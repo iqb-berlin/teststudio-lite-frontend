@@ -1,3 +1,4 @@
+import { DatastoreService } from './../datastore.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ItemmodulesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private ds: DatastoreService
+  ) { }
 
   ngOnInit() {
-  }
+    this.ds.updatePageTitle('Verwaltung: Item-Module');
+ }
 
 }

@@ -1,0 +1,11 @@
+<p *ngIf="isSuperadmin">
+  <button color="accent" [routerLink]="['/superadmin/users']">
+    <i class="material-icons">settings</i> Users
+  </button><br/>
+  <button color="accent" [routerLink]="['/superadmin/workspaces']">
+    <i class="material-icons">settings</i> Arbeitsbereiche
+  </button><br/>
+  <button color="accent" [routerLink]="['/superadmin/itemmodules']">
+    <i class="material-icons">settings</i> Item-Module
+  </button>
+</p>

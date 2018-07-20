@@ -1,3 +1,4 @@
+import { DatastoreService } from './../datastore.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WorkspacesComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private ds: DatastoreService
+  ) { }
 
   ngOnInit() {
+    this.ds.updatePageTitle('Verwaltung: Arbeitsbereiche');
   }
 
 }

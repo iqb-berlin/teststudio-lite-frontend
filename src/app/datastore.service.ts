@@ -8,6 +8,7 @@ import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iq
 import { BackendService, LoginStatusResponseData, ServerError } from './backend.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,7 +29,19 @@ export class DatastoreService {
     private bs: BackendService,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    const myToken = localStorage.getItem('t');
+    if ((myToken === null) || (myToken === undefined)) {
+      this.updateStatus('', '', false, '');
+    } else {
+      this.bs.getStatus(myToken).subscribe(
+        (userdata: LoginStatusResponseData) => {
+          this.updateStatus(userdata.token, userdata.name, userdata.is_superadmin, '');
+        }, (err: ServerError) => {
+          this.updateStatus('', '', false, err.label);
+      });
+    }
+  }
 
 
   // *******************************************************************************************************
@@ -53,7 +66,7 @@ export class DatastoreService {
   login(name: string, password: string) {
     this.bs.login(name, password).subscribe(
       (userdata: LoginStatusResponseData) => {
-        this.updateStatus(userdata.token, userdata.name, userdata.is_superuser, '');
+        this.updateStatus(userdata.token, userdata.name, userdata.is_superadmin, '');
       }, (err: ServerError) => {
         this.updateStatus('', '', false, err.label);
       }
@@ -89,7 +102,8 @@ export class DatastoreService {
     this.pageTitle$.next(newTitle);
   }
 
-  updateStatus(token: string, name: string, is_superuser: boolean, message: string) {
+  updateStatus(token: string, name: string, is_superadmin: boolean, message: string) {
+
     if ((token === null) || (token.length === 0)) {
       this.isLoggedIn$.next(false);
       this.isSuperadmin$.next(false);
@@ -99,7 +113,7 @@ export class DatastoreService {
       this.notLoggedInMessage$.next(message);
     } else {
       this.isLoggedIn$.next(true);
-      this.isSuperadmin$.next(is_superuser);
+      this.isSuperadmin$.next(is_superadmin);
       localStorage.setItem('t', token);
       this.token$.next(token);
       this.loginName$.next(name);

@@ -15,6 +15,7 @@ import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from './../iqb-files/iqb-files.module';
 import { IqbCommonModule } from './../iqb-common/iqb-common.module';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 
 @NgModule({
@@ -41,13 +42,15 @@ import { IqbCommonModule } from './../iqb-common/iqb-common.module';
     MatSnackBarModule
   ],
   exports: [
-    SuperadminComponent
+    SuperadminComponent,
+    DashboardComponent
   ],
   declarations: [
     WorkspacesComponent,
     UsersComponent,
     ItemmodulesComponent,
-    SuperadminComponent],
+    SuperadminComponent,
+    DashboardComponent],
   providers: [
     BackendService,
     DatastoreService

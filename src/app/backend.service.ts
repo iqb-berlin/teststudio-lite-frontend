@@ -84,7 +84,7 @@ export class BackendService {
 export interface LoginStatusResponseData {
   token: string;
   name: string;
-  is_superuser: boolean;
+  is_superadmin: boolean;
 }
 
 export interface ServerError {
