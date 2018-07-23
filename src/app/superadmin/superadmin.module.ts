@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
   MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
-import { ReactiveFormsModule } from '@angular/forms';
+  import {FlexLayoutModule} from '@angular/flex-layout';
+  import { ReactiveFormsModule } from '@angular/forms';
 
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
@@ -16,6 +17,8 @@ import { BackendService } from './backend.service';
 import { IqbFilesModule } from './../iqb-files/iqb-files.module';
 import { IqbCommonModule } from './../iqb-common/iqb-common.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { NewuserComponent } from './users/newuser/newuser.component';
+import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 
 
 @NgModule({
@@ -39,7 +42,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     MatFormFieldModule,
     MatInputModule,
     MatToolbarModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    FlexLayoutModule
   ],
   exports: [
     SuperadminComponent,
@@ -50,10 +54,15 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     UsersComponent,
     ItemmodulesComponent,
     SuperadminComponent,
-    DashboardComponent],
+    DashboardComponent,
+    NewuserComponent,
+    NewpasswordComponent],
   providers: [
     BackendService,
     DatastoreService
+  ],
+  entryComponents: [
+    NewuserComponent
   ]
 })
 export class SuperadminModule { }
