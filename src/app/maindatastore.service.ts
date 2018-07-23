@@ -12,7 +12,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 @Injectable({
   providedIn: 'root'
 })
-export class DatastoreService {
+export class MainDatastoreService {
   public isSuperadmin$ = new BehaviorSubject<boolean>(false);
   public isLoggedIn$ = new BehaviorSubject<boolean>(false);
   public loginName$ = new BehaviorSubject<string>('');

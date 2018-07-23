@@ -1,4 +1,4 @@
-import { DatastoreService } from './../datastore.service';
+import { MainDatastoreService } from './../maindatastore.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
@@ -15,12 +15,12 @@ export class HomeComponent implements OnInit {
   errorMessage = '';
 
   constructor(private fb: FormBuilder,
-    private ds: DatastoreService,
+    private mds: MainDatastoreService,
     private router: Router) { }
 
   ngOnInit() {
-    this.ds.pageTitle$.next('IQB-Testcenter - Willkommen!');
-    this.ds.isLoggedIn$.subscribe(
+    this.mds.pageTitle$.next('IQB-Testcenter - Willkommen!');
+    this.mds.isLoggedIn$.subscribe(
       is => this.isLoggedIn = is);
 
     this.testtakerloginform = this.fb.group({
@@ -33,6 +33,6 @@ export class HomeComponent implements OnInit {
     this.isError = false;
     this.errorMessage = '';
 
-    this.ds.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value);
+    this.mds.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value);
   }
 }

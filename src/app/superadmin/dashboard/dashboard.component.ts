@@ -1,4 +1,4 @@
-import { DatastoreService } from './../../datastore.service';
+import { MainDatastoreService } from '../../maindatastore.service';
 import { Component, OnInit } from '@angular/core';
 
 
@@ -10,8 +10,8 @@ import { Component, OnInit } from '@angular/core';
 export class DashboardComponent implements OnInit {
   public isSuperadmin = false;
 
-  constructor(private ds: DatastoreService) {
-    this.ds.isSuperadmin$.subscribe(
+  constructor(private mds: MainDatastoreService) {
+    this.mds.isSuperadmin$.subscribe(
       is => this.isSuperadmin = is);
   }
 

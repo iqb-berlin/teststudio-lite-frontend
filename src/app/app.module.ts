@@ -12,7 +12,6 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BackendService } from './backend.service';
-import { DatastoreService } from './datastore.service';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { IqbCommonModule } from './iqb-common';
 import { HomeComponent } from './home/home.component';
@@ -50,7 +49,6 @@ import { SuperadminModule } from './superadmin/superadmin.module';
     LoginDialogComponent
   ],
   providers: [
-    DatastoreService,
     BackendService,
     {
       provide: LocationStrategy,

@@ -1,5 +1,5 @@
-import { BytesPipe } from './../../iqb-common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef } from '@angular/core';
+import { BytesPipe } from '../../iqb-common';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef, HostBinding } from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpErrorResponse, HttpEvent } from '@angular/common/http';
 
@@ -8,13 +8,11 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
     selector: 'iqb-file-upload',
     templateUrl: `./iqbFileUpload.component.html`,
     exportAs: 'iqbFileUpload',
-    host: {
-      'class': 'iqb-file-upload',
-    },
     styleUrls: ['./../iqbFile.scss'],
   })
 
   export class IqbFileUploadComponent implements OnInit {
+    @HostBinding('class') myclass = 'iqb-file-upload';
 
     constructor(
       private myHttpClient: HttpClient) { }
