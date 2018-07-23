@@ -109,6 +109,7 @@ export class UsersComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
+            this.dataLoading = true;
             this.bs.changePassword(
                 this.mds.token$.getValue(),
                 (<FormGroup>result).get('name').value,
@@ -119,6 +120,7 @@ export class UsersComponent implements OnInit {
                     } else {
                       this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
                     }
+                    this.dataLoading = false;
                   });
           }
         }
@@ -167,8 +169,10 @@ export class UsersComponent implements OnInit {
               if (respOk) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
                 this.updateObjectList();
+                this.dataLoading = false;
               } else {
                 this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 1000});
+                this.dataLoading = false;
               }
           });
         }
@@ -194,7 +198,8 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  setWorkspaceChanged() {
+  selectWorkspace(ws?: GetUserWorkspaceListResponse) {
+    ws.selected = !ws.selected;
     this.pendingWorkspaceChanges = true;
   }
 
@@ -202,15 +207,16 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.setWorkspacesByUser(this.mds.token$.getValue(), this.WorkspacelistDatasource.).subscribe(
+      this.bs.setWorkspacesByUser(this.mds.token$.getValue(), this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
           }
+          this.dataLoading = false;
         });
-} else {
+    } else {
       this.WorkspacelistDatasource = null;
     }
   }

@@ -56,13 +56,15 @@ import { NewpasswordComponent } from './users/newpassword/newpassword.component'
     SuperadminComponent,
     DashboardComponent,
     NewuserComponent,
-    NewpasswordComponent],
+    NewpasswordComponent
+  ],
   providers: [
     BackendService,
     DatastoreService
   ],
   entryComponents: [
-    NewuserComponent
+    NewuserComponent,
+    NewpasswordComponent
   ]
 })
 export class SuperadminModule { }

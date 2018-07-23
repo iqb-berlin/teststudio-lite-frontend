@@ -86,14 +86,14 @@ export class BackendService {
   }
 
   // *******************************************************************
-  setWorkspacesByUser(token: string, accessTo: GetUserWorkspaceListResponse[]): Observable<Boolean | ServerError> {
+  setWorkspacesByUser(token: string, user: string, accessTo: GetUserWorkspaceListResponse[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'superadmin/setUserWorkspaces.php', {t: token, w: accessTo}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'superadmin/setUserWorkspaces.php', {t: token, u: user, w: accessTo}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
