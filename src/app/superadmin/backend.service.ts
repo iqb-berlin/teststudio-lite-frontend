@@ -52,7 +52,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'superadmin/changePassword.php', {t: token, n: name, p: password}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'superadmin/setPassword.php', {t: token, n: name, p: password}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );

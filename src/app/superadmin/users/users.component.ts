@@ -112,7 +112,7 @@ export class UsersComponent implements OnInit {
             this.dataLoading = true;
             this.bs.changePassword(
                 this.mds.token$.getValue(),
-                (<FormGroup>result).get('name').value,
+                selectedRows[0]['name'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
                     if (respOk) {
