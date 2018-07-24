@@ -72,21 +72,21 @@ export class BackendService {
   }
 
   // *******************************************************************
-  getWorkspacesByUser(token: string, username: string): Observable<GetUserWorkspaceListResponse[] | ServerError> {
+  getWorkspacesByUser(token: string, username: string): Observable<IdLabelSelectedData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<GetUserWorkspaceListResponse[]>(this.serverUrl + 'superadmin/getUserWorkspaces.php', {t: token, u: username}, httpOptions)
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'superadmin/getUserWorkspaces.php', {t: token, u: username}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  setWorkspacesByUser(token: string, user: string, accessTo: GetUserWorkspaceListResponse[]): Observable<Boolean | ServerError> {
+  setWorkspacesByUser(token: string, user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -94,6 +94,91 @@ export class BackendService {
     };
     return this.http
       .post<Boolean>(this.serverUrl + 'superadmin/setUserWorkspaces.php', {t: token, u: user, w: accessTo}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  // *******************************************************************
+  addWorkspace(token: string, name: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/addWorkspace.php', {t: token, n: name}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  changeWorkspace(token: string, wsId: number, wsName: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/setWorkspace.php', {t: token, ws_id: wsId, ws_name: wsName}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  deleteWorkspaces(token: string, workspaces: number[]): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/deleteWorkspaces.php', {t: token, ws: workspaces}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  getUsersByWorkspace(token: string, workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'superadmin/getWorkspaceUsers.php', {t: token, ws: workspaceId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  setUsersByWorkspace(token: string, workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/setWorkspaceUsers.php', {t: token, w: workspace, u: accessing}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // *******************************************************************
+  getWorkspaces(token: string): Observable<IdLabelSelectedData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'superadmin/getWorkspaces.php', {t: token}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -130,7 +215,7 @@ export interface GetUserDataResponse {
   name: string;
 }
 
-export interface GetUserWorkspaceListResponse {
+export interface IdLabelSelectedData {
   id: number;
   label: string;
   selected: boolean;

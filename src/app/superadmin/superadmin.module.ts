@@ -19,6 +19,8 @@ import { IqbCommonModule } from './../iqb-common/iqb-common.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
+import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
+import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
 
 
 @NgModule({
@@ -56,7 +58,9 @@ import { NewpasswordComponent } from './users/newpassword/newpassword.component'
     SuperadminComponent,
     DashboardComponent,
     NewuserComponent,
-    NewpasswordComponent
+    NewpasswordComponent,
+    NewworkspaceComponent,
+    EditworkspaceComponent
   ],
   providers: [
     BackendService,
@@ -64,7 +68,9 @@ import { NewpasswordComponent } from './users/newpassword/newpassword.component'
   ],
   entryComponents: [
     NewuserComponent,
-    NewpasswordComponent
+    NewpasswordComponent,
+    NewworkspaceComponent,
+    EditworkspaceComponent
   ]
 })
 export class SuperadminModule { }

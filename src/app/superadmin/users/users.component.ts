@@ -1,6 +1,6 @@
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, GetUserWorkspaceListResponse, ServerError } from './../backend.service';
+import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from './../backend.service';
 import { MainDatastoreService } from './../../maindatastore.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
   private selectedUser = '';
 
   private pendingWorkspaceChanges = false;
-  public WorkspacelistDatasource: MatTableDataSource<GetUserWorkspaceListResponse>;
+  public WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
 
   @ViewChild(MatSort) sort: MatSort;
@@ -94,7 +94,7 @@ export class UsersComponent implements OnInit {
         width: '400px',
         data: <MessageDialogData>{
           title: 'Kennwort ändern',
-          content: 'Bitte markieren Sie erst Nutzer!',
+          content: 'Bitte markieren Sie erst einen Nutzer!',
           type: MessageType.error
         }
       });
@@ -154,7 +154,7 @@ export class UsersComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
           content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Nutzer Löschen'
+          confirmbuttonlabel: 'Nutzer löschen'
         }
       });
 
@@ -186,7 +186,7 @@ export class UsersComponent implements OnInit {
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
       this.bs.getWorkspacesByUser(this.mds.token$.getValue(), this.selectedUser).subscribe(
-        (dataresponse: GetUserWorkspaceListResponse[]) => {
+        (dataresponse: IdLabelSelectedData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
         }, (err: ServerError) => {
@@ -198,7 +198,7 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  selectWorkspace(ws?: GetUserWorkspaceListResponse) {
+  selectWorkspace(ws?: IdLabelSelectedData) {
     ws.selected = !ws.selected;
     this.pendingWorkspaceChanges = true;
   }
