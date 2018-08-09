@@ -15,7 +15,7 @@ export class NewpasswordComponent implements OnInit {
 
   ngOnInit() {
     this.newpasswordform = this.fb.group({
-      pw: this.fb.control('', [Validators.required, Validators.minLength(3)])
+      pw: this.fb.control('', [Validators.required, Validators.minLength(3), Validators.pattern(/^\S+$/)])
     });
   }
 }

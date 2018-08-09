@@ -8,14 +8,14 @@
   </div>
 
 
-  <form [formGroup]="testtakerloginform" (ngSubmit)="login()" *ngIf="!isLoggedIn" fxFlex="150px" fxLayout="column">
+  <form [formGroup]="loginform" (ngSubmit)="login()" *ngIf="!isLoggedIn" fxFlex="180px" fxLayout="column">
     <mat-form-field>
-      <input matInput formControlName="testname" placeholder="Testname">
+      <input matInput formControlName="name" placeholder="Benutzername">
     </mat-form-field>
     <mat-form-field>
-      <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
+      <input matInput type="password" formControlName="pw" placeholder="Kennwort" (keyup.enter)="login()">
     </mat-form-field>
-    <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid">Test starten</button>
+    <button mat-raised-button type="submit" [disabled]="loginform.invalid">Anmelden</button>
   </form>
 
   <div *ngIf="isError" class="intro-main">

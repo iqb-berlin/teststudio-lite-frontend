@@ -22,6 +22,8 @@ import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
+import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authoring-tool/new-item-authoring-tool.component';
+import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
 
 
 @NgModule({
@@ -63,7 +65,9 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,
-    EditworkspaceComponent
+    EditworkspaceComponent,
+    NewItemAuthoringToolComponent,
+    EditItemAuthoringToolComponent
   ],
   providers: [
     BackendService,
@@ -73,7 +77,9 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,
-    EditworkspaceComponent
+    EditworkspaceComponent,
+    NewItemAuthoringToolComponent,
+    EditItemAuthoringToolComponent
   ]
 })
 export class SuperadminModule { }

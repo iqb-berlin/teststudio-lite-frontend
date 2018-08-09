@@ -18,6 +18,10 @@ export class BackendService {
   }
 
   // *******************************************************************
+  // *******************************************************************
+  // users
+  // *******************************************************************
+  // *******************************************************************
   getUsers(token: string): Observable<GetUserDataResponse[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -85,7 +89,6 @@ export class BackendService {
         );
   }
 
-  // *******************************************************************
   setWorkspacesByUser(token: string, user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -101,6 +104,22 @@ export class BackendService {
 
   // *******************************************************************
   // *******************************************************************
+  // workspaces
+  // *******************************************************************
+  // *******************************************************************
+  getWorkspaces(token: string): Observable<IdLabelSelectedData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'superadmin/getWorkspaces.php', {t: token}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   addWorkspace(token: string, name: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -114,7 +133,6 @@ export class BackendService {
         );
   }
 
-  // *******************************************************************
   changeWorkspace(token: string, wsId: number, wsName: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -128,7 +146,6 @@ export class BackendService {
         );
   }
 
-  // *******************************************************************
   deleteWorkspaces(token: string, workspaces: number[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -156,7 +173,6 @@ export class BackendService {
         );
   }
 
-  // *******************************************************************
   setUsersByWorkspace(token: string, workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -171,14 +187,57 @@ export class BackendService {
   }
 
   // *******************************************************************
-  getWorkspaces(token: string): Observable<IdLabelSelectedData[] | ServerError> {
+  // *******************************************************************
+  // itemauthoringtools
+  // *******************************************************************
+  // *******************************************************************
+  getItemAuthoringTools(token: string): Observable<StrIdLabelSelectedData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'superadmin/getWorkspaces.php', {t: token}, httpOptions)
+      .post<StrIdLabelSelectedData[]>(this.serverUrl + 'superadmin/getItemAuthoringTools.php', {t: token}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  addItemAuthoringTool(token: string, id: string, name: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/addItemAuthoringTool.php', {t: token, i: id, n: name}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  changeItemAuthoringTool(token: string, oldid: string, id: string, name: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/renameItemAuthoringTool.php', {t: token, old_i: oldid, new_i: id, n: name}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  deleteItemAuthoringTools(token: string, ids: string[]): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'superadmin/deleteItemAuthoringTools.php', {t: token, i: ids}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -217,6 +276,12 @@ export interface GetUserDataResponse {
 
 export interface IdLabelSelectedData {
   id: number;
+  label: string;
+  selected: boolean;
+}
+
+export interface StrIdLabelSelectedData {
+  id: string;
   label: string;
   selected: boolean;
 }

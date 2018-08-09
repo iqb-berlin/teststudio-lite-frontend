@@ -1,21 +1,19 @@
 <form [formGroup]="newuserform">
   <h1 mat-dialog-title>Neue/r Nutzer/in</h1>
 
-  <mat-dialog-content>
+  <mat-dialog-content fxLayout="column">
     <p>
-      <mat-form-field class="full-width">
-        <input matInput formControlName="name" placeholder="Name" [value]="data.name">
-      </mat-form-field>
+      Name und Kennwort müssen mindestens drei Zeichen lang sein und dürfen keine Leerzeichen enthalten.
     </p>
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Name" [value]="data.name">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="password" formControlName="pw" placeholder="Kennwort">
+    </mat-form-field>
     <p>
-      <mat-form-field class="full-width">
-        <input matInput type="password" formControlName="pw" placeholder="Kennwort">
-      </mat-form-field>
+      Nach dem Anlegen des Nutzers können Sie die Rechte zuweisen.
     </p>
-    <div class="infobox">
-      <p>Nach dem Anlegen des Nutzers können Sie die Rechte zuweisen.
-      </p>
-    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions>

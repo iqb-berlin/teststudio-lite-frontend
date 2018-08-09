@@ -9,8 +9,8 @@ import { Component } from '@angular/core';
 export class SuperadminComponent {
   private isSuperadmin = false;
   public navLinks = [
-    {path: 'itemauthoring', label: 'Item-Authoring'},
-    {path: 'itemplayer', label: 'Item-Player'},
+    {path: 'itemauthoring', label: 'Autorenmodule'},
+    {path: 'itemplayer', label: 'Itemplayer'},
     {path: 'users', label: 'Nutzer'},
     {path: 'workspaces', label: 'Arbeitsbereiche'}
   ];

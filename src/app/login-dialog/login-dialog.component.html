@@ -1,21 +1,16 @@
 <form [formGroup]="loginform">
   <h1 mat-dialog-title>Anmelden</h1>
 
-  <mat-dialog-content>
+  <mat-dialog-content fxLayout="column">
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Benutzername" [value]="data.lastloginname">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="password" formControlName="pw" placeholder="Kennwort">
+    </mat-form-field>
     <p>
-      <mat-form-field class="full-width">
-        <input matInput formControlName="name" placeholder="Name" [value]="data.lastloginname">
-      </mat-form-field>
+      Mit dieser Anmeldung erhalten Sie Zugriff auf den nicht-öffentlichen Bereich dieser Webanwendung.
     </p>
-    <p>
-      <mat-form-field class="full-width">
-        <input matInput type="password" formControlName="pw" placeholder="Kennwort">
-      </mat-form-field>
-    </p>
-    <div class="infobox">
-      <p>Mit dieser Anmeldung erhalten Sie Zugriff auf den nicht-öffentlichen Bereich dieser Webanwendung.
-      </p>
-    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions>

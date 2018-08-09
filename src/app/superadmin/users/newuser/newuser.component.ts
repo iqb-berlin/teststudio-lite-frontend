@@ -14,8 +14,8 @@ export class NewuserComponent implements OnInit {
 
   ngOnInit() {
     this.newuserform = this.fb.group({
-      name: this.fb.control('', [Validators.required, Validators.minLength(3)]),
-      pw: this.fb.control('', [Validators.required, Validators.minLength(3)])
+      name: this.fb.control('', [Validators.required,  Validators.minLength(3), Validators.pattern(/^\S+$/)]),
+      pw: this.fb.control('', [Validators.required, Validators.minLength(3), Validators.pattern(/^\S+$/)])
     });
   }
 }

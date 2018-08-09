@@ -1,16 +1,13 @@
 <form [formGroup]="newworkspaceform">
   <h1 mat-dialog-title>Neuer Arbeitsbereich</h1>
 
-  <mat-dialog-content>
+  <mat-dialog-content fxLayout="column">
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Name" [value]="data.name">
+    </mat-form-field>
     <p>
-      <mat-form-field class="full-width">
-        <input matInput formControlName="name" placeholder="Name" [value]="data.name">
-      </mat-form-field>
+      Nach dem Anlegen des Arbeitsbereiches können Sie die Zugriffsrechte zuweisen.
     </p>
-    <div class="infobox">
-      <p>Nach dem Anlegen des Arbeitsbereiches können Sie die Zugriffsrechte zuweisen.
-      </p>
-    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions>
