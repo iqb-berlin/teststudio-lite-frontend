@@ -17,7 +17,7 @@
         </button>
     </div>
 
-    <mat-table *ngIf="isSuperadmin" [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef fxFlex="70px">
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -45,7 +45,7 @@
   </div>
 
   <!-- ============================================= -->
-  <div *ngIf="isSuperadmin" fxLayout="column" fxFlex="40">
+  <div fxLayout="column" fxFlex="40">
 
     <div *ngIf="selectedWorkspaceId == 0">
       <div>Zugriffsberechtigte für Arbeitsbereich:</div>

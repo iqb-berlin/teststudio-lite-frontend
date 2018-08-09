@@ -1,5 +1,5 @@
 <div class="page-body">
-  <div class="adminbackground">
+  <div class="adminbackground" *ngIf="isSuperadmin">
 
     <!--<p class="communication-error-message" *ngIf="!isAdmin">{{ notLoggedInMessage }}</p>-->
 
@@ -14,5 +14,9 @@
     </nav>
 
     <router-outlet></router-outlet>
+  </div>
+
+  <div class="adminbackground" *ngIf="!isSuperadmin">
+    <p class="communication-error-message">Bitte als Administrator/in mit Sonderrechten anmelden!</p>
   </div>
 </div>

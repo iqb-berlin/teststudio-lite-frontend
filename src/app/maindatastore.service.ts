@@ -16,7 +16,7 @@ export class MainDatastoreService {
   public isSuperadmin$ = new BehaviorSubject<boolean>(false);
   public isLoggedIn$ = new BehaviorSubject<boolean>(false);
   public loginName$ = new BehaviorSubject<string>('');
-  public pageTitle$ = new BehaviorSubject<string>('');
+  public pageTitle$ = new BehaviorSubject<string>('IQB-Itembanking - Willkommen!');
   public notLoggedInMessage$ = new BehaviorSubject<string>('');
   public token$ = new BehaviorSubject<string>('');
 
@@ -107,6 +107,7 @@ export class MainDatastoreService {
     if ((token === null) || (token.length === 0)) {
       this.isLoggedIn$.next(false);
       this.isSuperadmin$.next(false);
+      this.pageTitle$.next('IQB-Itembanking - Bitte anmelden!');
       localStorage.removeItem('t');
       this.token$.next('');
       this.loginName$.next('');

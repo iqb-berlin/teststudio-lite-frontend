@@ -1,4 +1,4 @@
-import { MainDatastoreService } from './../maindatastore.service';
+import { MainDatastoreService } from '../maindatastore.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
@@ -19,9 +19,14 @@ export class HomeComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.mds.pageTitle$.next('IQB-Testcenter - Willkommen!');
-    this.mds.isLoggedIn$.subscribe(
-      is => this.isLoggedIn = is);
+    this.mds.isLoggedIn$.subscribe(is => {
+        this.isLoggedIn = is;
+        if (this.isLoggedIn) {
+          this.mds.pageTitle$.next('IQB-Itembanking - Bitte wählen!');
+        } else {
+          this.mds.pageTitle$.next('IQB-Itembanking - Bitte anmelden!');
+        }
+    });
 
     this.testtakerloginform = this.fb.group({
       testname: this.fb.control('', [Validators.required, Validators.minLength(3)]),

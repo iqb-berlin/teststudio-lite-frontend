@@ -1,3 +1,4 @@
+import { DatastoreService } from './datastore.service';
 import { Component } from '@angular/core';
 
 
@@ -6,12 +7,20 @@ import { Component } from '@angular/core';
   styleUrls: ['./superadmin.component.css']
 })
 export class SuperadminComponent {
+  private isSuperadmin = false;
   public navLinks = [
-    {path: 'users', label: 'Users'},
-    {path: 'workspaces', label: 'Arbeitsbereiche'},
-    {path: 'itemmodules', label: 'Item-Module'}
+    {path: 'itemauthoring', label: 'Item-Authoring'},
+    {path: 'itemplayer', label: 'Item-Player'},
+    {path: 'users', label: 'Nutzer'},
+    {path: 'workspaces', label: 'Arbeitsbereiche'}
   ];
 
 
-  constructor() { }
+  constructor(
+    private ds: DatastoreService
+  ) {
+    this.ds.isSuperadmin$.subscribe(is => {
+      this.isSuperadmin = is;
+    });
+  }
 }

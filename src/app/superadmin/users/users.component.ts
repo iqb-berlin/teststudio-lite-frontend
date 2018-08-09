@@ -1,7 +1,7 @@
+import { DatastoreService } from './../datastore.service';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from './../backend.service';
-import { MainDatastoreService } from './../../maindatastore.service';
+import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
@@ -10,7 +10,7 @@ import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from './../../iqb-common';
+  MessageDialogData, MessageType } from '../../iqb-common';
 
 
 @Component({
@@ -18,7 +18,6 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  private isSuperadmin = false;
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<GetUserDataResponse>;
   public displayedColumns = ['selectCheckbox', 'name'];
@@ -33,26 +32,29 @@ export class UsersComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private mds: MainDatastoreService,
     private bs: BackendService,
+    private ds: DatastoreService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.mds.isSuperadmin$.subscribe(i => {
-      this.isSuperadmin = i;
-    });
     this.tableselectionRow.onChange.subscribe(
       r => {
-        this.selectedUser = r.added[0].name;
+        if (r.added.length > 0) {
+          this.selectedUser = r.added[0].name;
+        } else {
+          this.selectedUser = '';
+        }
+
         this.updateWorkspaceList();
       });
   }
 
   ngOnInit() {
     this.updateObjectList();
+    this.ds.updatePageTitle('Nutzer');
   }
 
   // ***********************************************************************************
@@ -68,7 +70,7 @@ export class UsersComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.bs.addUser(
-              this.mds.token$.getValue(),
+              this.ds.token$.getValue(),
               (<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
@@ -111,7 +113,7 @@ export class UsersComponent implements OnInit {
           if (result !== false) {
             this.dataLoading = true;
             this.bs.changePassword(
-                this.mds.token$.getValue(),
+                this.ds.token$.getValue(),
                 selectedRows[0]['name'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
@@ -164,7 +166,7 @@ export class UsersComponent implements OnInit {
           this.dataLoading = true;
           const usersToDelete = [];
           selectedRows.forEach((r: GetUserDataResponse) => usersToDelete.push(r.name));
-          this.bs.deleteUsers(this.mds.token$.getValue(), usersToDelete).subscribe(
+          this.bs.deleteUsers(this.ds.token$.getValue(), usersToDelete).subscribe(
             respOk => {
               if (respOk) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
@@ -185,7 +187,7 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.getWorkspacesByUser(this.mds.token$.getValue(), this.selectedUser).subscribe(
+      this.bs.getWorkspacesByUser(this.ds.token$.getValue(), this.selectedUser).subscribe(
         (dataresponse: IdLabelSelectedData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
@@ -207,7 +209,7 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.setWorkspacesByUser(this.mds.token$.getValue(), this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
+      this.bs.setWorkspacesByUser(this.ds.token$.getValue(), this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
@@ -223,9 +225,12 @@ export class UsersComponent implements OnInit {
 
   // ***********************************************************************************
   updateObjectList() {
-    if (this.isSuperadmin) {
+    this.selectedUser = '';
+    this.updateWorkspaceList();
+
+    if (this.ds.isSuperadmin$.getValue()) {
       this.dataLoading = true;
-      this.bs.getUsers(this.mds.token$.getValue()).subscribe(
+      this.bs.getUsers(this.ds.token$.getValue()).subscribe(
         (dataresponse: GetUserDataResponse[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;

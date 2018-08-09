@@ -1,19 +1,18 @@
-<div class="page-body">
-  <div class="intro-main">
+<div class="page-body" fxLayout="row" fxLayoutAlign="space-around start">
+  <div fxFlex="1 1 60%" *ngIf="!isLoggedIn">
     <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
     betreibt auf diesen Seiten eine Pilotanwendung für das Erstellen computerbasierter Testitems.</p>
     <p>Um sich anzumelden, geben Sie bitte den entsprechenden Namen und das Kennwort ein.
       Sie können über das Seitenmenü oben rechts ggf. weitere Funktionen aufrufen.</p>
-    <p *ngIf="isLoggedIn">Derzeit sind Sie am System angemeldet. Über das Menü oben rechts oder <a [routerLink]="['/admin/myfiles']">diesen Link</a> gelangen Sie zur Startseite der Item-Verwaltung.</p>
-    <p>Bei Fragen zu diesem System wenden Sie sich bitte an <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20OpenCBA-Testsystem">Martin Mechtel</a>.</p>
+    <p>Bei Fragen zu diesem System wenden Sie sich bitte an <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20IQB-Itembankingsystem">Martin Mechtel</a>.</p>
   </div>
 
 
-  <form [formGroup]="testtakerloginform" (ngSubmit)="login()">
-    <mat-form-field class="full-width">
+  <form [formGroup]="testtakerloginform" (ngSubmit)="login()" *ngIf="!isLoggedIn" fxFlex="150px" fxLayout="column">
+    <mat-form-field>
       <input matInput formControlName="testname" placeholder="Testname">
     </mat-form-field>
-    <mat-form-field class="full-width">
+    <mat-form-field>
       <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
     </mat-form-field>
     <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid">Test starten</button>

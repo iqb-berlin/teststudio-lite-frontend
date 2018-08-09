@@ -1,3 +1,4 @@
+import { MainDatastoreService } from './../maindatastore.service';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
@@ -5,16 +6,21 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DatastoreService {
-  public pageTitle$ = new BehaviorSubject('Verwaltung');
   public isSuperadmin$ = new BehaviorSubject(false);
+  public token$ = new BehaviorSubject('');
 
-  constructor() { }
-
-  updatePageTitle(newTitle: string) {
-    this.pageTitle$.next(newTitle);
+  constructor(
+    private mds: MainDatastoreService
+  ) {
+    this.mds.isSuperadmin$.subscribe(is => {
+      this.isSuperadmin$.next(is);
+    });
+    this.mds.token$.subscribe(t => {
+      this.token$.next(t);
+    });
   }
 
-  updateIsSuperadmin(newStatus: boolean) {
-    this.isSuperadmin$.next(newStatus);
+  updatePageTitle(newTitle: string) {
+    this.mds.updatePageTitle('Verwaltung: ' + newTitle);
   }
 }

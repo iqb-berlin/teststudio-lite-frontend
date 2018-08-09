@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
-  MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
+  MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule, MatCardModule,
   MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
   import {FlexLayoutModule} from '@angular/flex-layout';
   import { ReactiveFormsModule } from '@angular/forms';
@@ -10,12 +10,13 @@ import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolb
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
-import { ItemmodulesComponent } from './itemmodules/itemmodules.component';
+import { ItemauthoringComponent } from './itemauthoring/itemauthoring.component';
+import { ItemplayerComponent } from './itemplayer/itemplayer.component';
 import { SuperadminComponent } from './superadmin.component';
 import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
-import { IqbFilesModule } from './../iqb-files/iqb-files.module';
-import { IqbCommonModule } from './../iqb-common/iqb-common.module';
+import { IqbFilesModule } from '../iqb-files/iqb-files.module';
+import { IqbCommonModule } from '../iqb-common/iqb-common.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
@@ -40,6 +41,7 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     MatProgressSpinnerModule,
     MatDialogModule,
     MatButtonModule,
+    MatCardModule,
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
@@ -54,7 +56,8 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
   declarations: [
     WorkspacesComponent,
     UsersComponent,
-    ItemmodulesComponent,
+    ItemauthoringComponent,
+    ItemplayerComponent,
     SuperadminComponent,
     DashboardComponent,
     NewuserComponent,

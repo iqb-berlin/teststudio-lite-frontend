@@ -1,5 +1,5 @@
-import { MainDatastoreService } from '../../maindatastore.service';
-import { Component, OnInit } from '@angular/core';
+import { DatastoreService } from './../datastore.service';
+import { Component } from '@angular/core';
 
 
 @Component({
@@ -7,16 +7,12 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
   public isSuperadmin = false;
 
-  constructor(private mds: MainDatastoreService) {
-    this.mds.isSuperadmin$.subscribe(
+  constructor(private ds: DatastoreService) {
+    this.ds.isSuperadmin$.subscribe(
       is => this.isSuperadmin = is);
-  }
-
-  ngOnInit() {
-
   }
 
 }

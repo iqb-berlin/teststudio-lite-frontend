@@ -17,7 +17,7 @@ import { IqbCommonModule } from './iqb-common';
 import { HomeComponent } from './home/home.component';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { SuperadminModule } from './superadmin/superadmin.module';
-
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -42,6 +42,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
     HttpClientModule,
     SuperadminModule,
     AppRoutingModule,
+    FlexLayoutModule,
     IqbCommonModule
   ],
   entryComponents: [
