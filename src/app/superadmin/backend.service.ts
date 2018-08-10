@@ -243,6 +243,34 @@ export class BackendService {
         );
   }
 
+  // *******************************************************************
+  // itemauthoringtools - Files
+  getItemAuthoringToolFiles(token: string, id: string): Observable<GetFileResponseData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<GetFileResponseData[]>(this.serverUrl + 'superadmin/getItemAuthoringToolFiles.php', {t: token, i: id}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  deleteItemAuthoringToolFiles(token: string, id: string, files: string[]): Observable<string | ServerError>  {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<string>(this.serverUrl + 'superadmin/deleteItemAuthoringToolFiles.php', {t: token, i: id, f: files}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -283,5 +311,14 @@ export interface IdLabelSelectedData {
 export interface StrIdLabelSelectedData {
   id: string;
   label: string;
+  selected: boolean;
+}
+
+export interface GetFileResponseData {
+  filename: string;
+  filesize: number;
+  filesizestr: string;
+  filedatetime: string;
+  filedatetimestr: string;
   selected: boolean;
 }

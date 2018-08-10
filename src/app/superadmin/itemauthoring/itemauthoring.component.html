@@ -4,15 +4,17 @@
   </div>
 
   <!-- ============================================= -->
-  <div class="objectlist" fxLayout="column" fxFlex="50">
+  <div class="objectlist" fxLayout="column" fxFlex="40">
     <div fxLayout="row">
         <button mat-raised-button (click)="addObject()" matTooltip="Autorenmodul hinzufügen" matTooltipPosition="above">
             <mat-icon>add</mat-icon>
           </button>
-        <button mat-raised-button (click)="deleteObject()" matTooltip="Markierte/s Autorenmodul/e löschen" matTooltipPosition="above">
+        <button mat-raised-button (click)="deleteObject()" [disabled]="(selectedItemAuthoringToolId.length == 0) && (tableselectionCheckbox.selected.length == 0)"
+            matTooltip="Markierte/s Autorenmodul/e löschen" matTooltipPosition="above">
           <mat-icon>delete</mat-icon>
         </button>
-        <button mat-raised-button (click)="changeObject()" matTooltip="Autorenmodul umbenennen" matTooltipPosition="above">
+        <button mat-raised-button (click)="changeObject()"  [disabled]="(selectedItemAuthoringToolId.length == 0) && (tableselectionCheckbox.selected.length == 0)"
+            matTooltip="Autorenmodul umbenennen" matTooltipPosition="above">
           <mat-icon>edit</mat-icon>
         </button>
     </div>
@@ -50,35 +52,62 @@
   </div>
 
   <!-- ============================================= -->
-  <div fxLayout="column" fxFlex="40">
+  <div fxLayout="column" fxFlex="55">
 
-    <div *ngIf="selectedWorkspaceId == 0">
-      <div>Dateien für Autorenmodul:</div>
-      <div>Bitte links ein Autorenmodul wählen</div>
+    <div *ngIf="selectedItemAuthoringToolId.length == 0">
+      <p>Bitte links ein Autorenmodul wählen</p>
     </div>
 
-    <div *ngIf="selectedWorkspaceId > 0" fxLayout="row" fxLayoutAlign="space-between center">
-      <div>Zugriffsrechte für "{{ selectedAuthoringToolId }}":</div>
-        <button mat-raised-button (click)="saveUsers()" matTooltip="Speichern"
-            matTooltipPosition="above" [disabled]="!pendingUserChanges">
-          <mat-icon>save</mat-icon>
-        </button>
+    <div *ngIf="selectedItemAuthoringToolId.length > 0" fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxFlex *ngIf="!hasFiles()">
+        Keine Dateien für "{{ selectedItemAuthoringToolId }}" im System.</div>
+      <div fxFlex *ngIf="hasFiles()">
+        Dateien für "{{ selectedItemAuthoringToolId }}":</div>
+
+      <button fxFlex="88px" mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above">
+        <mat-icon>cloud_upload</mat-icon>
+      </button>
+      <button fxFlex="88px" mat-raised-button (click)="deleteFiles()" [disabled]="tableselectionCheckboxFiles.selected.length == 0"
+          matTooltip="Markierte Dateien löschen" matTooltipPosition="above">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <input #hiddenfileinput type="file" name="fileforopencba" multiple hidden="true"/>
     </div>
 
-    <mat-table [dataSource]="UserlistDatasource">
+    <mat-table [dataSource]="filesDatasource" *ngIf="hasFiles()" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-cell *matCellDef="let row" fxFlex="70px">
-          <mat-checkbox (change)="selectUser(row)"
-                        [checked]="row.selected">
+        <mat-header-cell *matHeaderCellDef fxFlex="60px">
+          <mat-checkbox (change)="$event ? masterToggleFiles() : null"
+                        [checked]="tableselectionCheckboxFiles.hasValue() && isAllSelectedFiles()"
+                        [indeterminate]="tableselectionCheckboxFiles.hasValue() && !isAllSelectedFiles()">
+          </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" fxFlex="60px">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? tableselectionCheckboxFiles.toggle(row) : null"
+                        [checked]="tableselectionCheckboxFiles.isSelected(row)">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="name">
-        <mat-cell *matCellDef="let row"> {{row.label}} </mat-cell>
+      <ng-container matColumnDef="filename">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell" fxFlex> Name </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="namecell" fxFlex><a target="_blank" [href]="getDownloadRef(element)">{{element.filename}}</a> </mat-cell>
       </ng-container>
 
-      <mat-row *matRowDef="let row; columns: displayedUserColumns;"></mat-row>
+      <ng-container matColumnDef="filedatetime">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell" fxFlex="80px"> Datum </mat-header-cell>
+        <mat-cell *matCellDef="let element" class="datecell" fxFlex="80px"> {{element.filedatetimestr}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="filesize">
+        <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="80px"> Größe </mat-header-cell>
+        <mat-cell *matCellDef="let element" fxFlex="80px"> {{element.filesizestr}} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumnsFiles"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumnsFiles;"></mat-row>
     </mat-table>
   </div>
 </div>

@@ -1,12 +1,12 @@
 import { EditItemAuthoringToolComponent } from './edit-item-authoring-tool/edit-item-authoring-tool.component';
 import { NewItemAuthoringToolComponent } from './new-item-authoring-tool/new-item-authoring-tool.component';
 
-import { BackendService, GetUserDataResponse, StrIdLabelSelectedData, ServerError } from '../backend.service';
+import { BackendService, GetUserDataResponse, StrIdLabelSelectedData, ServerError, GetFileResponseData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
 import { DatastoreService } from '../datastore.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -19,19 +19,21 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
 })
 export class ItemauthoringComponent implements OnInit {
   public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<StrIdLabelSelectedData>;
+  public objectsDatasource: MatTableDataSource<StrIdLabelSelectedData> = null;
   public displayedColumns = ['selectCheckbox', 'id', 'name'];
   private tableselectionCheckbox = new SelectionModel <StrIdLabelSelectedData>(true, []);
   private tableselectionRow = new SelectionModel <StrIdLabelSelectedData>(false, []);
   private selectedItemAuthoringToolId = '';
 
-  private pendingUserChanges = false;
-  // public UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
-  // public displayedUserColumns = ['selectCheckbox', 'name'];
+  private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
+  public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
+  private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
+
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
+    @Inject('SERVER_URL') private serverUrl: string,
     private ds: DatastoreService,
     private bs: BackendService,
     private newItemAuthoringToolDialog: MatDialog,
@@ -189,52 +191,6 @@ export class ItemauthoringComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateFileList() {
-
-  }
-  /*
-  // ***********************************************************************************
-  updateUserList() {
-    this.pendingUserChanges = false;
-    if (this.selectedWorkspaceId > 0) {
-      this.dataLoading = true;
-      this.bs.getUsersByWorkspace(this.ds.token$.getValue(), this.selectedWorkspaceId).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
-          this.UserlistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        }, (err: ServerError) => {
-          // this.ass.updateAdminStatus('', '', [], err.label);
-          this.dataLoading = false;
-        });
-    } else {
-      this.UserlistDatasource = null;
-    }
-  }
-
-  selectUser(ws?: IdLabelSelectedData) {
-    ws.selected = !ws.selected;
-    this.pendingUserChanges = true;
-  }
-
-  saveUsers() {
-    this.pendingUserChanges = false;
-    if (this.selectedWorkspaceId > 0) {
-      this.dataLoading = true;
-      this.bs.setUsersByWorkspace(this.ds.token$.getValue(), this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
-        respOk => {
-          if (respOk) {
-            this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
-          } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
-          }
-          this.dataLoading = false;
-        });
-    } else {
-      this.UserlistDatasource = null;
-    }
-  }*/
-
-  // ***********************************************************************************
   updateObjectList() {
     this.selectedItemAuthoringToolId = '';
     this.updateFileList();
@@ -249,11 +205,14 @@ export class ItemauthoringComponent implements OnInit {
           this.tableselectionRow.clear();
           this.dataLoading = false;
         }, (err: ServerError) => {
+          this.objectsDatasource = null;
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
         }
       );
+    } else {
+      this.objectsDatasource = null;
     }
   }
 
@@ -271,5 +230,106 @@ export class ItemauthoringComponent implements OnInit {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
+  }
+
+  // Files ====================================================================
+  isAllSelectedFiles() {
+    const numSelected = this.tableselectionCheckboxFiles.selected.length;
+    const numRows = this.filesDatasource.data.length;
+    return numSelected === numRows;
+  }
+
+  masterToggleFiles() {
+    this.isAllSelectedFiles() ?
+        this.tableselectionCheckboxFiles.clear() :
+        this.filesDatasource.data.forEach(row => this.tableselectionCheckboxFiles.select(row));
+  }
+
+  hasFiles() {
+    if (this.selectedItemAuthoringToolId.length > 0) {
+      if (this.filesDatasource == null) {
+        return false;
+      } else {
+        return this.filesDatasource.data.length > 0;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // ***********************************************************************************
+  getDownloadRef(element: GetFileResponseData): string {
+    return this.serverUrl
+        + 'itemauthoringtools/' + this.selectedItemAuthoringToolId + '/' + element.filename;
+  }
+
+  updateFileList() {
+    if (this.selectedItemAuthoringToolId.length > 0) {
+      this.dataLoading = true;
+      this.bs.getItemAuthoringToolFiles(this.ds.token$.getValue(), this.selectedItemAuthoringToolId).subscribe(
+        (filedataresponse: GetFileResponseData[]) => {
+          this.filesDatasource = new MatTableDataSource(filedataresponse);
+          this.filesDatasource.sort = this.sort;
+          this.dataLoading = false;
+        }, (err: ServerError) => {
+          this.filesDatasource = null;
+          this.dataLoading = false;
+        }
+      );
+    } else {
+      this.filesDatasource = null;
+    }
+  }
+
+  deleteFiles() {
+    const filesToDelete = [];
+    this.tableselectionCheckboxFiles.selected.forEach(element => {
+      filesToDelete.push(element.filename);
+    });
+
+    if (filesToDelete.length > 0) {
+      let prompt = 'Sie haben ';
+      if (filesToDelete.length > 1) {
+        prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
+      } else {
+        prompt = prompt + ' eine Datei ausgewählt. Soll';
+      }
+      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Löschen von Dateien',
+          content: prompt + ' diese gelöscht werden?',
+          confirmbuttonlabel: 'Löschen'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== false) {
+          // =========================================================
+          this.dataLoading = true;
+          this.bs.deleteItemAuthoringToolFiles(this.ds.token$.getValue(), this.selectedItemAuthoringToolId, filesToDelete).subscribe(
+            (deletefilesresponse: string) => {
+              if ((deletefilesresponse.length > 5) && (deletefilesresponse.substr(0, 2) === 'e:')) {
+                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', {duration: 1000});
+              } else {
+                this.snackBar.open(deletefilesresponse, '', {duration: 1000});
+                this.updateFileList();
+              }
+            }, (err: ServerError) => {
+              this.snackBar.open(err.label, '', {duration: 1000});
+            });
+          // =========================================================
+        }
+      });
+    } else {
+      this.messsageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Löschen von Dateien',
+          content: 'Bitte markieren Sie erst Dateien!',
+          type: MessageType.error
+        }
+      });
+    }
   }
 }
