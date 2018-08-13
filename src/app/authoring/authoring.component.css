@@ -1,0 +1,23 @@
+.authoring-body {
+  position: absolute;
+  width: 100%;
+  top: 70px;
+  bottom: 0;
+  padding: 0px;
+}
+
+.navi {
+  background-color:lightgray;
+  padding: 1px;
+  margin: 0px;
+  width: 160px;
+  height: 100%;
+}
+
+.mat-nav-list {
+  overflow-x: auto;
+}
+
+.mat-form-field {
+  margin: 5px;
+}

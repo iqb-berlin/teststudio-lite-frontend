@@ -1,8 +1,7 @@
 // import { environment } from '../environments/environment';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
-import { FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material';
 
 import { MainDatastoreService } from './maindatastore.service';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
@@ -20,7 +19,6 @@ export class AppComponent implements OnInit {
 
   constructor (
     private mds: MainDatastoreService,
-    private router: Router,
     public aboutDialog: MatDialog) { }
 
   ngOnInit() {

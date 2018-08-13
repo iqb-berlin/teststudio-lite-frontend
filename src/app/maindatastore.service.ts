@@ -120,7 +120,5 @@ export class MainDatastoreService {
       this.loginName$.next(name);
       this.notLoggedInMessage$.next('');
     }
-
-    this.router.navigateByUrl('/');
   }
 }

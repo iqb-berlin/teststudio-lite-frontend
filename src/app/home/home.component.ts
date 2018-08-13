@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit {
         }
     });
 
+    this.mds.notLoggedInMessage$.subscribe(
+      m => this.errorMessage = m);
     this.loginform = this.fb.group({
       name: this.fb.control('', [Validators.required, Validators.minLength(1)]),
       pw: this.fb.control('', [Validators.required, Validators.minLength(1)])

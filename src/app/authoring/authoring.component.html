@@ -1,0 +1,26 @@
+<div class="authoring-body">
+  <div class="navi" fxLayout="column">
+    <mat-form-field>
+      <mat-select placeholder="Arbeitsbereich" [formControl]="wsSelector">
+        <mat-option *ngFor="let ws of myWorkspaces" [value]="ws.id">
+            {{ws.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div fxLayout="row">
+      <button mat-raised-button (click)="addUnit()" matTooltip="Unit hinzufügen" matTooltipPosition="above" fxFlex="33">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-raised-button (click)="deleteUnit()" matTooltip="Unit(s) löschen" matTooltipPosition="above" fxFlex>
+          <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-raised-button (click)="saveUnit()" matTooltip="Unit speichern" matTooltipPosition="above" fxFlex="33">
+          <mat-icon>save</mat-icon>
+      </button>
+    </div>
+    <mat-nav-list fxFlex dense>
+        <a mat-list-item *ngFor="let unit of allUnits">{{ unit.name }}</a>
+    </mat-nav-list>
+  </div>
+  <router-outlet></router-outlet>
+</div>

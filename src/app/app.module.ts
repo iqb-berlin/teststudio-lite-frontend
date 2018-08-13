@@ -1,3 +1,4 @@
+import { AuthoringModule } from './authoring';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
@@ -43,7 +44,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     SuperadminModule,
     AppRoutingModule,
     FlexLayoutModule,
-    IqbCommonModule
+    IqbCommonModule,
+    AuthoringModule
   ],
   entryComponents: [
     AboutDialogComponent,
