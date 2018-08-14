@@ -7,20 +7,50 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-chip-list #unitview>
+      <mat-chip [selected]="!isDesignView" matTooltip="Eigenschaften" color="primary" (click)="isDesignView = false" fxFlex>
+        <mat-icon>edit</mat-icon>
+      </mat-chip>
+      <mat-chip [selected]="isDesignView" matTooltip="Design" color="primary" (click)="isDesignView = true" fxFlex>
+        <mat-icon>brush</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+    <div fxLayout="row">
+      <button mat-raised-button (click)="runUnit()" matTooltip="Voransicht" matTooltipPosition="above" fxFlex>
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button mat-raised-button (click)="saveUnit()" matTooltip="Unit speichern" matTooltipPosition="above" fxFlex>
+          <mat-icon>save</mat-icon>
+      </button>
+    </div>
+    <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
+    <mat-button-toggle-group vertical fxFlex>
+        <mat-button-toggle *ngFor="let unit of allUnits">{{ unit.name }}</mat-button-toggle>
+    </mat-button-toggle-group>
+    <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <div fxLayout="row">
       <button mat-raised-button (click)="addUnit()" matTooltip="Unit hinzufügen" matTooltipPosition="above" fxFlex="33">
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-raised-button (click)="deleteUnit()" matTooltip="Unit(s) löschen" matTooltipPosition="above" fxFlex>
+      <button mat-raised-button (click)="deleteUnit()" matTooltip="Unit(s) löschen" matTooltipPosition="above" fxFlex="33">
           <mat-icon>delete</mat-icon>
       </button>
-      <button mat-raised-button (click)="saveUnit()" matTooltip="Unit speichern" matTooltipPosition="above" fxFlex="33">
-          <mat-icon>save</mat-icon>
+      <button mat-button [matMenuTriggerFor]="menu" matTooltip="Weitere Funktionen..." matTooltipPosition="above" fxFlex>
+        <mat-icon>menu</mat-icon>
       </button>
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>
+          <span>Units verschieben</span>
+        </button>
+        <button mat-menu-item>
+          <span>Units importieren</span>
+        </button>
+        <button mat-menu-item>
+          <span>Units als Datei speichern</span>
+        </button>
+      </mat-menu>
     </div>
-    <mat-nav-list fxFlex dense>
-        <a mat-list-item *ngFor="let unit of allUnits">{{ unit.name }}</a>
-    </mat-nav-list>
   </div>
   <router-outlet></router-outlet>
 </div>

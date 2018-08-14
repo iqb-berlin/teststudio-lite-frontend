@@ -7,17 +7,30 @@
 }
 
 .navi {
-  background-color:lightgray;
+  background-color:whitesmoke;
   padding: 1px;
   margin: 0px;
   width: 160px;
   height: 100%;
 }
 
-.mat-nav-list {
-  overflow-x: auto;
+.mat-nav-list, .mat-button-toggle-group {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.mat-form-field {
+.mat-form-field, .mat-chip-list {
   margin: 5px;
+}
+
+.mat-chip {
+  height: 30px;
+}
+
+.mat-raised-button, .mat-button {
+  min-width: 20px;
+}
+
+.mat-button-toggle {
+  color: blue;
 }

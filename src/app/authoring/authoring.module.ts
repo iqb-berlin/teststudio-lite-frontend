@@ -1,6 +1,6 @@
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
-  MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatCardModule, MatListModule } from '@angular/material';
+  MatSelectModule, MatListModule, MatSlideToggleModule, MatButtonToggleModule, MatChipsModule, MatMenuModule } from '@angular/material';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
@@ -9,7 +9,8 @@ import { CommonModule } from '@angular/common';
 
 import { AuthoringRoutingModule } from './authoring-routing.module';
 import { AuthoringComponent } from './authoring.component';
-import { UnitComponent } from './unit/unit.component';
+import { UnitdesignComponent } from './unitdesign/unitdesign.component';
+import { UnitpropertiesComponent } from './unitproperties/unitproperties.component';
 
 @NgModule({
   imports: [
@@ -20,12 +21,18 @@ import { UnitComponent } from './unit/unit.component';
     AuthoringRoutingModule,
     ReactiveFormsModule,
     MatSelectModule,
-    MatListModule
+    MatListModule,
+    MatSlideToggleModule,
+    MatButtonToggleModule,
+    MatChipsModule,
+    MatMenuModule,
+    MatButtonModule
   ],
   declarations: [
     AuthoringComponent,
     ResizeIFrameChildDirective,
-    UnitComponent
+    UnitdesignComponent,
+    UnitpropertiesComponent
   ],
   exports: [
     AuthoringComponent

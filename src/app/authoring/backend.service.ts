@@ -7,3 +7,9 @@ export class BackendService {
 
   constructor() { }
 }
+
+export interface UnitShortData {
+  db_id: number;
+  key: string;
+  label: string;
+}
