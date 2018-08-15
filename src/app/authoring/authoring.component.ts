@@ -1,3 +1,10 @@
+import { NewunitComponent } from './newunit/newunit.component';
+import { FormGroup } from '@angular/forms';
+import { MatDialog, MatSnackBar } from '@angular/material';
+import { MainDatastoreService } from './../maindatastore.service';
+import { BehaviorSubject } from 'rxjs';
+import { UnitShortData, BackendService, WorkspaceData } from './backend.service';
+import { DatastoreService } from './datastore.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
@@ -6,47 +13,114 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./authoring.component.css']
 })
 export class AuthoringComponent implements OnInit {
-  private myWorkspaces = [{'id': '2', 'name': 'Zwo'},
-    {'id': '8', 'name': 'Acht'},
-    {'id': '7', 'name': 'Sieben'}];
-    private allUnits = [
-      {'id': '33', 'name': '1Soso'},
-      {'id': '33', 'name': 'Sosdcd sdcos oihdc oisdhc osidhc o'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'Soso'},
-      {'id': '33', 'name': 'SosoX'}
-    ];
-  private wsSelector = new FormControl();
-  constructor() { }
+  private dataLoading = false;
+  private unitId$ = new BehaviorSubject<number>(0);
+  private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
+  private workspaceList: WorkspaceData[] = [];
+  private workspaceId = 0;
 
-  ngOnInit() {
+  private wsSelector = new FormControl();
+  private unitSelector = new FormControl();
+
+  constructor(
+    private mds: MainDatastoreService,
+    private ds: DatastoreService,
+    private bs: BackendService,
+    private newunitDialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
+    this.ds.workspaceList$.subscribe(wsList => this.workspaceList = wsList);
+    this.ds.workspaceId$.subscribe(wsint => {
+      this.workspaceId = wsint;
+      this.updateUnitList();
+      this.wsSelector.setValue(wsint, {emitEvent: false});
+    });
   }
 
+  ngOnInit() {
+    this.wsSelector.valueChanges
+      .subscribe(wsId => {
+        this.ds.workspaceId$.next(wsId);
+    });
+
+    this.unitId$.subscribe((uId: number) => {
+      localStorage.setItem('u', String(uId));
+      this.unitSelector.setValue(uId, {emitEvent: false});
+    });
+
+    this.unitSelector.valueChanges
+      .subscribe(uId => {
+        this.unitId$.next(uId);
+    });
+  }
+
+  updateUnitList() {
+    const myToken = this.mds.token$.getValue();
+    const myWorkspace = this.ds.workspaceId$.getValue();
+    if ((myToken === '') || (myWorkspace === 0)) {
+      this.unitList$.next([]);
+      this.unitId$.next(0);
+    } else {
+      this.dataLoading = true;
+      this.bs.getUnitList(myToken, myWorkspace).subscribe(
+        (uresponse: UnitShortData[]) => {
+          this.dataLoading = false;
+          this.unitList$.next(uresponse);
+          const uIdStr = localStorage.getItem('u');
+          if (uIdStr == null) {
+            this.unitId$.next(0);
+          } else {
+            const uId = +uIdStr;
+            if (uId > 0) {
+              let uFound = false;
+              for (let i = 0; i < uresponse.length; i++) {
+                if (uresponse[i].id === uId) {
+                  this.unitId$.next(uId);
+                  uFound = true;
+                  break;
+                }
+              }
+
+              if (!uFound) {
+                this.unitId$.next(0);
+              }
+            } else {
+              this.unitId$.next(0);
+            }
+          }
+      });
+    }
+  }
+
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  addUnit() {
+    const dialogRef = this.newunitDialog.open(NewunitComponent, {
+      width: '600px',
+      data: {
+        key: ''
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (typeof result !== 'undefined') {
+        if (result !== false) {
+          this.dataLoading = true;
+          this.bs.addUnit(
+              this.mds.token$.getValue(),
+              this.workspaceId,
+              (<FormGroup>result).get('key').value,
+              (<FormGroup>result).get('label').value).subscribe(
+                respOk => {
+                  if (respOk) {
+                    this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
+                    this.updateUnitList();
+                  } else {
+                    this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
+                  }
+                  this.dataLoading = false;
+                });
+        }
+      }
+    });
+  }
 }
