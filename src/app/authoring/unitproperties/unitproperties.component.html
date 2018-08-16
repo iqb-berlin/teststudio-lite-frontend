@@ -1,3 +1,9 @@
-<p>
-  unitproperties works!
-</p>
+<div id="unitproperties">
+  <ul *ngIf="myUnitProps !== null">
+    <li>id: {{ myUnitProps.id }}</li>
+    <li>key: {{ myUnitProps.key }}</li>
+    <li>label: {{ myUnitProps.label }}</li>
+    <li>lastchange: {{ myUnitProps.lastchange }}</li>
+  </ul>
+  <p *ngIf="myUnitProps === null">nix data</p>
+</div>

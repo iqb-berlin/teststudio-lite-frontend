@@ -1,3 +1,4 @@
+import { routingUnitpropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
   MatSelectModule, MatListModule, MatSlideToggleModule, MatButtonToggleModule, MatChipsModule,
@@ -47,6 +48,9 @@ import { NewunitComponent } from './newunit/newunit.component';
   ],
   entryComponents: [
     NewunitComponent
+  ],
+  providers: [
+    routingUnitpropertiesProviders
   ]
 })
 export class AuthoringModule { }

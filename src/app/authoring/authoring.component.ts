@@ -1,3 +1,4 @@
+import { Router, ActivatedRoute } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
 import { MatDialog, MatSnackBar } from '@angular/material';
@@ -27,7 +28,9 @@ export class AuthoringComponent implements OnInit {
     private ds: DatastoreService,
     private bs: BackendService,
     private newunitDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.ds.workspaceList$.subscribe(wsList => this.workspaceList = wsList);
     this.ds.workspaceId$.subscribe(wsint => {
@@ -44,8 +47,8 @@ export class AuthoringComponent implements OnInit {
     });
 
     this.unitId$.subscribe((uId: number) => {
-      localStorage.setItem('u', String(uId));
       this.unitSelector.setValue(uId, {emitEvent: false});
+      this.router.navigate(['up/' + uId], {relativeTo: this.route});
     });
 
     this.unitSelector.valueChanges

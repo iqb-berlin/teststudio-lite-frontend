@@ -56,6 +56,20 @@ export class BackendService {
         );
   }
 
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public getUnitProperties (sessiontoken: string, workspaceId: number, unitId: number): Observable<UnitProperties | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<UnitProperties>(this.serverUrl + 'getUnitProperties.php', {t: sessiontoken, ws: workspaceId, u: unitId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -86,6 +100,14 @@ export interface UnitShortData {
   id: number;
   key: string;
   label: string;
+}
+
+export interface UnitProperties {
+  id: number;
+  key: string;
+  label: string;
+  lastchangeStr: string;
+  description: string;
 }
 
 export interface WorkspaceData {
