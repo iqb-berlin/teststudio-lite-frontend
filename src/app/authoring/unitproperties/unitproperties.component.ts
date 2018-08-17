@@ -1,3 +1,4 @@
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MainDatastoreService } from './../../maindatastore.service';
 import { Subscriber ,  Subscription } from 'rxjs';
 import { BackendService, UnitProperties, ServerError } from './../backend.service';
@@ -13,17 +14,24 @@ import { Location } from '@angular/common';
 export class UnitpropertiesComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription;
   private myUnitProps: UnitProperties = null;
+  private unitpropsForm: FormGroup;
 
   constructor(
     private mds: MainDatastoreService,
     private bs: BackendService,
     private location: Location,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fb: FormBuilder
   ) {
 
   }
 
   ngOnInit() {
+    this.unitpropsForm = this.fb.group({
+      key: this.fb.control('', [Validators.required, Validators.minLength(3)]),
+      label: this.fb.control('')
+    });
+
     this.routingSubscription = this.route.params.subscribe(
       params => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -32,14 +40,27 @@ export class UnitpropertiesComponent implements OnInit, OnDestroy {
         if (newUnit !== null) {
           if ((newUnit as UnitProperties).id !== undefined) {
             this.myUnitProps = newUnit as UnitProperties;
-            console.log(this.myUnitProps);
+            this.unitpropsForm.setValue(
+              {key: this.myUnitProps.key, label: this.myUnitProps.label},
+              {emitEvent: false}
+            );
           } else {
             this.myUnitProps = null;
+            this.unitpropsForm.setValue(
+              {key: '', label: ''},
+              {emitEvent: false}
+            );
           }
         } else {
           this.myUnitProps = null;
-        }
+          this.unitpropsForm.setValue(
+            {key: '', label: ''},
+            {emitEvent: false}
+          );
+      }
       });
+
+    this.unitpropsForm.valueChanges.subscribe(val => console.log(val));
   }
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

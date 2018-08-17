@@ -43,7 +43,6 @@ export class AuthoringComponent implements OnInit {
     this.unitViewModes = this.ds.unitViewModes;
     this.ds.unitViewMode$.subscribe(uvm => {
       this.selectedUnitViewMode = uvm;
-      this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
     });
   }
 
@@ -68,6 +67,7 @@ export class AuthoringComponent implements OnInit {
 
   selectUnitViewMode(uvm: string) {
     this.ds.unitViewMode$.next(uvm);
+    this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
   }
 
   updateUnitList() {

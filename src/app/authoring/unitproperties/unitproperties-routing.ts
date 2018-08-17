@@ -39,6 +39,7 @@ export class UnitpropertiesResolver implements Resolve<UnitProperties | ServerEr
 
   resolve(next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<UnitProperties | ServerError> {
+      this.ds.unitViewMode$.next('up');
       if (this.mds.isLoggedIn$.getValue() === true) {
         return this.bs.getUnitProperties(
               this.mds.token$.getValue(),
