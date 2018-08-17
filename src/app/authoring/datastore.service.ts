@@ -1,5 +1,4 @@
 import { MainDatastoreService } from './../maindatastore.service';
-import { DataSource } from '@angular/cdk/table';
 import { BackendService, UnitShortData, WorkspaceData } from './backend.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
@@ -12,9 +11,17 @@ export class DatastoreService {
   public workspaceId$ = new BehaviorSubject<number>(0);
   public workspaceName$ = new BehaviorSubject<string>('');
 
+  public unitViewMode$ = new BehaviorSubject<string>('up');
+  public unitViewModes: UnitViewMode[] = [
+    {route: 'up', label: 'Eigenschaften', matIcon: 'edit'},
+    {route: 'ud', label: 'Gestaltung', matIcon: 'brush'}
+  ];
+
+
   constructor(
     private bs: BackendService,
     private mds: MainDatastoreService) {
+
     this.workspaceId$.next(+localStorage.getItem('ws'));
 
     this.workspaceId$.subscribe((wsId: number) => {
@@ -72,4 +79,10 @@ export class DatastoreService {
         });
       }
     }
+}
+
+export interface UnitViewMode {
+  route: string;
+  label: string;
+  matIcon: string;
 }

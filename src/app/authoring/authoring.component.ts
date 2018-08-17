@@ -1,11 +1,11 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog, MatSnackBar, MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material';
 import { MainDatastoreService } from './../maindatastore.service';
 import { BehaviorSubject } from 'rxjs';
 import { UnitShortData, BackendService, WorkspaceData } from './backend.service';
-import { DatastoreService } from './datastore.service';
+import { DatastoreService, UnitViewMode } from './datastore.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
@@ -22,6 +22,8 @@ export class AuthoringComponent implements OnInit {
 
   private wsSelector = new FormControl();
   private unitSelector = new FormControl();
+  private selectedUnitViewMode = '';
+  private unitViewModes: UnitViewMode[] = [];
 
   constructor(
     private mds: MainDatastoreService,
@@ -37,6 +39,11 @@ export class AuthoringComponent implements OnInit {
       this.workspaceId = wsint;
       this.updateUnitList();
       this.wsSelector.setValue(wsint, {emitEvent: false});
+    });
+    this.unitViewModes = this.ds.unitViewModes;
+    this.ds.unitViewMode$.subscribe(uvm => {
+      this.selectedUnitViewMode = uvm;
+      this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
     });
   }
 
@@ -55,6 +62,12 @@ export class AuthoringComponent implements OnInit {
       .subscribe(uId => {
         this.unitId$.next(uId);
     });
+
+
+  }
+
+  selectUnitViewMode(uvm: string) {
+    this.ds.unitViewMode$.next(uvm);
   }
 
   updateUnitList() {

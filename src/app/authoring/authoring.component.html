@@ -10,12 +10,11 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-chip-list #unitview>
-      <mat-chip [selected]="!isDesignView" matTooltip="Eigenschaften" color="primary" (click)="isDesignView = false" fxFlex>
-        <mat-icon>edit</mat-icon>
-      </mat-chip>
-      <mat-chip [selected]="isDesignView" matTooltip="Design" color="primary" (click)="isDesignView = true" fxFlex>
-        <mat-icon>brush</mat-icon>
+    <mat-chip-list [selectable]="true">
+      <mat-chip *ngFor="let uvm of unitViewModes" [matTooltip]="uvm.label" [selectable]="true"
+          [selected]="selectedUnitViewMode === uvm.route"
+          (click)="selectUnitViewMode(uvm.route)" color="primary" fxFlex>
+        <mat-icon>{{ uvm.matIcon }}</mat-icon>
       </mat-chip>
     </mat-chip-list>
     <div fxLayout="row">
