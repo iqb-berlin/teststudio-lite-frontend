@@ -11,9 +11,10 @@ import { CommonModule } from '@angular/common';
 
 import { AuthoringRoutingModule } from './authoring-routing.module';
 import { AuthoringComponent } from './authoring.component';
-import { UnitdesignComponent } from './unitdesign/unitdesign.component';
-import { UnitpropertiesComponent } from './unitproperties/unitproperties.component';
+import { UnitDesignComponent } from './unitdesign/unitdesign.component';
+import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
 import { NewunitComponent } from './newunit/newunit.component';
+import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
 
 @NgModule({
   imports: [
@@ -39,8 +40,8 @@ import { NewunitComponent } from './newunit/newunit.component';
   declarations: [
     AuthoringComponent,
     ResizeIFrameChildDirective,
-    UnitdesignComponent,
-    UnitpropertiesComponent,
+    UnitDesignComponent,
+    UnitPropertiesComponent,
     NewunitComponent
   ],
   exports: [
@@ -50,7 +51,8 @@ import { NewunitComponent } from './newunit/newunit.component';
     NewunitComponent
   ],
   providers: [
-    routingUnitpropertiesProviders
+    routingUnitpropertiesProviders,
+    routingUnitdesignProviders
   ]
 })
 export class AuthoringModule { }

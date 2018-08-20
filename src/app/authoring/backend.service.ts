@@ -1,3 +1,4 @@
+import { UnitShortData } from './backend.service';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse, HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -70,6 +71,34 @@ export class BackendService {
         );
   }
 
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public getUnitDesignData (sessiontoken: string, workspaceId: number, unitId: number): Observable<UnitDesignData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<UnitDesignData>(this.serverUrl + 'getUnitDesignData.php', {t: sessiontoken, ws: workspaceId, u: unitId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public getItemAuthoringToolList (): Observable<StrIdLabelSelectedData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<StrIdLabelSelectedData[]>(this.serverUrl + 'getItemAuthoringToolList.php', httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -108,6 +137,21 @@ export interface UnitProperties {
   label: string;
   lastchangeStr: string;
   description: string;
+}
+
+export interface UnitDesignData {
+  id: number;
+  key: string;
+  label: string;
+  def: string;
+  authoringtool_id: string;
+  player_id: string;
+}
+
+export interface StrIdLabelSelectedData {
+  id: string;
+  label: string;
+  selected: boolean;
 }
 
 export interface WorkspaceData {

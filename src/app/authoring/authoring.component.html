@@ -10,13 +10,12 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-chip-list [selectable]="true">
-      <mat-chip *ngFor="let uvm of unitViewModes" [matTooltip]="uvm.label" [selectable]="true"
-          [selected]="selectedUnitViewMode === uvm.route"
-          (click)="selectUnitViewMode(uvm.route)" color="primary" fxFlex>
+    <mat-button-toggle-group id="unitViewSelector" multiple="false" [formControl]="unitviewSelector"
+        fxLayoutAlign="space-around center" style="height: 50px">
+      <mat-button-toggle *ngFor="let uvm of unitViewModes" [matTooltip]="uvm.label" [value]="uvm.route">
         <mat-icon>{{ uvm.matIcon }}</mat-icon>
-      </mat-chip>
-    </mat-chip-list>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
     <div fxLayout="row">
       <button mat-raised-button (click)="runUnit()" matTooltip="Voransicht" matTooltipPosition="above" fxFlex>
         <mat-icon>visibility</mat-icon>

@@ -34,3 +34,11 @@
 .mat-button-toggle {
   color: blue;
 }
+
+#unitViewSelector {
+  background-color: darkslategrey;
+}
+
+#unitViewSelector .mat-button-toggle {
+  color: black;
+}

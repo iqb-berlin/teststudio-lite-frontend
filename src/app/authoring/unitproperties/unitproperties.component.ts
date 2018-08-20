@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
   templateUrl: './unitproperties.component.html',
   styleUrls: ['./unitproperties.component.css']
 })
-export class UnitpropertiesComponent implements OnInit, OnDestroy {
+export class UnitPropertiesComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription;
   private myUnitProps: UnitProperties = null;
   private unitpropsForm: FormGroup;

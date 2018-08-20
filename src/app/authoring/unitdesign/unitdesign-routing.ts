@@ -1,47 +1,47 @@
 import { DatastoreService } from './../datastore.service';
 import { MainDatastoreService } from './../../maindatastore.service';
-import { UnitPropertiesComponent } from './unitproperties.component';
-import { BackendService, ServerError, UnitProperties } from './../backend.service';
+import { UnitDesignComponent } from './Unitdesign.component';
+import { BackendService, ServerError, UnitDesignData } from './../backend.service';
 import { Injectable, Component } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable } from 'rxjs';
 
 
 @Injectable()
-export class UnitPropertiesActivateGuard implements CanActivate {
+export class UnitDesignActivateGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitPropertiesActivateGuard');
+      console.log('UnitdesignActivateGuard');
     return true;
   }
 }
 
 @Injectable()
-export class UnitPropertiesDeactivateGuard implements CanDeactivate<UnitPropertiesComponent> {
+export class UnitDesignDeactivateGuard implements CanDeactivate<UnitDesignComponent> {
   canDeactivate(
-    component: UnitPropertiesComponent,
+    component: UnitDesignComponent,
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitPropertiesDeactivateGuard');
+      console.log('UnitdesignDeactivateGuard');
     return true;
   }
 }
 
 @Injectable()
 // enriches the routing data with unit data:
-// places in data['unitProperties'] the unit object
-export class UnitPropertiesResolver implements Resolve<UnitProperties | ServerError> {
+// places in data['Unitdesign'] the unit object
+export class UnitDesignResolver implements Resolve<UnitDesignData | ServerError> {
   constructor(
     private mds: MainDatastoreService,
     private ds: DatastoreService,
     private bs: BackendService) { }
 
   resolve(next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<UnitProperties | ServerError> {
-      this.ds.unitViewMode$.next('up');
+    state: RouterStateSnapshot): Observable<UnitDesignData | ServerError> {
+      this.ds.unitViewMode$.next('ud');
       if (this.mds.isLoggedIn$.getValue() === true) {
-        return this.bs.getUnitProperties(
+        return this.bs.getUnitDesignData(
               this.mds.token$.getValue(),
               this.ds.workspaceId$.getValue(),
               next.params['u']);
@@ -52,4 +52,4 @@ export class UnitPropertiesResolver implements Resolve<UnitProperties | ServerEr
 }
 
 
-export const routingUnitpropertiesProviders = [UnitPropertiesActivateGuard, UnitPropertiesDeactivateGuard, UnitPropertiesResolver];
+export const routingUnitdesignProviders = [UnitDesignActivateGuard, UnitDesignDeactivateGuard, UnitDesignResolver];

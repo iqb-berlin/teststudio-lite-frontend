@@ -1,3 +1,21 @@
-<div id="iFrameHost" iqbResizeIFrameChild>
+<div id="unitdesign" *ngIf="!hasAuthoringToolDef" fxLayout="column">
+  <h1 mat-dialog-title>Aufgaben-Gestaltung</h1>
+
+  <p *ngIf="myUnitDesign === null">Bitte wählen Sie links eine Aufgabe aus der Liste!</p>
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlex="50" *ngIf="myUnitDesign !== null">
+      <p>Interne ID in der Datenbank: {{ myUnitDesign.id }}<br/>
+      Name: {{ myUnitDesign.key }}-{{ myUnitDesign.label }}</p>
+
+      <p>Diese Aufgabe wurde noch nicht gestaltet. Bitte wählen Sie das Autoren-Modul aus!</p>
+      <button mat-raised-button *ngFor="let tool of authoringToolList$ | async" (click)="selectAuthoringTool(tool.id)">
+        {{ tool.id }}: {{ tool.label }}
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="hasAuthoringToolDef" id="iFrameHost" iqbResizeIFrameChild>
 
 </div>

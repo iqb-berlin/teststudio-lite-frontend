@@ -22,7 +22,7 @@ export class AuthoringComponent implements OnInit {
 
   private wsSelector = new FormControl();
   private unitSelector = new FormControl();
-  private selectedUnitViewMode = '';
+  private unitviewSelector = new FormControl();
   private unitViewModes: UnitViewMode[] = [];
 
   constructor(
@@ -42,7 +42,7 @@ export class AuthoringComponent implements OnInit {
     });
     this.unitViewModes = this.ds.unitViewModes;
     this.ds.unitViewMode$.subscribe(uvm => {
-      this.selectedUnitViewMode = uvm;
+      this.unitviewSelector.setValue(uvm, {emitEvent: false});
     });
   }
 
@@ -54,7 +54,7 @@ export class AuthoringComponent implements OnInit {
 
     this.unitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
-      this.router.navigate(['up/' + uId], {relativeTo: this.route});
+      this.router.navigate([this.ds.unitViewMode$.getValue() + '/' + uId], {relativeTo: this.route});
     });
 
     this.unitSelector.valueChanges
@@ -62,12 +62,11 @@ export class AuthoringComponent implements OnInit {
         this.unitId$.next(uId);
     });
 
-
-  }
-
-  selectUnitViewMode(uvm: string) {
-    this.ds.unitViewMode$.next(uvm);
-    this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
+    this.unitviewSelector.valueChanges
+      .subscribe(uvm => {
+        this.ds.unitViewMode$.next(uvm);
+        this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
+      });
   }
 
   updateUnitList() {

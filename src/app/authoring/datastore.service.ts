@@ -13,8 +13,8 @@ export class DatastoreService {
 
   public unitViewMode$ = new BehaviorSubject<string>('up');
   public unitViewModes: UnitViewMode[] = [
-    {route: 'up', label: 'Eigenschaften', matIcon: 'edit'},
-    {route: 'ud', label: 'Gestaltung', matIcon: 'brush'}
+    {route: 'up', label: 'Ansicht: Eigenschaften', matIcon: 'edit'},
+    {route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'brush'}
   ];
 
 
