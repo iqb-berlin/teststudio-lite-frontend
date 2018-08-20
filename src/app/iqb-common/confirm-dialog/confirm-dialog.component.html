@@ -7,6 +7,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" [mat-dialog-close]="true">{{ confirmdata.confirmbuttonlabel }}</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="confirmdata.confirmbuttonreturn">{{ confirmdata.confirmbuttonlabel }}</button>
+  <button mat-raised-button [mat-dialog-close]="confirmdata.confirmbutton2return"
+    *ngIf="confirmdata.confirmbutton2label !== undefined">{{ confirmdata.confirmbutton2label }}</button>
   <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
 </mat-dialog-actions>

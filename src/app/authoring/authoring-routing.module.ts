@@ -25,7 +25,7 @@ const routes: Routes = [
       {path: 'up/:u',
         component: UnitPropertiesComponent,
         // canActivate: [UnitActivateGuard],
-        // canDeactivate: [UnitDeactivateGuard],
+        canDeactivate: [UnitPropertiesDeactivateGuard],
         resolve: {
           unitProperties: UnitPropertiesResolver
         }

@@ -86,3 +86,7 @@ export interface UnitViewMode {
   label: string;
   matIcon: string;
 }
+
+export interface CanComponentDeactivate {
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+}

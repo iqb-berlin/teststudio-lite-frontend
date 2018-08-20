@@ -23,8 +23,10 @@ export class UnitPropertiesDeactivateGuard implements CanDeactivate<UnitProperti
     component: UnitPropertiesComponent,
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitPropertiesDeactivateGuard');
-    return true;
+
+    const v = component.saveOrDiscard();
+    console.log(v);
+    return v;
   }
 }
 

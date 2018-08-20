@@ -99,6 +99,27 @@ export class BackendService {
         );
   }
 
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public changeUnitProperties (sessiontoken: string, workspaceId: number, props: UnitProperties): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'changeUnitProperties.php', {
+              t: sessiontoken,
+              ws: workspaceId,
+              u: props.id,
+              k: props.key,
+              l: props.label,
+              d: props.description
+            }, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
