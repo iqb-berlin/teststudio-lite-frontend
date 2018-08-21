@@ -30,6 +30,11 @@ export class AppComponent implements OnInit {
         this.title = t;
       }
     );
+
+    // give a message to the central message broadcast
+    window.addEventListener('message', (event) => {
+      this.mds.processMessagePost(event);
+    }, false);
   }
 
   // *******************************************************************************************************

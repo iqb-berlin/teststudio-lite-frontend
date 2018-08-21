@@ -40,3 +40,8 @@ body {
   bottom: 0;
   right: 0;
 }
+
+iframe.unitHost {
+  width: 100%;
+  border: none;
+}

@@ -120,6 +120,26 @@ export class BackendService {
         );
   }
 
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public setUnitAuthoringTool (sessiontoken: string, workspaceId: number,
+            unitId: number, authoringtoolId: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'setUnitAuthoringTool.php', {
+              t: sessiontoken,
+              ws: workspaceId,
+              u: unitId,
+              ati: authoringtoolId
+            }, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -165,8 +185,8 @@ export interface UnitDesignData {
   key: string;
   label: string;
   def: string;
-  authoringtool_id: string;
-  player_id: string;
+  authoringtoolLink: string;
+  playerLink: string;
 }
 
 export interface StrIdLabelSelectedData {

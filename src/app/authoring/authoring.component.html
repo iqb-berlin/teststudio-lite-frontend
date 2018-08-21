@@ -35,7 +35,7 @@
       <button mat-raised-button (click)="addUnit()" matTooltip="Aufgabe hinzufügen" matTooltipPosition="above" fxFlex="33">
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-raised-button (click)="deleteUnit()" matTooltip="Aufgabe(n) löschen" matTooltipPosition="above" fxFlex="33">
+      <button mat-raised-button [disabled]="true" (click)="deleteUnit()" matTooltip="Aufgabe(n) löschen" matTooltipPosition="above" fxFlex="33">
           <mat-icon>delete</mat-icon>
       </button>
       <button mat-button [matMenuTriggerFor]="menu" matTooltip="Weitere Funktionen..." matTooltipPosition="above" fxFlex>

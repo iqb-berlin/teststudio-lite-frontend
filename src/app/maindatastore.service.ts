@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormGroup } from '@angular/forms';
@@ -19,6 +19,7 @@ export class MainDatastoreService {
   public pageTitle$ = new BehaviorSubject<string>('IQB-Itembanking - Willkommen!');
   public notLoggedInMessage$ = new BehaviorSubject<string>('');
   public token$ = new BehaviorSubject<string>('');
+  public postMessage$ = new Subject<MessageEvent>();
 
   // .................................................................................
   private _lastloginname = '';
@@ -119,6 +120,16 @@ export class MainDatastoreService {
       this.token$.next(token);
       this.loginName$.next(name);
       this.notLoggedInMessage$.next('');
+    }
+  }
+
+  processMessagePost(postData: MessageEvent) {
+    const msgData = postData.data;
+    const msgType = msgData['type'];
+    if ((msgType !== undefined) || (msgType !== null)) {
+      if (msgType.substr(0, 7) === 'OpenCBA') {
+        this.postMessage$.next(postData);
+      }
     }
   }
 }

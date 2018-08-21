@@ -4,8 +4,8 @@
   <p *ngIf="myUnitDesign === null">Bitte wählen Sie links eine Aufgabe aus der Liste!</p>
   <div fxLayout="row">
     <div fxLayout="column" fxFlex="50" *ngIf="myUnitDesign !== null">
-      <p>Interne ID in der Datenbank: {{ myUnitDesign.id }}<br/>
-      Name: {{ myUnitDesign.key }}-{{ myUnitDesign.label }}</p>
+      <p>Interne ID in der Datenbank: {{ unitDesignDataToShow ? unitDesignDataToShow.id : '-' }}<br/>
+      Name: {{ unitDesignDataToShow ? unitDesignDataToShow.key : '-' }}-{{ unitDesignDataToShow ? unitDesignDataToShow.label : '-'}}</p>
 
       <p>Diese Aufgabe wurde noch nicht gestaltet.</p>
       <p *ngIf="authoringToolList.length === 0">In diesem System ist kein Autorenmodul verfügbar.</p>
@@ -27,6 +27,6 @@
 
 </div>
 
-<div *ngIf="hasAuthoringToolDef" id="iFrameHost" iqbResizeIFrameChild>
+<div [hidden]="!hasAuthoringToolDef" id="iFrameHost" iqbResizeIFrameChild>
 
 </div>
