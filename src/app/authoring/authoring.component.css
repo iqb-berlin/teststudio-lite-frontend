@@ -23,10 +23,6 @@
   margin: 5px;
 }
 
-.mat-chip {
-  height: 30px;
-}
-
 .mat-raised-button, .mat-button {
   min-width: 20px;
 }

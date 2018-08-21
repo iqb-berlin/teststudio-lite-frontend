@@ -1,4 +1,4 @@
-import { DatastoreService } from './../datastore.service';
+import { DatastoreService, SaveDataComponent } from './../datastore.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material';
 import { switchMap, map, filter } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
   templateUrl: './unitproperties.component.html',
   styleUrls: ['./unitproperties.component.css']
 })
-export class UnitPropertiesComponent implements OnInit, OnDestroy {
+export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataComponent {
   private routingSubscription: Subscription;
   private myUnitProps: UnitProperties = null;
   private unitpropsForm: FormGroup;
@@ -41,9 +41,9 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy {
       params => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         const newUnit: UnitProperties | ServerError = this.route.snapshot.data['unitProperties'];
-        console.log('##');
 
         this.hasChanged$.next(false);
+        this.ds.unitPropertiesToSave$.next(null);
         if (newUnit !== null) {
           if ((newUnit as UnitProperties).id !== undefined) {
             this.myUnitProps = newUnit as UnitProperties;
@@ -69,7 +69,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy {
 
     this.unitpropsForm.valueChanges.subscribe(val => {
       this.hasChanged$.next(true);
-      console.log('changed');
+      this.ds.unitPropertiesToSave$.next(this);
     });
   }
 
@@ -102,24 +102,32 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy {
               if (result === 'NO') {
                 return of(true);
               } else { // 'YES'
-                this.myUnitProps.key = this.unitpropsForm.get('key').value;
-                this.myUnitProps.label = this.unitpropsForm.get('label').value;
 
-                return this.bs.changeUnitProperties(
-                    this.mds.token$.getValue(),
-                    this.ds.workspaceId$.getValue(),
-                    this.myUnitProps)
-                  .pipe(
-                    map(saveResult => {
-                      const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
-                      this.hasChanged$.next(myreturn);
-                      return myreturn;
-                    })
-                  );
+                return this.saveData();
               }
             }
           }
       ));
     }
+  }
+
+  saveData(): Observable<boolean> {
+    this.myUnitProps.key = this.unitpropsForm.get('key').value;
+    this.myUnitProps.label = this.unitpropsForm.get('label').value;
+
+    return this.bs.changeUnitProperties(
+      this.mds.token$.getValue(),
+      this.ds.workspaceId$.getValue(),
+      this.myUnitProps)
+    .pipe(
+      map(saveResult => {
+        const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
+        if (myreturn) {
+          this.hasChanged$.next(false);
+          this.ds.unitPropertiesToSave$.next(null);
+        }
+        return myreturn;
+      })
+    );
   }
 }

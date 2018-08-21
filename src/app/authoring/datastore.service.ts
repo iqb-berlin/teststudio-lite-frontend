@@ -17,6 +17,8 @@ export class DatastoreService {
     {route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'brush'}
   ];
 
+  public unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
+  public unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
 
   constructor(
     private bs: BackendService,
@@ -87,6 +89,7 @@ export interface UnitViewMode {
   matIcon: string;
 }
 
-export interface CanComponentDeactivate {
-  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+export interface SaveDataComponent {
+  saveData: () => Observable<boolean>;
+  saveOrDiscard: () => Observable<boolean> | Promise<boolean> | boolean;
 }

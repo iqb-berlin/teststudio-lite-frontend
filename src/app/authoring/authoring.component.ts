@@ -1,11 +1,11 @@
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, Resolve } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
 import { MatDialog, MatSnackBar, MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material';
 import { MainDatastoreService } from './../maindatastore.service';
 import { BehaviorSubject } from 'rxjs';
 import { UnitShortData, BackendService, WorkspaceData } from './backend.service';
-import { DatastoreService, UnitViewMode } from './datastore.service';
+import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
@@ -19,8 +19,10 @@ export class AuthoringComponent implements OnInit {
   private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
   private workspaceList: WorkspaceData[] = [];
   private workspaceId = 0;
+  private disableSaveButton = true;
 
-  private wsSelector = new FormControl();
+
+  // private wsSelector = new FormControl();
   private unitSelector = new FormControl();
   private unitviewSelector = new FormControl();
   private unitViewModes: UnitViewMode[] = [];
@@ -38,20 +40,25 @@ export class AuthoringComponent implements OnInit {
     this.ds.workspaceId$.subscribe(wsint => {
       this.workspaceId = wsint;
       this.updateUnitList();
-      this.wsSelector.setValue(wsint, {emitEvent: false});
+      // this.wsSelector.setValue(wsint, {emitEvent: false});
     });
     this.unitViewModes = this.ds.unitViewModes;
     this.ds.unitViewMode$.subscribe(uvm => {
       this.unitviewSelector.setValue(uvm, {emitEvent: false});
     });
+    this.ds.unitDesignToSave$.subscribe(c =>
+      this.disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null));
+    this.ds.unitPropertiesToSave$.subscribe(c =>
+      this.disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null));
   }
 
   ngOnInit() {
+    /*
     this.wsSelector.valueChanges
       .subscribe(wsId => {
         this.ds.workspaceId$.next(wsId);
     });
-
+    */
     this.unitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
       this.router.navigate([this.ds.unitViewMode$.getValue() + '/' + uId], {relativeTo: this.route});
@@ -137,5 +144,24 @@ export class AuthoringComponent implements OnInit {
         }
       }
     });
+  }
+
+  saveUnit() {
+    let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
+    if (componentToSaveData !== null) {
+      componentToSaveData.saveData().subscribe(result => {
+        if (result) {
+          this.snackBar.open('Aufgabe gepeichert', '', {duration: 1000});
+        }
+      });
+    }
+    componentToSaveData = this.ds.unitDesignToSave$.getValue();
+    if (componentToSaveData !== null) {
+      componentToSaveData.saveData().subscribe(result => {
+        if (result) {
+          this.snackBar.open('Aufgabe gepeichert', '', {duration: 1000});
+        }
+      });
+    }
   }
 }

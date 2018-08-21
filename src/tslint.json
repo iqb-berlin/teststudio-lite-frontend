@@ -10,7 +10,7 @@
         "component-selector": [
             true,
             "element",
-            ["app", "superadmin", "iqb"],
+            ["app", "superadmin", "iqb", "authoring"],
             "kebab-case"
         ]
     }

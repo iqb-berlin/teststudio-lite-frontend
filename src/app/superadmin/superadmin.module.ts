@@ -17,7 +17,7 @@ import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files/iqb-files.module';
 import { IqbCommonModule } from '../iqb-common/iqb-common.module';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { SuperadminDashboardComponent } from './dashboard/dashboard.component';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
@@ -53,7 +53,7 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
   ],
   exports: [
     SuperadminComponent,
-    DashboardComponent
+    SuperadminDashboardComponent
   ],
   declarations: [
     WorkspacesComponent,
@@ -61,7 +61,7 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
     ItemauthoringComponent,
     ItemplayerComponent,
     SuperadminComponent,
-    DashboardComponent,
+    SuperadminDashboardComponent,
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,

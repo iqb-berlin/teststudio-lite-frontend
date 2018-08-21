@@ -3,10 +3,10 @@
     <!--<i mat-card-avatar class="material-icons">settings</i>-->
     <mat-card-title>Konfiguration</mat-card-title>
   </mat-card-header>
-  <mat-card-actions>
-    <button mat-button [routerLink]="['/superadmin/itemauthoring']">Autorenmodule</button>
-    <button mat-button [routerLink]="['/superadmin/itemplayer']">Itemplayer</button>
-    <button mat-button [routerLink]="['/superadmin/users']">Nutzer</button>
-    <button mat-button [routerLink]="['/superadmin/workspaces']">Arbeitsbereiche</button>
-  </mat-card-actions>
+  <mat-card-content fxLayout="column">
+    <button mat-button [routerLink]="['/superadmin/itemauthoring']" fxLayout="row">Autorenmodule<span fxFlex></span></button>
+    <button mat-button [routerLink]="['/superadmin/itemplayer']" fxLayout="row">Itemplayer<span fxFlex></span></button>
+    <button mat-button [routerLink]="['/superadmin/users']" fxLayout="row">Nutzer<span fxFlex></span></button>
+    <button mat-button [routerLink]="['/superadmin/workspaces']" fxLayout="row">Arbeitsbereiche<span fxFlex></span></button>
+  </mat-card-content>
 </mat-card>

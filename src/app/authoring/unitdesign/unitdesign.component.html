@@ -7,10 +7,21 @@
       <p>Interne ID in der Datenbank: {{ myUnitDesign.id }}<br/>
       Name: {{ myUnitDesign.key }}-{{ myUnitDesign.label }}</p>
 
-      <p>Diese Aufgabe wurde noch nicht gestaltet. Bitte wählen Sie das Autoren-Modul aus!</p>
-      <button mat-raised-button *ngFor="let tool of authoringToolList$ | async" (click)="selectAuthoringTool(tool.id)">
-        {{ tool.id }}: {{ tool.label }}
-      </button>
+      <p>Diese Aufgabe wurde noch nicht gestaltet.</p>
+      <p *ngIf="authoringToolList.length === 0">In diesem System ist kein Autorenmodul verfügbar.</p>
+      <div *ngIf="authoringToolList.length === 1">
+        <p>
+          In diesem System können Sie das Autorenmodul "{{authoringToolList[0].label}}" benutzen. Klicken Sie auf
+          den unteren Schalter, um die Bearbeitung zu starten!
+        </p>
+        <button mat-raised-button (click)="selectAuthoringTool(authoringToolList[0].id)">Start Gestaltung</button>
+      </div>
+      <div *ngIf="authoringToolList.length > 1">
+        <p>Bitte wählen Sie das Autoren-Modul aus, um die Gestaltung zu starten!</p>
+        <button mat-raised-button *ngFor="let tool of authoringToolList" (click)="selectAuthoringTool(tool.id)">
+          {{ tool.id }}: {{ tool.label }}
+        </button>
+      </div>
     </div>
   </div>
 

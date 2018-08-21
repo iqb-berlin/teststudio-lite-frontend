@@ -1,8 +1,9 @@
+import { AuthoringDashboardComponent } from './dashboard/dashboard.component';
 import { routingUnitpropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
   MatSelectModule, MatListModule, MatSlideToggleModule, MatButtonToggleModule, MatChipsModule,
-  MatMenuModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+  MatMenuModule, MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatCardModule } from '@angular/material';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
@@ -35,6 +36,7 @@ import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatInputModule,
+    MatCardModule,
     MatSnackBarModule
   ],
   declarations: [
@@ -42,10 +44,12 @@ import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
     ResizeIFrameChildDirective,
     UnitDesignComponent,
     UnitPropertiesComponent,
-    NewunitComponent
+    NewunitComponent,
+    AuthoringDashboardComponent
   ],
   exports: [
-    AuthoringComponent
+    AuthoringComponent,
+    AuthoringDashboardComponent
   ],
   entryComponents: [
     NewunitComponent

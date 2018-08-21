@@ -1,6 +1,5 @@
-import { DatastoreService } from './../datastore.service';
+import { DatastoreService, SaveDataComponent } from './../datastore.service';
 import { MainDatastoreService } from './../../maindatastore.service';
-import { UnitDesignComponent } from './Unitdesign.component';
 import { BackendService, ServerError, UnitDesignData } from './../backend.service';
 import { Injectable, Component } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
@@ -18,13 +17,13 @@ export class UnitDesignActivateGuard implements CanActivate {
 }
 
 @Injectable()
-export class UnitDesignDeactivateGuard implements CanDeactivate<UnitDesignComponent> {
+export class UnitDesignDeactivateGuard implements CanDeactivate<SaveDataComponent> {
   canDeactivate(
-    component: UnitDesignComponent,
+    component: SaveDataComponent,
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitdesignDeactivateGuard');
-    return true;
+
+    return component.saveOrDiscard();
   }
 }
 
