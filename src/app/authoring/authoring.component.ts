@@ -1,3 +1,4 @@
+import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 import { Router, ActivatedRoute, Resolve } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
@@ -32,6 +33,7 @@ export class AuthoringComponent implements OnInit {
     private ds: DatastoreService,
     private bs: BackendService,
     private newunitDialog: MatDialog,
+    private deleteunitDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
@@ -144,6 +146,10 @@ export class AuthoringComponent implements OnInit {
         }
       }
     });
+  }
+
+  deleteUnit() {
+    console.log('tbd');
   }
 
   saveUnit() {

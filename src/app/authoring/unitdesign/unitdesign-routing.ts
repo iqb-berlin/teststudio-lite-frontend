@@ -11,7 +11,7 @@ export class UnitDesignActivateGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitdesignActivateGuard');
+
     return true;
   }
 }

@@ -26,7 +26,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
     private bs: BackendService,
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    public confirmDialog: MatDialog,
+    public confirmDialog: MatDialog
   ) {
 
   }

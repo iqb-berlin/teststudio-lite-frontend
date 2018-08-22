@@ -1,32 +1,3 @@
-<div id="unitdesign" *ngIf="!hasAuthoringToolDef" fxLayout="column">
-  <h1 mat-dialog-title>Aufgaben-Gestaltung</h1>
-
-  <p *ngIf="myUnitDesign === null">Bitte wählen Sie links eine Aufgabe aus der Liste!</p>
-  <div fxLayout="row">
-    <div fxLayout="column" fxFlex="50" *ngIf="myUnitDesign !== null">
-      <p>Interne ID in der Datenbank: {{ unitDesignDataToShow ? unitDesignDataToShow.id : '-' }}<br/>
-      Name: {{ unitDesignDataToShow ? unitDesignDataToShow.key : '-' }}-{{ unitDesignDataToShow ? unitDesignDataToShow.label : '-'}}</p>
-
-      <p>Diese Aufgabe wurde noch nicht gestaltet.</p>
-      <p *ngIf="authoringToolList.length === 0">In diesem System ist kein Autorenmodul verfügbar.</p>
-      <div *ngIf="authoringToolList.length === 1">
-        <p>
-          In diesem System können Sie das Autorenmodul "{{authoringToolList[0].label}}" benutzen. Klicken Sie auf
-          den unteren Schalter, um die Bearbeitung zu starten!
-        </p>
-        <button mat-raised-button (click)="selectAuthoringTool(authoringToolList[0].id)">Start Gestaltung</button>
-      </div>
-      <div *ngIf="authoringToolList.length > 1">
-        <p>Bitte wählen Sie das Autoren-Modul aus, um die Gestaltung zu starten!</p>
-        <button mat-raised-button *ngFor="let tool of authoringToolList" (click)="selectAuthoringTool(tool.id)">
-          {{ tool.id }}: {{ tool.label }}
-        </button>
-      </div>
-    </div>
-  </div>
-
-</div>
-
 <div [hidden]="!hasAuthoringToolDef" id="iFrameHost" iqbResizeIFrameChild>
 
 </div>

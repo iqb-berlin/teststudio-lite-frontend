@@ -6,12 +6,15 @@
   padding: 0px;
 }
 
-.navi {
+.unitdatacontainer {
+  background-color:white;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.navibar {
   background-color:whitesmoke;
-  padding: 1px;
   margin: 0px;
-  width: 160px;
-  height: 100%;
 }
 
 .mat-nav-list, .mat-button-toggle-group {

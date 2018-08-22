@@ -16,6 +16,7 @@ import { UnitDesignComponent } from './unitdesign/unitdesign.component';
 import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
 import { NewunitComponent } from './newunit/newunit.component';
 import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
+import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 
 @NgModule({
   imports: [
@@ -45,14 +46,16 @@ import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
     UnitDesignComponent,
     UnitPropertiesComponent,
     NewunitComponent,
-    AuthoringDashboardComponent
+    AuthoringDashboardComponent,
+    SelectAuthoringToolComponent
   ],
   exports: [
     AuthoringComponent,
     AuthoringDashboardComponent
   ],
   entryComponents: [
-    NewunitComponent
+    NewunitComponent,
+    SelectAuthoringToolComponent
   ],
   providers: [
     routingUnitpropertiesProviders,

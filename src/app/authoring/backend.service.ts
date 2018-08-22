@@ -139,6 +139,27 @@ export class BackendService {
           catchError(this.handleError)
         );
   }
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public setUnitDefinition (sessiontoken: string, workspaceId: number,
+            unitId: number, unitDef: string, unitPlayerId: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    return this.http
+      .post<Boolean>(this.serverUrl + 'setUnitDefinition.php', {
+          t: sessiontoken,
+          ws: workspaceId,
+          u: unitId,
+          ud: unitDef,
+          pl: unitPlayerId
+        }, httpOptions)
+    .pipe(
+      catchError(this.handleError)
+    );
+  }
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
@@ -187,6 +208,7 @@ export interface UnitDesignData {
   def: string;
   authoringtoolLink: string;
   playerLink: string;
+  uid: string;
 }
 
 export interface StrIdLabelSelectedData {

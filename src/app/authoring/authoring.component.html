@@ -1,8 +1,8 @@
-<div class="authoring-body">
-  <div class="spinner-container" *ngIf="dataLoading">
-    <mat-spinner></mat-spinner>
-  </div>
-  <div class="navi" fxLayout="column">
+<div class="authoring-body" fxLayout="row">
+  <div class="navibar" fxLayout="column" fxFlex="160px">
+    <div class="spinner-container" *ngIf="dataLoading">
+      <mat-spinner></mat-spinner>
+    </div>
     <!--<mat-form-field>
       <mat-select placeholder="Arbeitsbereich" [formControl]="wsSelector">
         <mat-option *ngFor="let ws of workspaceList" [value]="ws.id">
@@ -35,7 +35,7 @@
       <button mat-raised-button (click)="addUnit()" matTooltip="Aufgabe hinzufügen" matTooltipPosition="above" fxFlex="33">
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-raised-button [disabled]="true" (click)="deleteUnit()" matTooltip="Aufgabe(n) löschen" matTooltipPosition="above" fxFlex="33">
+      <button mat-raised-button (click)="deleteUnit()" matTooltip="Aufgabe(n) löschen" matTooltipPosition="above" fxFlex="33">
           <mat-icon>delete</mat-icon>
       </button>
       <button mat-button [matMenuTriggerFor]="menu" matTooltip="Weitere Funktionen..." matTooltipPosition="above" fxFlex>
@@ -54,6 +54,9 @@
         </button>
       </mat-menu>
     </div>
+
   </div>
-  <router-outlet></router-outlet>
+  <div fxFlex class="unitdatacontainer">
+    <router-outlet></router-outlet>
+  </div>
 </div>
