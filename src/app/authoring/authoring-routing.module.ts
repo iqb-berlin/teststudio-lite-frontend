@@ -16,7 +16,7 @@ const routes: Routes = [
     children: [
       {path: 'ud/:u',
         component: UnitDesignComponent,
-        // canActivate: [UnitActivateGuard],
+        canActivate: [UnitDesignActivateGuard],
         canDeactivate: [UnitDesignDeactivateGuard],
         resolve: {
           unitDesignData: UnitDesignResolver

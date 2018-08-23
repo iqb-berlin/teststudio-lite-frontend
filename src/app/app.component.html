@@ -16,11 +16,7 @@
     </button>
     <button mat-menu-item [routerLink]="['/']">
       <mat-icon>home</mat-icon>
-      <span>Anmeldeseite</span>
-    </button>
-    <button mat-menu-item *ngIf="isLoggedIn" [routerLink]="['/admin/myfiles']">
-      <mat-icon>settings</mat-icon>
-      <span>Testverwaltung</span>
+      <span>Startseite</span>
     </button>
     <button mat-menu-item *ngIf="isLoggedIn" (click)="logout()">
       <mat-icon>exit_to_app</mat-icon>

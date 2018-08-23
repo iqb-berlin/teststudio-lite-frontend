@@ -15,19 +15,18 @@ export class SelectAuthoringToolComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private bs: BackendService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  ) { }
+
+  ngOnInit() {
+    this.selectform = this.fb.group({
+      atSelector: this.fb.control(this.data.authoringTool, [Validators.required])
+    });
     this.bs.getItemAuthoringToolList().subscribe((atL: StrIdLabelSelectedData[] | ServerError) => {
       if (atL !== null) {
         if ((atL as ServerError).code === undefined) {
           this.authoringToolList = atL as StrIdLabelSelectedData[];
         }
       }
-    });
-  }
-
-  ngOnInit() {
-    this.selectform = this.fb.group({
-      atSelector: this.fb.control('', [Validators.required])
     });
   }
 

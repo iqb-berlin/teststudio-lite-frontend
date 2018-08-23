@@ -9,10 +9,10 @@
       </div>
       <div [hidden]="authoringToolList.length === 0">
         <p>
-          Für diese Aufgabe ist bisher kein Autorenmodul festgelegt. Bitte wählen Sie aus der Liste ein Modul aus!
+          {{data.prompt}}
         </p>
         <mat-form-field>
-          <mat-select placeholder="Autorenmodul" formControlName="atSelector">
+          <mat-select placeholder="Autorenmodul" formControlName="atSelector" [(value)]="data.authoringTool">
             <mat-option *ngFor="let a of authoringToolList" [value]="a.id">
                 {{a.label}}
             </mat-option>

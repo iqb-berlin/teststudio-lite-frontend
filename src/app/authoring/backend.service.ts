@@ -100,6 +100,20 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public hasValidAuthoringTool (unitId: number): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this.serverUrl + 'hasValidAuthoringTool.php', {u: unitId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   public changeUnitProperties (sessiontoken: string, workspaceId: number, props: UnitProperties): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -198,6 +212,7 @@ export interface UnitProperties {
   key: string;
   label: string;
   lastchangeStr: string;
+  authoringtoolId: string;
   description: string;
 }
 

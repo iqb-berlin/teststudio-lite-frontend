@@ -19,6 +19,7 @@ export class DatastoreService {
 
   public unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
   public unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
+  public selectedUnitId$ = new BehaviorSubject<number>(0);
 
   constructor(
     private bs: BackendService,
@@ -78,9 +79,13 @@ export class DatastoreService {
           } else {
             this.workspaceId$.next(0); // to trigger reload
           }
-        });
-      }
+      });
     }
+  }
+
+  updatePageTitle(newTitle: string) {
+    this.mds.updatePageTitle(newTitle);
+  }
 }
 
 export interface UnitViewMode {

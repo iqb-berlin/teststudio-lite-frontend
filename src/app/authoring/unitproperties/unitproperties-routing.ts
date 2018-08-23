@@ -39,13 +39,17 @@ export class UnitPropertiesResolver implements Resolve<UnitProperties | ServerEr
   resolve(next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<UnitProperties | ServerError> {
       this.ds.unitViewMode$.next('up');
-      if (this.mds.isLoggedIn$.getValue() === true) {
-        return this.bs.getUnitProperties(
-              this.mds.token$.getValue(),
-              this.ds.workspaceId$.getValue(),
-              next.params['u']);
+      if ((next.params['u'] === null) || (next.params['u'] === 0) || (next.params['u'] === '0')) {
+        return null; // no unit-data
       } else {
-        return null;
+        if (this.mds.isLoggedIn$.getValue() === true) {
+          return this.bs.getUnitProperties(
+                this.mds.token$.getValue(),
+                this.ds.workspaceId$.getValue(),
+                next.params['u']);
+        } else {
+          return null;
+        }
       }
     }
 }

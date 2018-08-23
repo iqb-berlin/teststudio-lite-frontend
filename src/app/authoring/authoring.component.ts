@@ -16,7 +16,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthoringComponent implements OnInit {
   private dataLoading = false;
-  private unitId$ = new BehaviorSubject<number>(0);
   private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
   private workspaceList: WorkspaceData[] = [];
   private workspaceId = 0;
@@ -61,20 +60,23 @@ export class AuthoringComponent implements OnInit {
         this.ds.workspaceId$.next(wsId);
     });
     */
-    this.unitId$.subscribe((uId: number) => {
+   this.ds.selectedUnitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
-      this.router.navigate([this.ds.unitViewMode$.getValue() + '/' + uId], {relativeTo: this.route});
     });
 
-    this.unitSelector.valueChanges
-      .subscribe(uId => {
-        this.unitId$.next(uId);
+    this.unitSelector.valueChanges.subscribe(uId => {
+      this.router.navigate([this.ds.unitViewMode$.getValue() + '/' + uId], {relativeTo: this.route})
+        .then(naviresult => {
+          if (naviresult === false) {
+            this.unitSelector.setValue(this.ds.selectedUnitId$.getValue(), {emitEvent: false});
+          }
+        });
     });
 
     this.unitviewSelector.valueChanges
       .subscribe(uvm => {
         this.ds.unitViewMode$.next(uvm);
-        this.router.navigate([uvm + '/' + this.unitId$.getValue()], {relativeTo: this.route});
+        this.router.navigate([uvm + '/' + this.ds.selectedUnitId$.getValue()], {relativeTo: this.route});
       });
   }
 
@@ -83,14 +85,14 @@ export class AuthoringComponent implements OnInit {
     const myWorkspace = this.ds.workspaceId$.getValue();
     if ((myToken === '') || (myWorkspace === 0)) {
       this.unitList$.next([]);
-      this.unitId$.next(0);
+      // this.unitId$.next(0);
     } else {
       this.dataLoading = true;
       this.bs.getUnitList(myToken, myWorkspace).subscribe(
         (uresponse: UnitShortData[]) => {
           this.dataLoading = false;
           this.unitList$.next(uresponse);
-          const uIdStr = localStorage.getItem('u');
+          /* const uIdStr = localStorage.getItem('u');
           if (uIdStr == null) {
             this.unitId$.next(0);
           } else {
@@ -111,7 +113,7 @@ export class AuthoringComponent implements OnInit {
             } else {
               this.unitId$.next(0);
             }
-          }
+          }*/
       });
     }
   }

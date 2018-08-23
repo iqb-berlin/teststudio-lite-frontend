@@ -23,12 +23,14 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   private myUnitDesign$ = new BehaviorSubject<UnitDesignData>(null);
   private hasAuthoringToolDef = false;
   private hasChanged$ = new BehaviorSubject<boolean>(false);
-  private authoringSessionId$ = new BehaviorSubject<string>('');
+  private authoringSessionId = '';
+  private currentAuthoringTool = '';
 
 
   private iFrameHostElement: HTMLElement;
+  private iFrameElement: HTMLElement = null;
   private unitWindow: Window = null;
-  private pendingUnitDefinition$ = new BehaviorSubject<string>('');
+  private pendingUnitDefinition = '';
   private postMessageSubscription: Subscription = null;
 
   constructor(
@@ -54,21 +56,17 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
 
             // // // // // // //
             case 'OpenCBA.UnitAuthoring.Ready':
-              const myData = this.pendingUnitDefinition$.getValue();
-
-              if (myData !== null) {
-                this.unitWindow.postMessage({
-                  type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
-                  unitDefinition: myData,
-                  authoringSessionId: this.authoringSessionId$.getValue(),
-                }, '*');
-                this.pendingUnitDefinition$.next(null);
-              }
+              this.unitWindow.postMessage({
+                type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
+                unitDefinition: this.pendingUnitDefinition,
+                authoringSessionId: this.authoringSessionId,
+              }, '*');
+              this.pendingUnitDefinition = null;
               break;
 
             // // // // // // //
             case 'OpenCBA.UnitAuthoring.HasChanged':
-              if (msgData['authoringSessionId'] === this.authoringSessionId$.getValue()) {
+              if (msgData['authoringSessionId'] === this.authoringSessionId) {
                 this.hasChanged$.next(true);
                 this.ds.unitDesignToSave$.next(this);
               }
@@ -77,7 +75,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
             // // // // // // //
             case 'OpenCBA.UnitAuthoring.UnitDefinition':
               console.log('ich war hier: ' + msgData);
-              if (msgData['authoringSessionId'] === this.authoringSessionId$.getValue()) {
+              if (msgData['authoringSessionId'] === this.authoringSessionId) {
                 const UnitDef = msgData['unitDefinition'];
                 const myLocalUnitdata = this.myUnitDesign$.getValue();
                 if ((myLocalUnitdata !== null) &&
@@ -110,6 +108,8 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   }
 
   ngOnInit() {
+    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+
     this.myUnitDesign$.subscribe((ud: UnitDesignData) => {
       if (ud === null) {
         this.hasAuthoringToolDef = false;
@@ -118,39 +118,38 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
       }
 
       if (this.hasAuthoringToolDef) {
-        this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+        if ((this.iFrameElement !== null) && (ud.authoringtoolLink === this.currentAuthoringTool)) {
+          // reuse the authoring tool: load new data
+          this.pendingUnitDefinition = null;
+          this.authoringSessionId = ud.uid;
 
-        while (this.iFrameHostElement.hasChildNodes()) {
-          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+          this.unitWindow.postMessage({
+            type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
+            unitDefinition: ud.def,
+            authoringSessionId: this.authoringSessionId,
+          }, '*');
+
+        } else {
+          while (this.iFrameHostElement.hasChildNodes()) {
+            this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+          }
+          this.pendingUnitDefinition = ud.def;
+          this.authoringSessionId = ud.uid;
+          this.currentAuthoringTool = ud.authoringtoolLink;
+
+          this.iFrameElement = <HTMLIFrameElement>document.createElement('iframe');
+          this.iFrameElement.setAttribute('src', this.serverUrl + ud.authoringtoolLink);
+          this.iFrameElement.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+          this.iFrameElement.setAttribute('class', 'unitHost');
+          this.iFrameElement.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+
+          this.iFrameHostElement.appendChild(this.iFrameElement);
+          // the iFrame will now be loaded and when it's ready, it will send a message to get the
+          // pending unit definition
         }
 
-        const iFrameUnit = <HTMLIFrameElement>document.createElement('iframe');
-        iFrameUnit.setAttribute('src', this.serverUrl + ud.authoringtoolLink);
-        iFrameUnit.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-        iFrameUnit.setAttribute('class', 'unitHost');
-        iFrameUnit.setAttribute('height', String(this.iFrameHostElement.clientHeight));
-
-        this.iFrameHostElement.appendChild(iFrameUnit);
-
-        this.pendingUnitDefinition$.next(ud.def);
-        this.authoringSessionId$.next(ud.uid);
       } else {
-        const dialogRef = this.selectAuthoringToolDialog.open(SelectAuthoringToolComponent, {
-          width: '400px',
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result !== false) {
-            this.bs.setUnitAuthoringTool(
-              this.mds.token$.getValue(),
-              this.ds.workspaceId$.getValue(),
-              ud.id,
-              (<FormGroup>result).get('atSelector').value
-            ).subscribe(setAuthoringTollResult => {
-              console.log('Unit neu laden!');
-            });
-          }
-        });
+        console.log('hasAuthoringToolDef is false');
       }
     });
 
@@ -170,19 +169,20 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
         } else {
           this.myUnitDesign$.next(null);
         }
+
+        if (this.myUnitDesign$.getValue() === null) {
+          this.ds.updatePageTitle('Ändern Gestaltung');
+          this.ds.selectedUnitId$.next(0);
+        } else {
+          this.ds.updatePageTitle('Ändern Gestaltung: ' + (newUnit as UnitDesignData).key);
+          this.ds.selectedUnitId$.next((newUnit as UnitDesignData).id);
+        }
       });
   }
 
   ngOnDestroy() {
     this.routingSubscription.unsubscribe();
     this.postMessageSubscription.unsubscribe();
-  }
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  selectAuthoringTool(tool_id) {
-    const myLocalUnitdata = this.myUnitDesign$.getValue();
-    if (myLocalUnitdata !== null) {
-    }
   }
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -224,7 +224,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   saveData(): Observable<boolean> {
     this.unitWindow.postMessage({
       type: 'OpenCBA.UnitAuthoring.UnitDefinitionRequest',
-      authoringSessionId: this.authoringSessionId$.getValue()
+      authoringSessionId: this.authoringSessionId
     }, '*');
 
     return of(true);
