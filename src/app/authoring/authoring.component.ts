@@ -57,12 +57,6 @@ export class AuthoringComponent implements OnInit {
   }
 
   ngOnInit() {
-    /*
-    this.wsSelector.valueChanges
-      .subscribe(wsId => {
-        this.ds.workspaceId$.next(wsId);
-    });
-    */
    this.ds.selectedUnitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
     });
@@ -76,11 +70,14 @@ export class AuthoringComponent implements OnInit {
         });
     });
 
-    this.unitviewSelector.valueChanges
-      .subscribe(uvm => {
-        this.ds.unitViewMode$.next(uvm);
-        this.router.navigate([uvm + '/' + this.ds.selectedUnitId$.getValue()], {relativeTo: this.route});
+    this.unitviewSelector.valueChanges.subscribe(uvm => {
+      this.router.navigate([uvm + '/' + this.ds.selectedUnitId$.getValue()], {relativeTo: this.route})
+        .then(naviresult => {
+          if (naviresult === false) {
+            this.unitviewSelector.setValue(this.ds.unitViewMode$.getValue(), {emitEvent: false});
+          }
       });
+    });
   }
 
   updateUnitList() {
@@ -95,28 +92,6 @@ export class AuthoringComponent implements OnInit {
         (uresponse: UnitShortData[]) => {
           this.dataLoading = false;
           this.unitList$.next(uresponse);
-          /* const uIdStr = localStorage.getItem('u');
-          if (uIdStr == null) {
-            this.unitId$.next(0);
-          } else {
-            const uId = +uIdStr;
-            if (uId > 0) {
-              let uFound = false;
-              for (let i = 0; i < uresponse.length; i++) {
-                if (uresponse[i].id === uId) {
-                  this.unitId$.next(uId);
-                  uFound = true;
-                  break;
-                }
-              }
-
-              if (!uFound) {
-                this.unitId$.next(0);
-              }
-            } else {
-              this.unitId$.next(0);
-            }
-          }*/
       });
     }
   }
