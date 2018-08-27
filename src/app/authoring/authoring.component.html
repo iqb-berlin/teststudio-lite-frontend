@@ -17,8 +17,8 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
     <div fxLayout="row">
-      <button mat-raised-button (click)="runUnit()" matTooltip="Voransicht"
-            [disabled]="true" matTooltipPosition="above" fxFlex>
+      <button mat-raised-button (click)="previewUnit()" matTooltip="Voransicht"
+            [disabled]="disablePreviewButton" matTooltipPosition="above" fxFlex>
         <mat-icon>visibility</mat-icon>
       </button>
       <button mat-raised-button (click)="saveUnit()" matTooltip="Aufgabe speichern"

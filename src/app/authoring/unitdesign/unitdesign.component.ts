@@ -74,7 +74,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
 
             // // // // // // //
             case 'OpenCBA.UnitAuthoring.UnitDefinition':
-              console.log('ich war hier: ' + msgData);
               if (msgData['authoringSessionId'] === this.authoringSessionId) {
                 const UnitDef = msgData['unitDefinition'];
                 const myLocalUnitdata = this.myUnitDesign$.getValue();

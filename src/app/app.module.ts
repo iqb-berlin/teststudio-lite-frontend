@@ -1,3 +1,4 @@
+import { PreviewModule } from './preview/preview.module';
 import { AuthoringModule } from './authoring';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -45,7 +46,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     AppRoutingModule,
     FlexLayoutModule,
     IqbCommonModule,
-    AuthoringModule
+    AuthoringModule,
+    PreviewModule
   ],
   entryComponents: [
     AboutDialogComponent,

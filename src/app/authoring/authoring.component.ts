@@ -21,8 +21,8 @@ export class AuthoringComponent implements OnInit {
   private dataLoading = false;
   private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
   private workspaceList: WorkspaceData[] = [];
-  private workspaceId = 0;
   private disableSaveButton = true;
+  private disablePreviewButton = true;
 
 
   // private wsSelector = new FormControl();
@@ -42,10 +42,10 @@ export class AuthoringComponent implements OnInit {
   ) {
     this.ds.workspaceList$.subscribe(wsList => this.workspaceList = wsList);
     this.ds.workspaceId$.subscribe(wsint => {
-      this.workspaceId = wsint;
       this.updateUnitList();
       // this.wsSelector.setValue(wsint, {emitEvent: false});
     });
+    this.ds.selectedUnitId$.subscribe(id => this.disablePreviewButton = id === 0);
     this.unitViewModes = this.ds.unitViewModes;
     this.ds.unitViewMode$.subscribe(uvm => {
       this.unitviewSelector.setValue(uvm, {emitEvent: false});
@@ -57,7 +57,7 @@ export class AuthoringComponent implements OnInit {
   }
 
   ngOnInit() {
-   this.ds.selectedUnitId$.subscribe((uId: number) => {
+    this.ds.selectedUnitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
     });
 
@@ -111,7 +111,7 @@ export class AuthoringComponent implements OnInit {
           this.dataLoading = true;
           this.bs.addUnit(
               this.mds.token$.getValue(),
-              this.workspaceId,
+              this.ds.workspaceId$.getValue(),
               (<FormGroup>result).get('key').value,
               (<FormGroup>result).get('label').value).subscribe(
                 respOk => {
@@ -143,7 +143,7 @@ export class AuthoringComponent implements OnInit {
         if (result !== false) {
           this.bs.deleteUnits(
             this.mds.token$.getValue(),
-            this.workspaceId,
+            this.ds.workspaceId$.getValue(),
             (result as UnitShortData[]).map(ud => ud.id)).subscribe(
               ok => {
                 if (ok) {
@@ -173,5 +173,9 @@ export class AuthoringComponent implements OnInit {
         }
       });
     }
+  }
+
+  previewUnit() {
+    this.router.navigate(['p/' + this.ds.workspaceId$.getValue() + '##' + this.ds.selectedUnitId$.getValue()]);
   }
 }

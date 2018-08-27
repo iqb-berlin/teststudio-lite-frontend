@@ -1,3 +1,4 @@
+import { PreviewComponent } from './preview';
 import { AuthoringComponent } from './authoring';
 import { SuperadminComponent } from './superadmin';
 import { HomeComponent } from './home/home.component';
@@ -10,7 +11,8 @@ const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: HomeComponent},
   {path: 'superadmin', component: SuperadminComponent},
-  {path: 'a', component: AuthoringComponent}
+  {path: 'a', component: AuthoringComponent},
+  {path: 'p', component: PreviewComponent}
 ];
 
 @NgModule({

@@ -1,0 +1,8 @@
+.preview-body {
+  position: absolute;
+  width: 100%;
+  top: 70px;
+  bottom: 0;
+  padding: 0px;
+  background-color: white;
+}
