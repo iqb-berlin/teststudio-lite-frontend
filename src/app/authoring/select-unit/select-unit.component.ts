@@ -1,4 +1,4 @@
-import { MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { DatastoreService } from './../datastore.service';
 import { MainDatastoreService } from './../../maindatastore.service';
 import { BackendService, UnitShortData, ServerError } from './../backend.service';

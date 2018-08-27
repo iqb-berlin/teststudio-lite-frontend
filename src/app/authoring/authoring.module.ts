@@ -19,6 +19,7 @@ import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 import { UnitresponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
+import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -42,7 +43,8 @@ import { SelectUnitComponent } from './select-unit/select-unit.component';
     MatCardModule,
     MatSnackBarModule,
     MatTableModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    ScrollDispatchModule
   ],
   declarations: [
     AuthoringComponent,

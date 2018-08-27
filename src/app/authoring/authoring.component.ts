@@ -156,10 +156,9 @@ export class AuthoringComponent implements OnInit {
   deleteUnit() {
     const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
       width: '400px',
-      height: '500px',
+      height: '700px',
       data: {
         title: 'Aufgabe(n) löschen',
-        prompt: 'Bitte Aufgabe(n) auswählen!',
         buttonlabel: 'Löschen'
       }
     });

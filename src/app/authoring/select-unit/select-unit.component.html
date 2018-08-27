@@ -1,10 +1,11 @@
-
+<div fxLayout="column" style="height: 100%">
 <h1 mat-dialog-title>{{ data.title }}</h1>
 
-<mat-dialog-content>
-  <p>
-    {{data.prompt}}
-  </p>
+<p *ngIf="!tableselectionCheckbox.hasValue()">Bitte Aufgaben auswählen!</p>
+<p *ngIf="tableselectionCheckbox.selected.length === 1">Eine Aufgabe ausgewählt.</p>
+<p *ngIf="tableselectionCheckbox.selected.length > 1">{{tableselectionCheckbox.selected.length}} Aufgaben ausgewählt.</p>
+
+<mat-dialog-content fxFlex>
   <mat-table [dataSource]="objectsDatasource" matSort>
     <ng-container matColumnDef="selectCheckbox">
       <mat-header-cell *matHeaderCellDef fxFlex="70px">
@@ -36,4 +37,4 @@
     {{data.buttonlabel}}</button>
   <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
 </mat-dialog-actions>
-
+</div>
