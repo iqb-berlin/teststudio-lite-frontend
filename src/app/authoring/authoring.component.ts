@@ -1,3 +1,6 @@
+import { SelectionModel } from '@angular/cdk/collections';
+import { RouterTestingModule } from '@angular/router/testing';
+import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 import { Router, ActivatedRoute, Resolve } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
@@ -32,7 +35,7 @@ export class AuthoringComponent implements OnInit {
     private ds: DatastoreService,
     private bs: BackendService,
     private newunitDialog: MatDialog,
-    private deleteunitDialog: MatDialog,
+    private selectUnitDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
@@ -151,7 +154,32 @@ export class AuthoringComponent implements OnInit {
   }
 
   deleteUnit() {
-    console.log('tbd');
+    const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
+      width: '400px',
+      height: '500px',
+      data: {
+        title: 'Aufgabe(n) löschen',
+        prompt: 'Bitte Aufgabe(n) auswählen!',
+        buttonlabel: 'Löschen'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (typeof result !== 'undefined') {
+        if (result !== false) {
+          this.bs.deleteUnits(
+            this.mds.token$.getValue(),
+            this.workspaceId,
+            (result as UnitShortData[]).map(ud => ud.id)).subscribe(
+              ok => {
+                if (ok) {
+                  this.updateUnitList();
+                  this.snackBar.open('Aufgabe(n) gelöscht', '', {duration: 1000});
+                }
+              });
+        }
+      }
+    });
   }
 
   saveUnit() {
@@ -159,7 +187,7 @@ export class AuthoringComponent implements OnInit {
     if (componentToSaveData !== null) {
       componentToSaveData.saveData().subscribe(result => {
         if (result) {
-          this.snackBar.open('Aufgabe gepeichert', '', {duration: 1000});
+          this.snackBar.open('Aufgabe gespeichert', '', {duration: 1000});
         }
       });
     }
@@ -167,7 +195,7 @@ export class AuthoringComponent implements OnInit {
     if (componentToSaveData !== null) {
       componentToSaveData.saveData().subscribe(result => {
         if (result) {
-          this.snackBar.open('Aufgabe gepeichert', '', {duration: 1000});
+          this.snackBar.open('Aufgabe gespeichert', '', {duration: 1000});
         }
       });
     }

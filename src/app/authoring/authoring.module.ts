@@ -17,6 +17,8 @@ import { UnitPropertiesComponent } from './unitproperties/unitproperties.compone
 import { NewunitComponent } from './newunit/newunit.component';
 import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
+import { UnitresponsesComponent } from './unitresponses/unitresponses.component';
+import { SelectUnitComponent } from './select-unit/select-unit.component';
 
 @NgModule({
   imports: [
@@ -38,7 +40,9 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
     MatProgressSpinnerModule,
     MatInputModule,
     MatCardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTableModule,
+    MatCheckboxModule
   ],
   declarations: [
     AuthoringComponent,
@@ -47,7 +51,9 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
     UnitPropertiesComponent,
     NewunitComponent,
     AuthoringDashboardComponent,
-    SelectAuthoringToolComponent
+    SelectAuthoringToolComponent,
+    UnitresponsesComponent,
+    SelectUnitComponent
   ],
   exports: [
     AuthoringComponent,
@@ -55,7 +61,8 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
   ],
   entryComponents: [
     NewunitComponent,
-    SelectAuthoringToolComponent
+    SelectAuthoringToolComponent,
+    SelectUnitComponent
   ],
   providers: [
     routingUnitpropertiesProviders,

@@ -14,7 +14,8 @@ export class DatastoreService {
   public unitViewMode$ = new BehaviorSubject<string>('up');
   public unitViewModes: UnitViewMode[] = [
     {route: 'up', label: 'Ansicht: Eigenschaften', matIcon: 'edit'},
-    {route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'brush'}
+    {route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'format_shapes'},
+    {route: 'ur', label: 'Ansicht: Antwortschema', matIcon: 'local_shipping'}
   ];
 
   public unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);

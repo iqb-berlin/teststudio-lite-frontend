@@ -1,3 +1,4 @@
+import { UnitresponsesComponent } from './unitresponses/unitresponses.component';
 import { UnitPropertiesActivateGuard,
   UnitPropertiesDeactivateGuard, UnitPropertiesResolver } from './unitproperties/unitproperties-routing';
 import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
@@ -29,6 +30,14 @@ const routes: Routes = [
         resolve: {
           unitProperties: UnitPropertiesResolver
         }
+      },
+      {path: 'ur/:u',
+        component: UnitresponsesComponent
+        // canActivate: [UnitActivateGuard],
+        // canDeactivate: [UnitPropertiesDeactivateGuard],
+        // resolve: {
+          // unitProperties: UnitPropertiesResolver
+        // }
       }
     ]
   }];
