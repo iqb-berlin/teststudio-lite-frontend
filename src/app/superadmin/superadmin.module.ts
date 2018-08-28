@@ -1,3 +1,4 @@
+import { IqbFilesShortModule } from './../iqb-filesShort';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -15,7 +16,6 @@ import { ItemplayerComponent } from './itemplayer/itemplayer.component';
 import { SuperadminComponent } from './superadmin.component';
 import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
-import { IqbFilesModule } from '../iqb-files/iqb-files.module';
 import { IqbCommonModule } from '../iqb-common/iqb-common.module';
 import { SuperadminDashboardComponent } from './dashboard/dashboard.component';
 import { NewuserComponent } from './users/newuser/newuser.component';
@@ -26,11 +26,12 @@ import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authorin
 import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
 
 
+
 @NgModule({
   imports: [
     CommonModule,
     SuperadminRoutingModule,
-    IqbFilesModule,
+    IqbFilesShortModule,
     IqbCommonModule,
     MatTableModule,
     MatTabsModule,

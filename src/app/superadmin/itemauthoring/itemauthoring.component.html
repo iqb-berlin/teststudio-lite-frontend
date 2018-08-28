@@ -72,8 +72,19 @@
         <mat-icon>delete</mat-icon>
       </button>
 
-      <input #hiddenfileinput type="file" name="fileforopencba" multiple hidden="true"/>
+      <input #hiddenfileinput type="file" name="authoringtoolfile" multiple [iqbFileShortUploadInputFor]="fileUploadQueue" hidden="true"/>
     </div>
+
+    <iqb-file-short-upload-queue #fileUploadQueue
+      [httpUrl]="uploadUrl"
+      [fileAlias]="'authoringtoolfile'"
+      [tokenName]="'t'"
+      [token]="token"
+      [folderName]="'i'"
+      [folder]="selectedItemAuthoringToolId"
+      (uploadCompleteEvent)="updateFileList()">
+    </iqb-file-short-upload-queue>
+
 
     <mat-table [dataSource]="filesDatasource" *ngIf="hasFiles()" matSort>
       <ng-container matColumnDef="selectCheckbox">

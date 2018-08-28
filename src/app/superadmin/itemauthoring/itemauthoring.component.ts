@@ -29,8 +29,12 @@ export class ItemauthoringComponent implements OnInit {
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
   private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
-
   @ViewChild(MatSort) sort: MatSort;
+
+  // for FileUpload
+  public uploadUrl = '';
+  public token = '';
+
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -42,6 +46,8 @@ export class ItemauthoringComponent implements OnInit {
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
+    this.uploadUrl = this.serverUrl + 'php_superadmin/uploadItemAuthoringFile.php';
+    this.ds.token$.subscribe(t => this.token = t);
     this.tableselectionRow.onChange.subscribe(
       r => {
         if (r.added.length > 0) {

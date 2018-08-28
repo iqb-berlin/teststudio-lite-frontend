@@ -273,6 +273,32 @@ export class BackendService {
         );
   }
 
+  getItemPlayerFiles(token: string): Observable<GetFileResponseData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<GetFileResponseData[]>(this.serverUrl + 'getItemPlayerFiles.php', {t: token}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  deleteItemPlayerFiles(token: string, files: string[]): Observable<string | ServerError>  {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<string>(this.serverUrl + 'deleteItemPlayerFiles.php', {t: token, f: files}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {

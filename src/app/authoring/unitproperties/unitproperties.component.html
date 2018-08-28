@@ -13,9 +13,11 @@
           <input matInput formControlName="label" placeholder="Name">
         </mat-form-field>
       </div>
-      <p>Autorenmodul: {{ myUnitProps.authoringtoolid }}
+      <p *ngIf="myUnitProps.authoringtoolid !== null">Autorenmodul: {{ myUnitProps.authoringtoolid }}<br/>
         <button mat-raised-button (click)="changeAuthoringTool()">Ändern</button></p>
-    </div>
+      <p *ngIf="myUnitProps.authoringtoolid === null">
+        <button mat-raised-button (click)="changeAuthoringTool()">Autorenmodul zuweisen</button></p>
+      </div>
 
   </form>
 

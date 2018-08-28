@@ -101,7 +101,8 @@ export class AuthoringComponent implements OnInit {
     const dialogRef = this.newunitDialog.open(NewunitComponent, {
       width: '600px',
       data: {
-        key: ''
+        key: '',
+        label: ''
       }
     });
 

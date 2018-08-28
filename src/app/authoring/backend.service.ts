@@ -226,7 +226,7 @@ export interface UnitProperties {
   key: string;
   label: string;
   lastchangeStr: string;
-  authoringtoolId: string;
+  authoringtoolid: string;
   description: string;
 }
 

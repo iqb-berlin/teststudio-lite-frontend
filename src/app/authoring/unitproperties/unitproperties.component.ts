@@ -87,7 +87,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
     const dialogRef = this.selectAuthoringToolDialog.open(SelectAuthoringToolComponent, {
       width: '400px',
       data: {
-        authoringTool: this.myUnitProps.authoringtoolId,
+        authoringTool: this.myUnitProps.authoringtoolid,
         prompt: 'Zum Ändern des Autorenmoduls bitte unten auswählen!'
       }
     });
@@ -100,7 +100,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
           this.myUnitProps.id,
           myNewAuthoringTool).subscribe(setResult => {
             if (setResult === true) {
-              this.myUnitProps.authoringtoolId = myNewAuthoringTool;
+              this.myUnitProps.authoringtoolid = myNewAuthoringTool;
             }
           });
       }
