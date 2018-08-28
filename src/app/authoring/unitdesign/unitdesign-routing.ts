@@ -23,7 +23,7 @@ export class UnitDesignActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
       if ((next.params['u'] === null) || (next.params['u'] === 0) || (next.params['u'] === '0')) {
-        return true; // no unit-data
+        return false; // no unit-data
       } else {
         return this.bs.hasValidAuthoringTool(next.params['u'])
         .pipe(
@@ -101,4 +101,4 @@ export class UnitDesignResolver implements Resolve<UnitDesignData | ServerError>
 }
 
 
-export const routingUnitdesignProviders = [UnitDesignActivateGuard, UnitDesignDeactivateGuard, UnitDesignResolver];
+export const routingUnitDesignProviders = [UnitDesignActivateGuard, UnitDesignDeactivateGuard, UnitDesignResolver];

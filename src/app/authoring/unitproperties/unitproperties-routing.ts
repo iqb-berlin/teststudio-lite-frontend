@@ -55,4 +55,4 @@ export class UnitPropertiesResolver implements Resolve<UnitProperties | ServerEr
 }
 
 
-export const routingUnitpropertiesProviders = [UnitPropertiesActivateGuard, UnitPropertiesDeactivateGuard, UnitPropertiesResolver];
+export const routingUnitPropertiesProviders = [UnitPropertiesActivateGuard, UnitPropertiesDeactivateGuard, UnitPropertiesResolver];

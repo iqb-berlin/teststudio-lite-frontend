@@ -11,7 +11,7 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_authoring/';
+      this.serverUrl = this.serverUrl + 'php_preview/';
   }
 
 
@@ -25,6 +25,20 @@ export class BackendService {
     };
     return this.http
       .post<UnitPreviewData>(this.serverUrl + 'getUnitPreviewData.php', {t: sessiontoken, ws: workspaceId, u: unitId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public hasValidItemplayer (unitId: number): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this.serverUrl + 'hasValidItemplayer.php', {u: unitId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );

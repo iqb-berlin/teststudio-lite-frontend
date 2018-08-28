@@ -1,4 +1,4 @@
-import { UnitresponsesComponent } from './unitresponses/unitresponses.component';
+import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { UnitPropertiesActivateGuard,
   UnitPropertiesDeactivateGuard, UnitPropertiesResolver } from './unitproperties/unitproperties-routing';
 import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
@@ -8,6 +8,7 @@ import { UnitDesignComponent } from './unitdesign/unitdesign.component';
 import { AuthoringComponent } from './authoring.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { UnitResponsesActivateGuard } from './unitresponses/unitresponses-routing';
 
 
 const routes: Routes = [
@@ -32,8 +33,8 @@ const routes: Routes = [
         }
       },
       {path: 'ur/:u',
-        component: UnitresponsesComponent
-        // canActivate: [UnitActivateGuard],
+        component: UnitResponsesComponent,
+        canActivate: [UnitResponsesActivateGuard],
         // canDeactivate: [UnitPropertiesDeactivateGuard],
         // resolve: {
           // unitProperties: UnitPropertiesResolver

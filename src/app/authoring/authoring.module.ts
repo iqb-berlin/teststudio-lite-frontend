@@ -1,5 +1,6 @@
+import { routingUnitResponsesProviders } from './unitresponses/unitresponses-routing';
 import { AuthoringDashboardComponent } from './dashboard/dashboard.component';
-import { routingUnitpropertiesProviders } from './unitproperties/unitproperties-routing';
+import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
   MatSelectModule, MatListModule, MatSlideToggleModule, MatButtonToggleModule, MatChipsModule,
@@ -15,9 +16,9 @@ import { AuthoringComponent } from './authoring.component';
 import { UnitDesignComponent } from './unitdesign/unitdesign.component';
 import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
 import { NewunitComponent } from './newunit/newunit.component';
-import { routingUnitdesignProviders } from './unitdesign/unitdesign-routing';
+import { routingUnitDesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
-import { UnitresponsesComponent } from './unitresponses/unitresponses.component';
+import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 
@@ -54,7 +55,7 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
     NewunitComponent,
     AuthoringDashboardComponent,
     SelectAuthoringToolComponent,
-    UnitresponsesComponent,
+    UnitResponsesComponent,
     SelectUnitComponent
   ],
   exports: [
@@ -67,8 +68,9 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
     SelectUnitComponent
   ],
   providers: [
-    routingUnitpropertiesProviders,
-    routingUnitdesignProviders
+    routingUnitPropertiesProviders,
+    routingUnitDesignProviders,
+    routingUnitResponsesProviders
   ]
 })
 export class AuthoringModule { }

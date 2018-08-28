@@ -4,6 +4,7 @@ import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameCh
 
 import { PreviewRoutingModule } from './preview-routing.module';
 import { PreviewComponent } from './preview.component';
+import { routingPreviewProviders } from './preview-routing';
 
 @NgModule({
   imports: [
@@ -13,6 +14,9 @@ import { PreviewComponent } from './preview.component';
   declarations: [
     PreviewComponent,
     ResizeIFrameChildDirective
+  ],
+  providers: [
+    routingPreviewProviders
   ]
 })
 export class PreviewModule { }

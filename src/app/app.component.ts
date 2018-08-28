@@ -16,10 +16,13 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 export class AppComponent implements OnInit {
   public title = '';
   public isLoggedIn = false;
+  private showNaviButtons = false;
 
   constructor (
     private mds: MainDatastoreService,
-    public aboutDialog: MatDialog) { }
+    public aboutDialog: MatDialog) {
+      this.mds.showNaviButtons$.subscribe(show => this.showNaviButtons = show);
+    }
 
   ngOnInit() {
     this.mds.isLoggedIn$.subscribe(
