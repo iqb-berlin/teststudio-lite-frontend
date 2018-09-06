@@ -21,14 +21,22 @@ export class AuthoringComponent implements OnInit {
   private dataLoading = false;
   private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
   private workspaceList: WorkspaceData[] = [];
-  private disableSaveButton = true;
-  private disablePreviewButton = true;
 
+  private _disablePreviewButton = true;
+  get disablePreviewButton() {
+    return this._disablePreviewButton;
+  }
+
+  private _disableSaveButton = true;
+  get disableSaveButton() {
+    return this._disableSaveButton;
+  }
 
   // private wsSelector = new FormControl();
   private unitSelector = new FormControl();
   private unitviewSelector = new FormControl();
   private unitViewModes: UnitViewMode[] = [];
+
 
   constructor(
     private mds: MainDatastoreService,
@@ -45,15 +53,15 @@ export class AuthoringComponent implements OnInit {
       this.updateUnitList();
       // this.wsSelector.setValue(wsint, {emitEvent: false});
     });
-    this.ds.selectedUnitId$.subscribe(id => this.disablePreviewButton = id === 0);
+    this.ds.selectedUnitId$.subscribe(id => this._disablePreviewButton = id === 0);
     this.unitViewModes = this.ds.unitViewModes;
     this.ds.unitViewMode$.subscribe(uvm => {
       this.unitviewSelector.setValue(uvm, {emitEvent: false});
     });
     this.ds.unitDesignToSave$.subscribe(c =>
-      this.disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null));
+      this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null));
     this.ds.unitPropertiesToSave$.subscribe(c =>
-      this.disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null));
+      this._disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null));
   }
 
   ngOnInit() {

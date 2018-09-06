@@ -53,7 +53,7 @@
                   "with": "src/environments/environment.build.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
