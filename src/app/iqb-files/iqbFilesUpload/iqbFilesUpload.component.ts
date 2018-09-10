@@ -5,14 +5,14 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
 
 
 @Component({
-    selector: 'iqb-file-short-upload',
-    templateUrl: `./iqbFileShortUpload.component.html`,
-    exportAs: 'iqbFileShortUpload',
-    styleUrls: ['./../iqbFileShort.scss'],
+    selector: 'iqb-files-upload',
+    templateUrl: `./iqbFilesUpload.component.html`,
+    exportAs: 'iqbFilesUpload',
+    styleUrls: ['./../iqb-files.scss'],
   })
 
-  export class IqbFileShortUploadComponent implements OnInit {
-    @HostBinding('class') myclass = 'iqb-file-short-upload';
+  export class IqbFilesUploadComponent implements OnInit {
+    @HostBinding('class') myclass = 'iqb-files-upload';
 
     constructor(
       private myHttpClient: HttpClient) { }
@@ -97,8 +97,8 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
       return this._id;
     }
 
-    @Output() removeFileRequestEvent = new EventEmitter<IqbFileShortUploadComponent>();
-    @Output() statusChangedEvent = new EventEmitter<IqbFileShortUploadComponent>();
+    @Output() removeFileRequestEvent = new EventEmitter<IqbFilesUploadComponent>();
+    @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
     private progressPercentage = 0;
     public loaded = 0;

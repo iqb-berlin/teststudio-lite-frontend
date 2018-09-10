@@ -24,7 +24,7 @@ body {
   width: 100%;
   top: 70px;
   bottom: 0;
-  padding: 20px;
+  overflow-y: auto;
 }
 
 

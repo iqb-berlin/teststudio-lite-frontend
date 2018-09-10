@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnDestroy, QueryList, ViewChildren, Input, Output } from '@angular/core';
-import { IqbFileShortUploadComponent, UploadStatus } from '../iqbFileShortUpload/iqbFileShortUpload.component';
+import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 
 
@@ -7,13 +7,13 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
  * A material design file upload queue component.
  */
 @Component({
-    selector: 'iqb-file-short-upload-queue',
-    templateUrl: `iqbFileShortUploadQueue.component.html`,
-    exportAs: 'iqbFileShortUploadQueue',
+    selector: 'iqb-files-upload-queue',
+    templateUrl: `iqbFilesUploadQueue.component.html`,
+    exportAs: 'iqbFilesUploadQueue',
   })
-  export class IqbFileShortUploadQueueComponent implements OnDestroy {
+  export class IqbFilesUploadQueueComponent implements OnDestroy {
 
-    @ViewChildren(IqbFileShortUploadComponent) fileUploads: QueryList<IqbFileShortUploadComponent>;
+    @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
     private files: Array<any> = [];
     private numberOfErrors = 0;
@@ -49,7 +49,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
     @Input()
     folder: string;
 
-    @Output() uploadCompleteEvent = new EventEmitter<IqbFileShortUploadQueueComponent>();
+    @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
     add(file: any) {
@@ -69,7 +69,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
     }
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
-    removeFile(fileToRemove: IqbFileShortUploadComponent) {
+    removeFile(fileToRemove: IqbFilesUploadComponent) {
       this.files.splice(fileToRemove.id, 1);
     }
 

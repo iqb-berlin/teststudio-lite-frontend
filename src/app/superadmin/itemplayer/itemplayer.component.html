@@ -1,4 +1,4 @@
-<div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
+<div fxLayout="row" fxLayoutAlign="space-between start">
   <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
   </div>
@@ -15,10 +15,10 @@
         <mat-icon>delete</mat-icon>
       </button>
 
-      <input #hiddenfileinput type="file" name="itemplayerfile" multiple [iqbFileShortUploadInputFor]="fileUploadQueue" hidden="true"/>
+      <input #hiddenfileinput type="file" name="itemplayerfile" multiple [iqbFilesUploadInputFor]="fileUploadQueue" hidden="true"/>
     </div>
 
-    <iqb-file-short-upload-queue #fileUploadQueue
+    <iqb-files-upload-queue #fileUploadQueue
       [httpUrl]="uploadUrl"
       [fileAlias]="'itemplayerfile'"
       [tokenName]="'t'"
@@ -26,7 +26,7 @@
       [folderName]="'i'"
       [folder]="'y'"
       (uploadCompleteEvent)="updateFileList()">
-    </iqb-file-short-upload-queue>
+    </iqb-files-upload-queue>
 
 
     <mat-table [dataSource]="filesDatasource" *ngIf="hasFiles()" matSort>

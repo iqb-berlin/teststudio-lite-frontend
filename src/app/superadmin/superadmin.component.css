@@ -1,16 +1,12 @@
 .adminbackground {
-  flex:  10 0 900px;
   box-shadow: 5px 10px 20px black;
   background-color: white;
   min-height: 85%;
   padding: 25px;
+  margin: 20px;
 }
 
 .communication-error-message {
   color: red;
   padding: 10px 50px;
-}
-
-.columnhost {
-  width: 100%;
 }

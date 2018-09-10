@@ -1,4 +1,4 @@
-import { IqbFilesShortModule } from './../iqb-filesShort';
+import { IqbFilesModule } from './../iqb-files';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -31,7 +31,7 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
   imports: [
     CommonModule,
     SuperadminRoutingModule,
-    IqbFilesShortModule,
+    IqbFilesModule,
     IqbCommonModule,
     MatTableModule,
     MatTabsModule,
