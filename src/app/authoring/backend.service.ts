@@ -58,6 +58,21 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public copyUnit (sessiontoken: string, workspaceId: number,
+                  fromUnit: number, key: string, label: string): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'addUnit.php', {t: sessiontoken, ws: workspaceId, u: fromUnit, k: key, l: label}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   public deleteUnits (sessiontoken: string, workspaceId: number, units: number[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({

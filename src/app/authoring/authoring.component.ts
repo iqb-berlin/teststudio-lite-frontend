@@ -1,3 +1,4 @@
+import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common/message-dialog/message-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
@@ -8,7 +9,7 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog, MatSnackBar, MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material';
 import { MainDatastoreService } from './../maindatastore.service';
 import { BehaviorSubject } from 'rxjs';
-import { UnitShortData, BackendService, WorkspaceData } from './backend.service';
+import { UnitShortData, BackendService, WorkspaceData, UnitProperties } from './backend.service';
 import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -44,6 +45,7 @@ export class AuthoringComponent implements OnInit {
     private bs: BackendService,
     private newunitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
+    private messsageDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
@@ -109,6 +111,7 @@ export class AuthoringComponent implements OnInit {
     const dialogRef = this.newunitDialog.open(NewunitComponent, {
       width: '600px',
       data: {
+        title: 'Neue Aufgabe',
         key: '',
         label: ''
       }
@@ -137,6 +140,7 @@ export class AuthoringComponent implements OnInit {
     });
   }
 
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
   deleteUnit() {
     const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
       width: '400px',
@@ -165,12 +169,14 @@ export class AuthoringComponent implements OnInit {
     });
   }
 
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
   saveUnit() {
     let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
     if (componentToSaveData !== null) {
       componentToSaveData.saveData().subscribe(result => {
         if (result) {
           this.snackBar.open('Aufgabe gespeichert', '', {duration: 1000});
+          this.updateUnitList();
         }
       });
     }
@@ -184,7 +190,69 @@ export class AuthoringComponent implements OnInit {
     }
   }
 
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
   previewUnit() {
     this.router.navigate(['p/' + this.ds.workspaceId$.getValue() + '##' + this.ds.selectedUnitId$.getValue()]);
+  }
+
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  copyUnit() {
+    const myUnitId = this.ds.selectedUnitId$.getValue();
+    if (myUnitId > 0) {
+      this.bs.getUnitProperties(
+        this.mds.token$.getValue(),
+        this.ds.workspaceId$.getValue(),
+        myUnitId).subscribe(up => {
+          if (up !== null) {
+            const newUnit = up as UnitProperties;
+            if (newUnit.id === myUnitId) {
+              const dialogRef = this.newunitDialog.open(NewunitComponent, {
+                width: '600px',
+                data: {
+                  title: 'Aufgabe ' + newUnit.key + ' in neue Aufgabe kopieren',
+                  key: newUnit.key,
+                  label: newUnit.label
+                }
+              });
+
+              dialogRef.afterClosed().subscribe(result => {
+                if (typeof result !== 'undefined') {
+                  if (result !== false) {
+                    this.dataLoading = true;
+                    this.bs.copyUnit(
+                        this.mds.token$.getValue(),
+                        this.ds.workspaceId$.getValue(),
+                        myUnitId,
+                        (<FormGroup>result).get('key').value,
+                        (<FormGroup>result).get('label').value).subscribe(
+                          respOk => {
+                            if (respOk) {
+                              this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
+                              this.updateUnitList();
+                            } else {
+                              this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
+                            }
+                            this.dataLoading = false;
+                          });
+                  }
+                }
+              });
+            }
+          }
+        });
+    } else {
+      this.snackBar.open('Bitte erst Aufgabe auswählen', 'Hinweis', {duration: 3000});
+    }
+  }
+
+  dummySorry() {
+    this.messsageDialog.open(MessageDialogComponent, {
+      width: '400px',
+      data: <MessageDialogData>{
+        title: 'Funktion noch nicht verfügbar',
+        content: 'Sorry - coming soon.',
+        type: MessageType.info
+      }
+    });
   }
 }

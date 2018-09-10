@@ -43,13 +43,13 @@
       </button>
 
       <mat-menu #menu="matMenu">
-        <button mat-menu-item>
-          <span>Aufgabe(n) verschieben</span>
+        <button mat-menu-item (click)="copyUnit()">
+          <span>Aufgabe kopieren</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="dummySorry()">
           <span>Aufgabe(n) importieren</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="dummySorry()">
           <span>Aufgabe(n) als Datei speichern</span>
         </button>
       </mat-menu>
