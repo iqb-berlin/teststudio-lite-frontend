@@ -20,7 +20,11 @@ export class MainDatastoreService {
   public notLoggedInMessage$ = new BehaviorSubject<string>('');
   public token$ = new BehaviorSubject<string>('');
   public postMessage$ = new Subject<MessageEvent>();
+
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
+  public itemplayerPageRequest$ = new BehaviorSubject<string>('');
+  public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
+  public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
 
   // .................................................................................
   private _lastloginname = '';

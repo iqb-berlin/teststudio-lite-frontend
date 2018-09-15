@@ -15,6 +15,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private postMessageSubscription: Subscription = null;
+  private itemplayerSessionId = '';
+  private postMessageTarget: Window = null;
 
   constructor(
     private mds: MainDatastoreService,
@@ -22,36 +24,72 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private route: ActivatedRoute,
   ) {
+    this.mds.itemplayerPageRequest$.subscribe((newPage: string) => {
+      if (newPage.length > 0) {
+        this.postMessageTarget.postMessage({
+          type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+          sessionId: this.itemplayerSessionId,
+          newPage: newPage
+        }, '*');
+      }
+    });
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
+      console.log(msgData);
 
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
           // // // // // // //
-          case 'OpenCBA.stateChanged':
-            if (msgData['newState'] === 'readyToInitialize') {
-              let hasData = false;
-              const initParams = {};
+          case 'OpenCBA.FromItemPlayer.ReadyNotification':
+            let hasData = false;
+            const initParams = {};
 
-              const pendingSpec = this.ds.pendingItemDefinition$.getValue();
-              if ((pendingSpec !== null) || (pendingSpec.length > 0)) {
-                initParams['itemSpecification'] = pendingSpec;
-                hasData = true;
-                this.ds.pendingItemDefinition$.next(null);
-              }
+            const pendingSpec = this.ds.pendingItemDefinition$.getValue();
+            if ((pendingSpec !== null) && (pendingSpec.length > 0)) {
+              hasData = true;
+              this.ds.pendingItemDefinition$.next(null);
+            }
 
-              if (hasData) {
-                const targetWindow = m.source;
-                targetWindow.postMessage({
-                  type: 'OpenCBA.initItemPlayer',
-                  initParameters: initParams
-                }, '*');
-              }
+            if (hasData) {
+              this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+              this.postMessageTarget = m.source;
+              this.postMessageTarget.postMessage({
+                type: 'OpenCBA.ToItemPlayer.DataTransfer',
+                sessionId: this.itemplayerSessionId,
+                unitDefinition: pendingSpec
+              }, '*');
             }
             break;
 
+          // // // // // // //
+          case 'OpenCBA.FromItemPlayer.StartedNotification':
+            const validPages = msgData['validPages'];
+            if ((validPages instanceof Array) && (validPages.length > 1)) {
+              this.mds.itemplayerValidPages$.next(validPages);
+              let currentPage = msgData['currentPage'];
+              if (currentPage  === undefined) {
+                currentPage = validPages[0];
+              }
+              this.mds.itemplayerCurrentPage$.next(currentPage);
+            }
+            break;
+
+          // // // // // // //
+          case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
+            const validPagesChanged = msgData['validPages'];
+            let currentPageChanged = msgData['currentPage'];
+            if ((validPagesChanged instanceof Array)) {
+              this.mds.itemplayerValidPages$.next(validPagesChanged);
+              if (currentPageChanged  === undefined) {
+                currentPageChanged = validPagesChanged[0];
+              }
+            }
+            if (currentPageChanged  !== undefined) {
+              this.mds.itemplayerCurrentPage$.next(currentPageChanged);
+            }
+            break;
 
           // // // // // // //
           default:
@@ -76,9 +114,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
           while (this.iFrameHostElement.hasChildNodes()) {
             this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
           }
-
-          // this.tss.updatePageTitle(newUnit.title);
-          // this.tss.updateUnitId(newUnit.sequenceId);
 
           this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
           this.iFrameItemplayer.setAttribute('srcdoc', data.player);

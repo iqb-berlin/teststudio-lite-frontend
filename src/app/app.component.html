@@ -1,3 +1,20 @@
+<div class="navButtonsContainer" *ngIf="showNaviButtons" fxLayout="row">
+  <button mat-fab disabled="true" color="accent">
+    <i class="material-icons">chevron_left</i>
+  </button>
+  <div class="navPageButtonsContainer" *ngIf="showPageNaviButtons">
+    <button mat-mini-fab [disabled]="!pagePrevEnabled" color="foreground" (click)="prevPageNaviButtonClick()">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button mat-mini-fab [disabled]="!pageNextEnabled" color="foreground" (click)="nextPageNaviButtonClick()">
+      <i class="material-icons">chevron_right</i>
+    </button>
+  </div>
+  <button mat-fab disabled="true" color="accent">
+    <i class="material-icons">chevron_right</i>
+  </button>
+</div>
+
 <mat-toolbar color="primary">
   <a [routerLink]="['/']">
     <img class="logo" src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
@@ -5,12 +22,6 @@
   <span>{{ title }}</span>
   <span class="itc-fill-remaining-space"></span>
 
-  <button mat-fab disabled="true" color="accent" *ngIf="showNaviButtons">
-    <i class="material-icons">chevron_left</i>
-  </button>
-  <button mat-fab disabled="true" color="accent" *ngIf="showNaviButtons">
-    <i class="material-icons">chevron_right</i>
-  </button>
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <i class="material-icons">menu</i>
   </button>

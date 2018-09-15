@@ -55,26 +55,26 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           switch (msgType) {
 
             // // // // // // //
-            case 'OpenCBA.UnitAuthoring.Ready':
+            case 'OpenCBA.FromUnitAuthoring.ReadyNotification':
               this.unitWindow.postMessage({
-                type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
+                type: 'OpenCBA.ToUnitAuthoring.DataTransfer',
                 unitDefinition: this.pendingUnitDefinition,
-                authoringSessionId: this.authoringSessionId,
+                sessionId: this.authoringSessionId,
               }, '*');
               this.pendingUnitDefinition = null;
               break;
 
             // // // // // // //
-            case 'OpenCBA.UnitAuthoring.HasChanged':
-              if (msgData['authoringSessionId'] === this.authoringSessionId) {
+            case 'OpenCBA.FromUnitAuthoring.ChangedNotification':
+              if (msgData['sessionId'] === this.authoringSessionId) {
                 this.hasChanged$.next(true);
                 this.ds.unitDesignToSave$.next(this);
               }
               break;
 
             // // // // // // //
-            case 'OpenCBA.UnitAuthoring.UnitDefinition':
-              if (msgData['authoringSessionId'] === this.authoringSessionId) {
+            case 'OpenCBA.FromUnitAuthoring.ChangedDataTransfer':
+              if (msgData['sessionId'] === this.authoringSessionId) {
                 const UnitDef = msgData['unitDefinition'];
                 const myLocalUnitdata = this.myUnitDesign$.getValue();
                 if ((myLocalUnitdata !== null) &&
@@ -84,7 +84,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
                     this.ds.workspaceId$.getValue(),
                     myLocalUnitdata.id,
                     UnitDef,
-                    msgData['unitPlayerId']
+                    msgData['unitDefinitionType']
                   ).subscribe(saveResult => {
                       const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
                       if (myreturn) {
@@ -223,8 +223,8 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   // not nice: Just sending get unitdata request an hope
   saveData(): Observable<boolean> {
     this.unitWindow.postMessage({
-      type: 'OpenCBA.UnitAuthoring.UnitDefinitionRequest',
-      authoringSessionId: this.authoringSessionId
+      type: 'OpenCBA.ToUnitAuthoring.ChangedDataCall',
+      sessionId: this.authoringSessionId
     }, '*');
 
     return of(true);
