@@ -123,9 +123,9 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           this.authoringSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
           this.unitWindow.postMessage({
-            type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
+            type: 'OpenCBA.ToUnitAuthoring.DataTransfer',
             unitDefinition: ud.def,
-            authoringSessionId: this.authoringSessionId,
+            sessionId: this.authoringSessionId
           }, '*');
 
         } else {
