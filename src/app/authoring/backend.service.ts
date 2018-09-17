@@ -252,7 +252,6 @@ export interface UnitDesignData {
   def: string;
   authoringtoolLink: string;
   playerLink: string;
-  uid: string;
 }
 
 export interface StrIdLabelSelectedData {

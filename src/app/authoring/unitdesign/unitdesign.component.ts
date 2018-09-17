@@ -120,7 +120,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
         if ((this.iFrameElement !== null) && (ud.authoringtoolLink === this.currentAuthoringTool)) {
           // reuse the authoring tool: load new data
           this.pendingUnitDefinition = null;
-          this.authoringSessionId = ud.uid;
+          this.authoringSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
           this.unitWindow.postMessage({
             type: 'OpenCBA.UnitAuthoring.LoadUnitDefinition',
@@ -133,7 +133,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
             this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
           }
           this.pendingUnitDefinition = ud.def;
-          this.authoringSessionId = ud.uid;
+          this.authoringSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
           this.currentAuthoringTool = ud.authoringtoolLink;
 
           this.iFrameElement = <HTMLIFrameElement>document.createElement('iframe');
