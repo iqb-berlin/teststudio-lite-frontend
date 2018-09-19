@@ -5,10 +5,12 @@ import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameCh
 import { PreviewRoutingModule } from './preview-routing.module';
 import { PreviewComponent } from './preview.component';
 import { routingPreviewProviders } from './preview-routing';
+import { MatProgressSpinnerModule } from '@angular/material';
 
 @NgModule({
   imports: [
     CommonModule,
+    MatProgressSpinnerModule,
     PreviewRoutingModule
   ],
   declarations: [

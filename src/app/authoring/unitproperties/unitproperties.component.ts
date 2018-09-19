@@ -177,13 +177,13 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
       this.ds.workspaceId$.getValue(),
       this.myUnitProps)
     .pipe(
-      map(saveResult => {
+      switchMap(saveResult => {
         const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
         if (myreturn) {
           this.hasChanged$.next(false);
           this.ds.unitPropertiesToSave$.next(null);
         }
-        return myreturn;
+        return of(myreturn);
       })
     );
   }

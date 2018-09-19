@@ -60,10 +60,18 @@ export class AuthoringComponent implements OnInit {
     this.ds.unitViewMode$.subscribe(uvm => {
       this.unitviewSelector.setValue(uvm, {emitEvent: false});
     });
-    this.ds.unitDesignToSave$.subscribe(c =>
-      this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null));
-    this.ds.unitPropertiesToSave$.subscribe(c =>
-      this._disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null));
+    this.ds.unitDesignToSave$.subscribe(c => {
+      this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null);
+      if (this._disableSaveButton) {
+        this.dataLoading = false;
+      }
+    });
+    this.ds.unitPropertiesToSave$.subscribe(c => {
+      this._disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null);
+      if (this._disableSaveButton) {
+        this.dataLoading = false;
+      }
+    });
   }
 
   ngOnInit() {
@@ -173,20 +181,17 @@ export class AuthoringComponent implements OnInit {
   saveUnit() {
     let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
     if (componentToSaveData !== null) {
+      this.dataLoading = true;
       componentToSaveData.saveData().subscribe(result => {
         if (result) {
-          this.snackBar.open('Aufgabe gespeichert', '', {duration: 1000});
           this.updateUnitList();
         }
       });
     }
     componentToSaveData = this.ds.unitDesignToSave$.getValue();
     if (componentToSaveData !== null) {
-      componentToSaveData.saveData().subscribe(result => {
-        if (result) {
-          this.snackBar.open('Aufgabe gespeichert', '', {duration: 1000});
-        }
-      });
+      this.dataLoading = true;
+      componentToSaveData.saveData().subscribe();
     }
   }
 

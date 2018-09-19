@@ -18,6 +18,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
 
+  private dataLoading = false;
+
   constructor(
     private mds: MainDatastoreService,
     private ds: DatastoreService,
@@ -73,6 +75,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
                 currentPage = validPages[0];
               }
               this.mds.itemplayerCurrentPage$.next(currentPage);
+            } else {
+              this.mds.itemplayerValidPages$.next([]);
+              this.mds.itemplayerCurrentPage$.next('');
             }
             break;
 
@@ -109,6 +114,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
       params => {
         const paramSplit = params['u'].split('##');
         this.ds.updatePageTitle(paramSplit[1]);
+        this.dataLoading = true;
+
         this.bs.getUnitDesignData(this.mds.token$.getValue(), paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
           // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
           while (this.iFrameHostElement.hasChildNodes()) {
@@ -125,6 +132,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
           this.ds.updatePageTitle(data.key + '-' + data.label);
+          this.dataLoading = false;
         });
     });
   }
