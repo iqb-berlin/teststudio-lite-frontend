@@ -24,6 +24,8 @@
     "@angular/platform-browser-dynamic": "^6.0.3",
     "@angular/router": "^6.0.3",
     "core-js": "^2.5.4",
+    "file-saver": "^2.0.0-rc.3",
+    "filesaver": "0.0.13",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.26"
   },

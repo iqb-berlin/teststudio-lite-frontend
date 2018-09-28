@@ -35,7 +35,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
 
   ngOnInit() {
     this.unitpropsForm = this.fb.group({
-      key: this.fb.control('', [Validators.required, Validators.minLength(3)]),
+      key: this.fb.control('', [Validators.required, Validators.pattern('[a-zA-Z-0-9]+'), Validators.minLength(3)]),
       label: this.fb.control('')
     });
 
@@ -169,22 +169,27 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
   }
 
   saveData(): Observable<boolean> {
-    this.myUnitProps.key = this.unitpropsForm.get('key').value;
-    this.myUnitProps.label = this.unitpropsForm.get('label').value;
+    if (this.unitpropsForm.invalid) {
+      console.log('nö');
+      return of(false);
+    } else {
+      this.myUnitProps.key = this.unitpropsForm.get('key').value;
+      this.myUnitProps.label = this.unitpropsForm.get('label').value;
 
-    return this.bs.changeUnitProperties(
-      this.mds.token$.getValue(),
-      this.ds.workspaceId$.getValue(),
-      this.myUnitProps)
-    .pipe(
-      switchMap(saveResult => {
-        const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
-        if (myreturn) {
-          this.hasChanged$.next(false);
-          this.ds.unitPropertiesToSave$.next(null);
-        }
-        return of(myreturn);
-      })
-    );
+      return this.bs.changeUnitProperties(
+        this.mds.token$.getValue(),
+        this.ds.workspaceId$.getValue(),
+        this.myUnitProps)
+      .pipe(
+        switchMap(saveResult => {
+          const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
+          if (myreturn) {
+            this.hasChanged$.next(false);
+            this.ds.unitPropertiesToSave$.next(null);
+          }
+          return of(myreturn);
+        })
+      );
+    }
   }
 }

@@ -21,6 +21,7 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
 import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
+import { MoveUnitComponent } from './moveunit/moveunit.component';
 
 @NgModule({
   imports: [
@@ -56,7 +57,8 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
     AuthoringDashboardComponent,
     SelectAuthoringToolComponent,
     UnitResponsesComponent,
-    SelectUnitComponent
+    SelectUnitComponent,
+    MoveUnitComponent
   ],
   exports: [
     AuthoringComponent,
@@ -65,7 +67,8 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
   entryComponents: [
     NewunitComponent,
     SelectAuthoringToolComponent,
-    SelectUnitComponent
+    SelectUnitComponent,
+    MoveUnitComponent
   ],
   providers: [
     routingUnitPropertiesProviders,

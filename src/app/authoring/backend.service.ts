@@ -2,7 +2,9 @@ import { UnitShortData } from './backend.service';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse, HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Injectable, Inject } from '@angular/core';
+
 
 @Injectable({
   providedIn: 'root'
@@ -84,6 +86,45 @@ export class BackendService {
         .pipe(
           catchError(this.handleError)
         );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public moveUnits (sessiontoken: string, workspaceId: number,
+          units: number[], targetWorkspace: number): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'moveUnits.php', {t: sessiontoken, ws: workspaceId, u: units, tws: targetWorkspace}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public downloadUnits (sessiontoken: string, workspaceId: number, units: number[]): Observable<Blob> {
+    const httpOptions = {
+      responseType: 'blob' as 'json',
+      headers: new HttpHeaders({
+        'options': JSON.stringify({t: sessiontoken, ws: workspaceId, u: units})
+      })
+    };
+
+    return this.http.get<Blob>(this.serverUrl + 'downloadUnits.php', httpOptions);
+
+        // .pipe(
+        //   map(binaryData => {
+        //     const blob = new Blob([binaryData], {type : 'application/zip'});
+        //     const url = window.URL.createObjectURL(blob);
+        //     const pwa = window.open(url);
+        //     if (!pwa || pwa.closed || typeof pwa.closed === 'undefined') {
+        //       alert( 'Please disable your Pop-up blocker and try again.');
+        //     }
+        //     return true;
+        //   })
+        // );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB

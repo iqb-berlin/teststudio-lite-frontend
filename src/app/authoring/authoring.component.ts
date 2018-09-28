@@ -1,3 +1,4 @@
+import { MoveUnitComponent } from './moveunit/moveunit.component';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common/message-dialog/message-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,6 +14,8 @@ import { UnitShortData, BackendService, WorkspaceData, UnitProperties } from './
 import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { saveAs } from 'file-saver';
+
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -178,6 +181,38 @@ export class AuthoringComponent implements OnInit {
   }
 
   // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  moveUnit() {
+    const dialogRef = this.selectUnitDialog.open(MoveUnitComponent, {
+      width: '400px',
+      height: '700px',
+      data: {
+        title: 'Aufgabe(n) verschieben',
+        buttonlabel: 'Verschieben',
+        curentWorkspaceId: this.ds.workspaceId$.getValue()
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (typeof result !== 'undefined') {
+        if (result !== false) {
+          const dialogComponent = dialogRef.componentInstance;
+          this.bs.moveUnits(
+            this.mds.token$.getValue(),
+            this.ds.workspaceId$.getValue(),
+            (dialogComponent.tableselectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
+            dialogComponent.selectform.get('wsSelector').value).subscribe(
+              ok => {
+                if (ok) {
+                  this.updateUnitList();
+                  this.snackBar.open('Aufgabe(n) verschoben', '', {duration: 1000});
+                }
+              });
+        }
+      }
+    });
+  }
+
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
   saveUnit() {
     let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
     if (componentToSaveData !== null) {
@@ -248,6 +283,34 @@ export class AuthoringComponent implements OnInit {
     } else {
       this.snackBar.open('Bitte erst Aufgabe auswählen', 'Hinweis', {duration: 3000});
     }
+  }
+
+  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  exportUnit() {
+    const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
+      width: '400px',
+      height: '700px',
+      data: {
+        title: 'Aufgabe(n) als Datei speichern',
+        buttonlabel: 'Download'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (typeof result !== 'undefined') {
+        if (result !== false) {
+          this.bs.downloadUnits(
+            this.mds.token$.getValue(),
+            this.ds.workspaceId$.getValue(),
+            (result as UnitShortData[]).map(ud => ud.id)).subscribe(
+              (binaryData: Blob) => {
+                // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
+                saveAs(binaryData, 'unitDefs.voud.zip');
+                this.snackBar.open('Aufgabe(n) gespeichert', '', {duration: 1000});
+              });
+        }
+      }
+    });
   }
 
   dummySorry() {
