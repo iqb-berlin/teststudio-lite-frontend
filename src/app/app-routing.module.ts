@@ -1,3 +1,4 @@
+import { AboutComponent } from './about/about.component';
 import { PreviewComponent } from './preview';
 import { AuthoringComponent } from './authoring';
 import { SuperadminComponent } from './superadmin';
@@ -10,6 +11,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: HomeComponent},
+  {path: 'about', component: AboutComponent},
   {path: 'superadmin', component: SuperadminComponent},
   {path: 'a', component: AuthoringComponent},
   {path: 'p', component: PreviewComponent}

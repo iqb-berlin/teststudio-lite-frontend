@@ -7,17 +7,16 @@ import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
+import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatProgressSpinnerModule, MatCardModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BackendService } from './backend.service';
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+import { AboutComponent } from './about/about.component';
 import { IqbCommonModule } from './iqb-common';
 import { HomeComponent } from './home/home.component';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { SuperadminModule } from './superadmin/superadmin.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -25,8 +24,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutDialogComponent,
-    LoginDialogComponent
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -39,19 +37,17 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatInputModule,
     MatTooltipModule,
     MatDialogModule,
+    MatCardModule,
     MatTabsModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule,
+    FlexLayoutModule,
     HttpClientModule,
     SuperadminModule,
     AppRoutingModule,
-    FlexLayoutModule,
     IqbCommonModule,
     AuthoringModule,
     PreviewModule
-  ],
-  entryComponents: [
-    AboutDialogComponent,
-    LoginDialogComponent
   ],
   providers: [
     BackendService,

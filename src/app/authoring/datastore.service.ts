@@ -10,6 +10,7 @@ export class DatastoreService {
   public workspaceList$ = new BehaviorSubject<WorkspaceData[]>([]);
   public workspaceId$ = new BehaviorSubject<number>(0);
   public workspaceName$ = new BehaviorSubject<string>('');
+  public unitList$ = new BehaviorSubject<UnitShortData[]>([]);
 
   public unitViewMode$ = new BehaviorSubject<string>('up');
   public unitViewModes: UnitViewMode[] = [
@@ -29,6 +30,8 @@ export class DatastoreService {
     this.workspaceId$.next(+localStorage.getItem('ws'));
 
     this.workspaceId$.subscribe((wsId: number) => {
+      this.updateUnitList();
+
       localStorage.setItem('ws', String(wsId));
       if (wsId > 0) {
         let wsFound = false;
@@ -86,6 +89,21 @@ export class DatastoreService {
 
   updatePageTitle(newTitle: string) {
     this.mds.updatePageTitle(newTitle);
+  }
+
+  updateUnitList() {
+    const myToken = this.mds.token$.getValue();
+    const myWorkspace = this.workspaceId$.getValue();
+    if ((myToken === '') || (myWorkspace === 0)) {
+      this.unitList$.next([]);
+      // this.unitId$.next(0);
+    } else {
+      this.bs.getUnitList(myToken, myWorkspace).subscribe(
+        (uresponse: UnitShortData[]) => {
+          this.unitList$.next(uresponse);
+          this.selectedUnitId$.next(0);
+      });
+    }
   }
 }
 

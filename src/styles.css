@@ -25,6 +25,7 @@ body {
   top: 70px;
   bottom: 0;
   overflow-y: auto;
+  background-image: linear-gradient(to bottom, #003333, #00465d, #005791, #005ebe, #8854d0);
 }
 
 

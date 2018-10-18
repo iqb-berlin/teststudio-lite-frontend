@@ -1,5 +1,5 @@
+import { WorkspaceData } from './backend.service';
 import { routingUnitResponsesProviders } from './unitresponses/unitresponses-routing';
-import { AuthoringDashboardComponent } from './dashboard/dashboard.component';
 import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
@@ -54,7 +54,6 @@ import { MoveUnitComponent } from './moveunit/moveunit.component';
     UnitDesignComponent,
     UnitPropertiesComponent,
     NewunitComponent,
-    AuthoringDashboardComponent,
     SelectAuthoringToolComponent,
     UnitResponsesComponent,
     SelectUnitComponent,
@@ -62,7 +61,6 @@ import { MoveUnitComponent } from './moveunit/moveunit.component';
   ],
   exports: [
     AuthoringComponent,
-    AuthoringDashboardComponent
   ],
   entryComponents: [
     NewunitComponent,

@@ -4,12 +4,11 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 
 import { MainDatastoreService } from './maindatastore.service';
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 
 
@@ -49,22 +48,6 @@ export class AppComponent implements OnInit {
     window.addEventListener('message', (event) => {
       this.mds.processMessagePost(event);
     }, false);
-  }
-
-  // *******************************************************************************************************
-  showAboutDialog() {
-    const dialogRef = this.aboutDialog.open(AboutDialogComponent, {
-      width: '500px',
-      data: {
-        status: this.mds.token$.getValue().length > 0 ? ('angemeldet als ' + this.mds.loginName$.getValue()) : 'nicht angemeldet',
-        workspace: '-'
-      }
-    });
-  }
-
-  // *******************************************************************************************************
-  login() {
-    this.mds.login_dialog();
   }
 
   // *******************************************************************************************************

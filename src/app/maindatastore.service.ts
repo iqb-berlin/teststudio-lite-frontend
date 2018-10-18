@@ -6,7 +6,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
 import { BackendService, LoginStatusResponseData, ServerError } from './backend.service';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 
 @Injectable({
@@ -51,24 +50,6 @@ export class MainDatastoreService {
 
 
   // *******************************************************************************************************
-  login_dialog() {
-    const dialogRef = this.loginDialog.open(LoginDialogComponent, {
-      width: '600px',
-      data: {
-        lastloginname: this._lastloginname
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.login((<FormGroup>result).get('name').value, (<FormGroup>result).get('pw').value);
-        }
-      }
-    });
-  }
-
-  // *******************************************************************************************************
   login(name: string, password: string) {
     this.bs.login(name, password).subscribe(
       (userdata: LoginStatusResponseData) => {
@@ -95,8 +76,10 @@ export class MainDatastoreService {
         this.bs.logout(this.token$.getValue()).subscribe(
           logoutresponse => {
             this.updateStatus('', '', false, '');
+            this.router.navigateByUrl('/');
           }, (err: ServerError) => {
             this.updateStatus('', '', false, err.label);
+            this.router.navigateByUrl('/');
           }
         );
       }

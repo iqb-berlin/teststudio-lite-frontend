@@ -1,3 +1,6 @@
-.mat-card-title {
-  background-color:slategray;
+.mat-card {
+  margin: 10px;
+}
+.status {
+  background-color: lightgrey;
 }

@@ -17,7 +17,6 @@ import { SuperadminComponent } from './superadmin.component';
 import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
 import { IqbCommonModule } from '../iqb-common/iqb-common.module';
-import { SuperadminDashboardComponent } from './dashboard/dashboard.component';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
@@ -53,8 +52,7 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
     FlexLayoutModule
   ],
   exports: [
-    SuperadminComponent,
-    SuperadminDashboardComponent
+    SuperadminComponent
   ],
   declarations: [
     WorkspacesComponent,
@@ -62,7 +60,6 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
     ItemauthoringComponent,
     ItemplayerComponent,
     SuperadminComponent,
-    SuperadminDashboardComponent,
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,

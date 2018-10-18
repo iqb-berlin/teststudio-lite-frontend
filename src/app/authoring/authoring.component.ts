@@ -23,7 +23,7 @@ import { saveAs } from 'file-saver';
 })
 export class AuthoringComponent implements OnInit {
   private dataLoading = false;
-  private unitList$ = new BehaviorSubject<UnitShortData[]>([]);
+  private unitList: UnitShortData[] = [];
   private workspaceList: WorkspaceData[] = [];
 
   private _disablePreviewButton = true;
@@ -54,9 +54,8 @@ export class AuthoringComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.ds.workspaceList$.subscribe(wsList => this.workspaceList = wsList);
-    this.ds.workspaceId$.subscribe(wsint => {
-      this.updateUnitList();
-      // this.wsSelector.setValue(wsint, {emitEvent: false});
+    this.ds.unitList$.subscribe(ul => {
+      this.unitList = ul;
     });
     this.ds.selectedUnitId$.subscribe(id => this._disablePreviewButton = id === 0);
     this.unitViewModes = this.ds.unitViewModes;
@@ -78,6 +77,12 @@ export class AuthoringComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.mds.pageTitle$.next('IQB-Itemdatenbank');
+    this.ds.workspaceName$.subscribe(ws => {
+      if (ws.length > 0) {
+        this.mds.pageTitle$.next('IQB-Itemdatenbank: ' + ws);
+      }
+    });
     this.ds.selectedUnitId$.subscribe((uId: number) => {
       this.unitSelector.setValue(uId, {emitEvent: false});
     });
@@ -99,22 +104,6 @@ export class AuthoringComponent implements OnInit {
           }
       });
     });
-  }
-
-  updateUnitList() {
-    const myToken = this.mds.token$.getValue();
-    const myWorkspace = this.ds.workspaceId$.getValue();
-    if ((myToken === '') || (myWorkspace === 0)) {
-      this.unitList$.next([]);
-      // this.unitId$.next(0);
-    } else {
-      this.dataLoading = true;
-      this.bs.getUnitList(myToken, myWorkspace).subscribe(
-        (uresponse: UnitShortData[]) => {
-          this.dataLoading = false;
-          this.unitList$.next(uresponse);
-      });
-    }
   }
 
   // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -140,7 +129,8 @@ export class AuthoringComponent implements OnInit {
                 respOk => {
                   if (respOk) {
                     this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
-                    this.updateUnitList();
+                    this.ds.updateUnitList();
+                    this.router.navigate(['a/']);
                   } else {
                     this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
                   }
@@ -171,7 +161,7 @@ export class AuthoringComponent implements OnInit {
             (result as UnitShortData[]).map(ud => ud.id)).subscribe(
               ok => {
                 if (ok) {
-                  this.updateUnitList();
+                  this.ds.updateUnitList();
                   this.snackBar.open('Aufgabe(n) gelöscht', '', {duration: 1000});
                 }
               });
@@ -203,7 +193,7 @@ export class AuthoringComponent implements OnInit {
             dialogComponent.selectform.get('wsSelector').value).subscribe(
               ok => {
                 if (ok) {
-                  this.updateUnitList();
+                  this.ds.updateUnitList();
                   this.snackBar.open('Aufgabe(n) verschoben', '', {duration: 1000});
                 }
               });
@@ -219,7 +209,7 @@ export class AuthoringComponent implements OnInit {
       this.dataLoading = true;
       componentToSaveData.saveData().subscribe(result => {
         if (result) {
-          this.updateUnitList();
+          this.ds.updateUnitList();
         }
       });
     }
@@ -268,7 +258,7 @@ export class AuthoringComponent implements OnInit {
                           respOk => {
                             if (respOk) {
                               this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
-                              this.updateUnitList();
+                              this.ds.updateUnitList();
                             } else {
                               this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
                             }

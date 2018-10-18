@@ -28,7 +28,7 @@
     </div>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <mat-button-toggle-group [formControl]="unitSelector" vertical fxFlex>
-        <mat-button-toggle *ngFor="let unit of unitList$ | async" [value]="unit.id">{{ unit.key }} - {{ unit.label }}</mat-button-toggle>
+        <mat-button-toggle *ngFor="let unit of unitList" [value]="unit.id">{{ unit.key }} - {{ unit.label }}</mat-button-toggle>
     </mat-button-toggle-group>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <div fxLayout="row">
