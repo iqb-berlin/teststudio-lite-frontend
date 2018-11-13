@@ -1,7 +1,6 @@
 // import { environment } from '../environments/environment';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
 
 import { MainDatastoreService } from './maindatastore.service';
 
@@ -21,8 +20,7 @@ export class AppComponent implements OnInit {
   private pageNextEnabled = false;
 
   constructor (
-    private mds: MainDatastoreService,
-    public aboutDialog: MatDialog) {
+    private mds: MainDatastoreService) {
       this.mds.showNaviButtons$.subscribe(show => this.showNaviButtons = show);
       this.mds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
       this.mds.itemplayerCurrentPage$.subscribe((p: string) => {
