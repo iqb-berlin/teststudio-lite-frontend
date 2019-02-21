@@ -1,14 +1,13 @@
 import { PreviewComponent } from './preview.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { PreviewActivateGuard, PreviewDeactivateGuard } from './preview-routing';
+import { PreviewActivateGuard } from './preview-routing';
 
 const routes: Routes = [
   {
     path: 'p/:u',
     component: PreviewComponent,
-    canActivate: [PreviewActivateGuard],
-    canDeactivate: [PreviewDeactivateGuard]
+    canActivate: [PreviewActivateGuard]
   }
 ];
 

@@ -1,24 +1,29 @@
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 
 import { PreviewRoutingModule } from './preview-routing.module';
 import { PreviewComponent } from './preview.component';
-import { routingPreviewProviders } from './preview-routing';
-import { MatProgressSpinnerModule } from '@angular/material';
+import { PreviewActivateGuard } from './preview-routing';
+import { MatProgressSpinnerModule, MatTooltipModule, MatButtonModule } from '@angular/material';
+
 
 @NgModule({
   imports: [
     CommonModule,
     MatProgressSpinnerModule,
-    PreviewRoutingModule
+    MatTooltipModule,
+    MatButtonModule,
+    PreviewRoutingModule,
+    FlexLayoutModule
   ],
   declarations: [
     PreviewComponent,
     ResizeIFrameChildDirective
   ],
   providers: [
-    routingPreviewProviders
+    PreviewActivateGuard
   ]
 })
 export class PreviewModule { }

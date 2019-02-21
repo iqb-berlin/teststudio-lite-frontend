@@ -1,3 +1,4 @@
+import { LoginStatusResponseData } from './../backend.service';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { ActivatedRoute } from '@angular/router';
 import { BackendService, UnitPreviewData } from './backend.service';
@@ -5,6 +6,7 @@ import { DatastoreService } from './datastore.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Subscription } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   templateUrl: './preview.component.html',
@@ -17,24 +19,22 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
+  private statusVisual: StatusVisual[] = [
+      {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
+      {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
+    ];
 
   private dataLoading = false;
+  private showPageNav = false;
+  private pageList: PageData[] = [];
 
   constructor(
     private mds: MainDatastoreService,
     private ds: DatastoreService,
     private bs: BackendService,
     private route: ActivatedRoute,
+    private location: Location
   ) {
-    this.mds.itemplayerPageRequest$.subscribe((newPage: string) => {
-      if (newPage.length > 0) {
-        this.postMessageTarget.postMessage({
-          type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
-          sessionId: this.itemplayerSessionId,
-          newPage: newPage
-        }, '*');
-      }
-    });
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -56,7 +56,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
             if (hasData) {
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.postMessageTarget = m.source;
+              this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,
@@ -67,33 +67,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.StartedNotification':
-            const validPages = msgData['validPages'];
-            if ((validPages instanceof Array) && (validPages.length > 1)) {
-              this.mds.itemplayerValidPages$.next(validPages);
-              let currentPage = msgData['currentPage'];
-              if (currentPage  === undefined) {
-                currentPage = validPages[0];
-              }
-              this.mds.itemplayerCurrentPage$.next(currentPage);
-            } else {
-              this.mds.itemplayerValidPages$.next([]);
-              this.mds.itemplayerCurrentPage$.next('');
-            }
+            this.setPageList(msgData['validPages'], msgData['currentPage']);
+            this.setPresentationStatus(msgData['presentationComplete']);
+            this.setResponsesStatus(msgData['responsesGiven']);
             break;
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
-            const validPagesChanged = msgData['validPages'];
-            let currentPageChanged = msgData['currentPage'];
-            if ((validPagesChanged instanceof Array)) {
-              this.mds.itemplayerValidPages$.next(validPagesChanged);
-              if (currentPageChanged  === undefined) {
-                currentPageChanged = validPagesChanged[0];
-              }
-            }
-            if (currentPageChanged  !== undefined) {
-              this.mds.itemplayerCurrentPage$.next(currentPageChanged);
-            }
+            this.setPageList(msgData['validPages'], msgData['currentPage']);
+            this.setPresentationStatus(msgData['presentationComplete']);
+            this.setResponsesStatus(msgData['responsesGiven']);
+
             break;
 
           // // // // // // //
@@ -109,12 +93,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
     this.iFrameItemplayer = null;
+    this.showPageNav = false;
 
     this.routingSubscription = this.route.params.subscribe(
       params => {
         const paramSplit = params['u'].split('##');
         this.ds.updatePageTitle(paramSplit[1]);
         this.dataLoading = true;
+        this.setPageList([], '');
+        this.setPresentationStatus('');
+        this.setResponsesStatus('');
 
         this.bs.getUnitDesignData(this.mds.token$.getValue(), paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
           // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -137,8 +125,169 @@ export class PreviewComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  setPageList(validPages: string[], currentPage: string) {
+    console.log('############################################');
+    console.log(validPages);
+    console.log(currentPage);
+    if ((validPages instanceof Array)) {
+      const newPageList: PageData[] = [];
+      if (validPages.length > 1) {
+        for (let i = 0; i < validPages.length; i++) {
+          if (i === 0) {
+            newPageList.push({
+              index: -1,
+              id: 'prev',
+              disabled: validPages[i] === currentPage,
+              type: 'prev'
+            });
+          }
+
+          newPageList.push({
+            index: i + 1,
+            id: validPages[i],
+            disabled: validPages[i] === currentPage,
+            type: 'goto'
+          });
+
+          if (i === validPages.length - 1) {
+            newPageList.push({
+              index: -1,
+              id: 'next',
+              disabled: validPages[i] === currentPage,
+              type: 'next'
+            });
+          }
+        }
+      }
+      this.pageList = newPageList;
+
+    } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if (this.pageList[i].type === 'goto') {
+          if (this.pageList[i].id === currentPage) {
+            this.pageList[i].disabled = true;
+            currentPageIndex = i;
+          } else {
+            this.pageList[i].disabled = false;
+          }
+        }
+      }
+      if (currentPageIndex === 1) {
+        this.pageList[0].disabled = true;
+        this.pageList[this.pageList.length - 1].disabled = false;
+      } else {
+        this.pageList[0].disabled = false;
+        if (currentPageIndex === this.pageList.length - 2) {
+          this.pageList[this.pageList.length - 1].disabled = true;
+        } else {
+          this.pageList[this.pageList.length - 1].disabled = false;
+        }
+      }
+    }
+    this.showPageNav = this.pageList.length > 0;
+  }
+
+  gotoPage(action: string, index: number) {
+    let nextPageId = '';
+    // currentpage is detected by disabled-attribute of page
+    if (action === 'next') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
+        nextPageId = this.pageList[currentPageIndex + 1].id;
+      }
+    } else if (action === 'prev') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if (currentPageIndex > 1) {
+        nextPageId = this.pageList[currentPageIndex - 1].id;
+      }
+    } else if (action === 'goto') {
+      if ((index > 0) && (index < this.pageList.length - 1)) {
+        nextPageId = this.pageList[index].id;
+      }
+    }
+
+    if (nextPageId.length > 0) {
+      this.postMessageTarget.postMessage({
+        type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+        sessionId: this.itemplayerSessionId,
+        newPage: nextPageId
+      }, '*');
+    }
+  }
+
+
+  // ++++++++++++ Status ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  setPresentationStatus(status: string) { // 'yes' | 'no' | '' | undefined;
+    console.log('status::::: ' + status);
+    if (status === 'yes') {
+      this.changeStatusColor('presentation', 'LimeGreen');
+    } else if (status === 'no') {
+        this.changeStatusColor('presentation', 'LightCoral');
+    } else if (status === '') {
+      this.changeStatusColor('presentation', 'DarkGray');
+    }
+    // if undefined: no change
+  }
+
+  setResponsesStatus(status: string) { // 'yes' | 'no' | 'all' | '' | undefined
+    if (status === 'yes') {
+      this.changeStatusColor('responses', 'Gold');
+    } else if (status === 'no') {
+        this.changeStatusColor('responses', 'LightCoral');
+    } else if (status === 'all') {
+        this.changeStatusColor('responses', 'LimeGreen');
+    } else if (status === '') {
+      this.changeStatusColor('responses', 'DarkGray');
+    }
+    // if undefined: no change
+  }
+
+  changeStatusColor(id: string, newcolor: string) {
+    for (let i = 0; i < this.statusVisual.length; i++) {
+      if (this.statusVisual[i].id === id) {
+        if (this.statusVisual[i].color !== newcolor) {
+          this.statusVisual[i].color = newcolor;
+          break;
+        }
+      }
+    }
+  }
+
+  return() {
+    this.location.back();
+  }
+
   ngOnDestroy() {
     this.routingSubscription.unsubscribe();
     this.postMessageSubscription.unsubscribe();
   }
+}
+
+export interface PageData {
+  index: number;
+  id: string;
+  type: 'next' | 'prev' | 'goto';
+  disabled: boolean;
+}
+
+export interface StatusVisual {
+  id: string;
+  label: string;
+  color: string;
+  description: string;
 }

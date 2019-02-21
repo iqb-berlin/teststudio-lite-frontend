@@ -20,11 +20,6 @@ export class MainDatastoreService {
   public token$ = new BehaviorSubject<string>('');
   public postMessage$ = new Subject<MessageEvent>();
 
-  public showNaviButtons$ = new BehaviorSubject<boolean>(false);
-  public itemplayerPageRequest$ = new BehaviorSubject<string>('');
-  public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
-  public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
-
   // .................................................................................
   private _lastloginname = '';
 
@@ -114,7 +109,7 @@ export class MainDatastoreService {
   processMessagePost(postData: MessageEvent) {
     const msgData = postData.data;
     const msgType = msgData['type'];
-    if ((msgType !== undefined) || (msgType !== null)) {
+    if ((typeof msgType !== 'undefined') && (msgType !== null)) {
       if (msgType.substr(0, 7) === 'OpenCBA') {
         this.postMessage$.next(postData);
       }

@@ -35,7 +35,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
 
   ngOnInit() {
     this.unitpropsForm = this.fb.group({
-      key: this.fb.control('', [Validators.required, Validators.pattern('[a-zA-Z-0-9]+'), Validators.minLength(3)]),
+      key: this.fb.control('', [Validators.required, Validators.pattern('[a-zA-Z-0-9_]+'), Validators.minLength(3)]),
       label: this.fb.control('')
     });
 
@@ -101,6 +101,8 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
           myNewAuthoringTool).subscribe(setResult => {
             if (setResult === true) {
               this.myUnitProps.authoringtoolid = myNewAuthoringTool;
+              this.hasChanged$.next(true);
+              this.ds.unitPropertiesToSave$.next(this);
             }
           });
       }

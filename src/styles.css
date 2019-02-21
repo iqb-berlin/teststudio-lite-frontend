@@ -46,3 +46,8 @@ iframe.unitHost {
   width: 100%;
   border: none;
 }
+
+#unitSelectorGroup .mat-button-toggle-label-content {
+  padding: 0 4px !important;
+  line-height: 24px !important;
+}
