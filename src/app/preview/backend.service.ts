@@ -76,4 +76,5 @@ export interface UnitPreviewData {
   label: string;
   def: string;
   player: string;
+  player_id: string;
 }

@@ -12,6 +12,7 @@
     <div class="statusVisual" fxLayout="row">
       <div *ngFor="let sV of statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
     </div>
+    <p>{{ player }}</p>
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">

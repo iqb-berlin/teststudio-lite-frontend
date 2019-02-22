@@ -283,6 +283,7 @@ export interface UnitProperties {
   label: string;
   lastchangeStr: string;
   authoringtoolid: string;
+  playerid: string;
   description: string;
 }
 

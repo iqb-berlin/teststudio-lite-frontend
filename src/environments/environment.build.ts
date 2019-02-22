@@ -5,5 +5,5 @@ export const environment = {
   backendUrl: '/',
   appName: 'IQB-ItemDB',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  appVersion: '0.7.1 - 21.2.2019'
+  appVersion: '0.7.2 - 22.2.2019'
 };

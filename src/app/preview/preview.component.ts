@@ -27,6 +27,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private dataLoading = false;
   private showPageNav = false;
   private pageList: PageData[] = [];
+  private player = '';
 
   constructor(
     private mds: MainDatastoreService,
@@ -121,15 +122,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
           this.ds.updatePageTitle(data.key + '-' + data.label);
           this.dataLoading = false;
+          this.player = data.player_id;
         });
     });
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setPageList(validPages: string[], currentPage: string) {
-    console.log('############################################');
-    console.log(validPages);
-    console.log(currentPage);
     if ((validPages instanceof Array)) {
       const newPageList: PageData[] = [];
       if (validPages.length > 1) {
@@ -233,7 +232,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   // ++++++++++++ Status ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   setPresentationStatus(status: string) { // 'yes' | 'no' | '' | undefined;
-    console.log('status::::: ' + status);
     if (status === 'yes') {
       this.changeStatusColor('presentation', 'LimeGreen');
     } else if (status === 'no') {

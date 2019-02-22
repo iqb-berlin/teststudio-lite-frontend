@@ -51,7 +51,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
         const msgType = msgData['type'];
 
         if ((msgType !== undefined) && (msgType !== null)) {
-          this.unitWindow = m.source;
+          this.unitWindow = m.source as Window;
           switch (msgType) {
 
             // // // // // // //

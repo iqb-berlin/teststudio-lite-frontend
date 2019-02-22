@@ -172,7 +172,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
 
   saveData(): Observable<boolean> {
     if (this.unitpropsForm.invalid) {
-      console.log('nö');
+      console.log('unitproperties: saveData unitpropsForm.invalid');
       return of(false);
     } else {
       this.myUnitProps.key = this.unitpropsForm.get('key').value;
