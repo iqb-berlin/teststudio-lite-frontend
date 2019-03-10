@@ -6,7 +6,7 @@ import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameCh
 import { PreviewRoutingModule } from './preview-routing.module';
 import { PreviewComponent } from './preview.component';
 import { PreviewActivateGuard } from './preview-routing';
-import { MatProgressSpinnerModule, MatTooltipModule, MatButtonModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatTooltipModule, MatButtonModule, MatSnackBarModule } from '@angular/material';
 
 
 @NgModule({
@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule, MatTooltipModule, MatButtonModule } from '@an
     CommonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatSnackBarModule,
     MatButtonModule,
     PreviewRoutingModule,
     FlexLayoutModule

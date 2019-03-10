@@ -48,7 +48,7 @@ export class ItemauthoringComponent implements OnInit {
   ) {
     this.uploadUrl = this.serverUrl + 'php_superadmin/uploadItemAuthoringFile.php';
     this.ds.token$.subscribe(t => this.token = t);
-    this.tableselectionRow.onChange.subscribe(
+    this.tableselectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
           this.selectedItemAuthoringToolId = r.added[0].id;

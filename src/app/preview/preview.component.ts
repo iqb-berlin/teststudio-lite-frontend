@@ -7,6 +7,7 @@ import { MainDatastoreService } from './../maindatastore.service';
 import { Subscription } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   templateUrl: './preview.component.html',
@@ -32,6 +33,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
     private mds: MainDatastoreService,
     private ds: DatastoreService,
+    private snackBar: MatSnackBar,
     private bs: BackendService,
     private route: ActivatedRoute,
     private location: Location
@@ -45,7 +47,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
         switch (msgType) {
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ReadyNotification':
+          case 'vo.FromPlayer.ReadyNotification':
             let hasData = false;
             const initParams = {};
 
@@ -59,7 +61,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
-                type: 'OpenCBA.ToItemPlayer.DataTransfer',
+                type: 'vo.ToPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,
                 unitDefinition: pendingSpec
               }, '*');
@@ -67,18 +69,29 @@ export class PreviewComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.StartedNotification':
+          case 'vo.FromPlayer.StartedNotification':
             this.setPageList(msgData['validPages'], msgData['currentPage']);
             this.setPresentationStatus(msgData['presentationComplete']);
             this.setResponsesStatus(msgData['responsesGiven']);
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
+          case 'vo.FromPlayer.ChangedDataTransfer':
             this.setPageList(msgData['validPages'], msgData['currentPage']);
             this.setPresentationStatus(msgData['presentationComplete']);
             this.setResponsesStatus(msgData['responsesGiven']);
 
+            break;
+
+          // // // // // // //
+          case 'vo.FromPlayer.NavigationRequestedNotification':
+            this.snackBar.open('Player sendet NavigationRequestedNotification: "' +
+                    msgData['navigationTarget'] + '"', '', {duration: 3000});
+            break;
+
+          // // // // // // // ;-)
+          case 'vo.FromPlayer.PageNavigationRequestedNotification':
+            this.gotoPage(msgData['newPage']);
             break;
 
           // // // // // // //
@@ -136,9 +149,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
           if (i === 0) {
             newPageList.push({
               index: -1,
-              id: 'prev',
+              id: '#previous',
               disabled: validPages[i] === currentPage,
-              type: 'prev'
+              type: '#previous'
             });
           }
 
@@ -146,15 +159,15 @@ export class PreviewComponent implements OnInit, OnDestroy {
             index: i + 1,
             id: validPages[i],
             disabled: validPages[i] === currentPage,
-            type: 'goto'
+            type: '#goto'
           });
 
           if (i === validPages.length - 1) {
             newPageList.push({
               index: -1,
-              id: 'next',
+              id: '#next',
               disabled: validPages[i] === currentPage,
-              type: 'next'
+              type: '#next'
             });
           }
         }
@@ -164,7 +177,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
-        if (this.pageList[i].type === 'goto') {
+        if (this.pageList[i].type === '#goto') {
           if (this.pageList[i].id === currentPage) {
             this.pageList[i].disabled = true;
             currentPageIndex = i;
@@ -188,10 +201,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.showPageNav = this.pageList.length > 0;
   }
 
-  gotoPage(action: string, index: number) {
+  gotoPage(action: string, index = 0) {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
-    if (action === 'next') {
+    if (action === '#next') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
         if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
@@ -202,7 +215,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
         nextPageId = this.pageList[currentPageIndex + 1].id;
       }
-    } else if (action === 'prev') {
+    } else if (action === '#previous') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
         if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
@@ -213,10 +226,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
       if (currentPageIndex > 1) {
         nextPageId = this.pageList[currentPageIndex - 1].id;
       }
-    } else if (action === 'goto') {
+    } else if (action === '#goto') {
       if ((index > 0) && (index < this.pageList.length - 1)) {
         nextPageId = this.pageList[index].id;
       }
+    } else if (index === 0) {
+      // call from player
+      nextPageId = action;
     }
 
     if (nextPageId.length > 0) {
@@ -279,7 +295,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 export interface PageData {
   index: number;
   id: string;
-  type: 'next' | 'prev' | 'goto';
+  type: '#next' | '#previous' | '#goto';
   disabled: boolean;
 }
 
