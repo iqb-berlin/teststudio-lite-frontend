@@ -84,14 +84,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'vo.FromPlayer.NavigationRequestedNotification':
-            this.snackBar.open('Player sendet NavigationRequestedNotification: "' +
+          case 'vo.FromPlayer.PageNavigationRequest':
+            this.snackBar.open('Player sendet PageNavigationRequest: "' +
                     msgData['navigationTarget'] + '"', '', {duration: 3000});
+            this.gotoPage(msgData['newPage']);
             break;
 
           // // // // // // // ;-)
-          case 'vo.FromPlayer.PageNavigationRequestedNotification':
-            this.gotoPage(msgData['newPage']);
+          case 'vo.FromPlayer.UnitNavigationRequest':
+            this.snackBar.open('Player sendet UnitNavigationRequest: "' +
+                    msgData['navigationTarget'] + '"', '', {duration: 3000});
             break;
 
           // // // // // // //
@@ -237,7 +239,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
     if (nextPageId.length > 0) {
       this.postMessageTarget.postMessage({
-        type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+        type: 'vo.ToPlayer.NavigateToPage',
         sessionId: this.itemplayerSessionId,
         newPage: nextPageId
       }, '*');

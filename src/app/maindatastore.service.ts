@@ -110,7 +110,7 @@ export class MainDatastoreService {
     const msgData = postData.data;
     const msgType = msgData['type'];
     if ((typeof msgType !== 'undefined') && (msgType !== null)) {
-      if (msgType.substr(0, 7) === 'OpenCBA') {
+      if (msgType.substr(0, 3) === 'vo.') {
         this.postMessage$.next(postData);
       }
     }

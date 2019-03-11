@@ -55,9 +55,9 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           switch (msgType) {
 
             // // // // // // //
-            case 'OpenCBA.FromUnitAuthoring.ReadyNotification':
+            case 'vo.FromAuthoringModule.ReadyNotification':
               this.unitWindow.postMessage({
-                type: 'OpenCBA.ToUnitAuthoring.DataTransfer',
+                type: 'vo.ToAuthoringModule.DataTransfer',
                 unitDefinition: this.pendingUnitDefinition,
                 sessionId: this.authoringSessionId,
               }, '*');
@@ -65,7 +65,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
               break;
 
             // // // // // // //
-            case 'OpenCBA.FromUnitAuthoring.ChangedNotification':
+            case 'vo.FromAuthoringModule.ChangedNotification':
               if (msgData['sessionId'] === this.authoringSessionId) {
                 this.hasChanged$.next(true);
                 this.ds.unitDesignToSave$.next(this);
@@ -73,7 +73,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
               break;
 
             // // // // // // //
-            case 'OpenCBA.FromUnitAuthoring.ChangedDataTransfer':
+            case 'vo.FromAuthoringModule.DataTransfer':
               if (msgData['sessionId'] === this.authoringSessionId) {
                 const UnitDef = msgData['unitDefinition'];
                 const myLocalUnitdata = this.myUnitDesign$.getValue();
@@ -84,7 +84,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
                     this.ds.workspaceId$.getValue(),
                     myLocalUnitdata.id,
                     UnitDef,
-                    msgData['unitDefinitionType']
+                    msgData['player']
                   ).subscribe(saveResult => {
                       const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
                       if (myreturn) {
@@ -123,7 +123,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           this.authoringSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
           this.unitWindow.postMessage({
-            type: 'OpenCBA.ToUnitAuthoring.DataTransfer',
+            type: 'vo.ToAuthoringModule.DataTransfer',
             unitDefinition: ud.def,
             sessionId: this.authoringSessionId
           }, '*');
@@ -145,6 +145,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           this.iFrameHostElement.appendChild(this.iFrameElement);
           // the iFrame will now be loaded and when it's ready, it will send a message to get the
           // pending unit definition
+          this.hasChanged$.next(false);
         }
 
       } else {
@@ -155,7 +156,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
     this.routingSubscription = this.route.params.subscribe(
       params => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-        const newUnit: UnitDesignData | ServerError = this.route.snapshot.data['unitDesignData'];
+        const newUnit = this.route.snapshot.data['unitDesignData'] as UnitDesignData;
 
         this.hasChanged$.next(false);
         this.ds.unitDesignToSave$.next(null);
@@ -223,7 +224,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   // not nice: Just sending get unitdata request an hope
   saveData(): Observable<boolean> {
     this.unitWindow.postMessage({
-      type: 'OpenCBA.ToUnitAuthoring.ChangedDataCall',
+      type: 'vo.ToAuthoringModule.DataRequest',
       sessionId: this.authoringSessionId
     }, '*');
 
