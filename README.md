@@ -6,10 +6,6 @@ Thes is the frontend for the Teststudio-Lite application (formally known as item
 
 You can find the backend for this application [here](https://github.com/iqb-berlin/teststudio-lite-backend).
 
-## Documentation
-
-*TODO*
-
 ## Bug Reports
 
 Please file bug reports etc. here [here](https://github.com/iqb-berlin/teststudio-lite-frontend/issues).
@@ -20,24 +16,23 @@ Please file bug reports etc. here [here](https://github.com/iqb-berlin/teststudi
 
 You can find Docker files and a complete setup [here](https://github.com/iqb-berlin/testcenter-setup). 
 
+### Manually
 
-### With Installation Script on Webserver
+**Warning this application is not in active development currently and therefore employs outdated dependencies. 
+We take not any warranties and don't recommend putting your instance on a publicly reachable server.**
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+- Set up the [backend](https://github.com/iqb-berlin/teststudio-lite-backend).
+- edit `src/environments/environment.ts` and insert the URL of the Backend.
+- Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. 
+Use the `--prod` flag for a production build.
+- Copy contents of dist directory to your desired webserver-folder.  
 
 #### Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-#### Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-#### Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-   
+Alternatively to building and serve with Apache2 you can run `ng serve` for a dev server. 
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of 
+the source files.
 
 ## Development
 
-This project is not under active development anymore. Only critical bugfixes will be done.
+This project is not under active development currently. Only critical bugfixes will be done.
