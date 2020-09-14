@@ -1,4 +1,4 @@
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { switchMap } from 'rxjs/operators';
 import { BackendService } from './backend.service';
 import { MessageDialogComponent } from './../iqb-common/message-dialog/message-dialog.component';

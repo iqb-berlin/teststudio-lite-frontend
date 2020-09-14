@@ -1,5 +1,5 @@
 import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { Router, ActivatedRoute, Resolve } from '@angular/router';
 import { DatastoreService, SaveDataComponent } from './../datastore.service';

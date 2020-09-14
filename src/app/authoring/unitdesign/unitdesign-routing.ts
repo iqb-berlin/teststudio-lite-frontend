@@ -1,7 +1,7 @@
 import { switchMap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { DatastoreService, SaveDataComponent } from './../datastore.service';
 import { MainDatastoreService } from './../../maindatastore.service';
 import { BackendService, ServerError, UnitDesignData } from './../backend.service';

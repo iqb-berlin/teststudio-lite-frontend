@@ -1,7 +1,7 @@
 import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
 import { DatastoreService, SaveDataComponent } from './../datastore.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { switchMap, map, filter } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MainDatastoreService } from './../../maindatastore.service';

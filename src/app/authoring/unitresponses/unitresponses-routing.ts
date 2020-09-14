@@ -2,7 +2,7 @@ import { MessageDialogComponent } from './../../iqb-common/message-dialog/messag
 import { MainDatastoreService } from './../../maindatastore.service';
 import { switchMap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Injectable, Component } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';

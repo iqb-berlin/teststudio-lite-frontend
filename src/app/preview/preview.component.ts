@@ -7,7 +7,7 @@ import { MainDatastoreService } from './../maindatastore.service';
 import { Subscription } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   templateUrl: './preview.component.html',

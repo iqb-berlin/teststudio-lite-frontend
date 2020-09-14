@@ -7,7 +7,9 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
 import { Router, ActivatedRoute, Resolve } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
-import { MatDialog, MatSnackBar, MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material';
+import { MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MainDatastoreService } from './../maindatastore.service';
 import { BehaviorSubject } from 'rxjs';
 import { UnitShortData, BackendService, WorkspaceData, UnitProperties } from './backend.service';
