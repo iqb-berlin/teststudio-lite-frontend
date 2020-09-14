@@ -29,7 +29,7 @@ export class WorkspacesComponent implements OnInit {
   public UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
   public displayedUserColumns = ['selectCheckbox', 'name'];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private ds: DatastoreService,
