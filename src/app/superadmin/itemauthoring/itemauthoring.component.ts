@@ -29,7 +29,7 @@ export class ItemauthoringComponent implements OnInit {
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
   private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   // for FileUpload
   public uploadUrl = '';
