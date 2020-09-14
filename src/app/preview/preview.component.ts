@@ -1,11 +1,9 @@
-import { LoginStatusResponseData } from './../backend.service';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { ActivatedRoute } from '@angular/router';
 import { BackendService, UnitPreviewData } from './backend.service';
 import { DatastoreService } from './datastore.service';
-import { MainDatastoreService } from './../maindatastore.service';
+import { MainDatastoreService } from '../maindatastore.service';
 import { Subscription } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -20,15 +18,15 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private statusVisual: StatusVisual[] = [
+  statusVisual: StatusVisual[] = [
       {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
       {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
     ];
 
-  private dataLoading = false;
-  private showPageNav = false;
+  dataLoading = false;
+  showPageNav = false;
   private pageList: PageData[] = [];
-  private player = '';
+  player = '';
 
   constructor(
     private mds: MainDatastoreService,
@@ -49,7 +47,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
           // // // // // // //
           case 'vo.FromPlayer.ReadyNotification':
             let hasData = false;
-            const initParams = {};
 
             const pendingSpec = this.ds.pendingItemDefinition$.getValue();
             if ((pendingSpec !== null) && (pendingSpec.length > 0)) {
@@ -193,11 +190,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
         this.pageList[this.pageList.length - 1].disabled = false;
       } else {
         this.pageList[0].disabled = false;
-        if (currentPageIndex === this.pageList.length - 2) {
-          this.pageList[this.pageList.length - 1].disabled = true;
-        } else {
-          this.pageList[this.pageList.length - 1].disabled = false;
-        }
+        this.pageList[this.pageList.length - 1].disabled = currentPageIndex === this.pageList.length - 2;
       }
     }
     this.showPageNav = this.pageList.length > 0;

@@ -1,8 +1,6 @@
-import { UnitShortData } from './backend.service';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse, HttpHeaders, HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
 
 

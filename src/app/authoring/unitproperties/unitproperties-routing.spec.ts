@@ -1,15 +1,15 @@
-import { TestBed, async, inject } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 
-import { UnitpropertiesActivateGuard, UnitpropertiesDeactivateGuard } from './unitproperties-routing';
+import { UnitPropertiesActivateGuard, UnitPropertiesDeactivateGuard } from './unitproperties-routing';
 
 describe('UnitpropertiesActivateGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UnitpropertiesActivateGuard]
+      providers: [UnitPropertiesActivateGuard]
     });
   });
 
-  it('should ...', inject([UnitpropertiesActivateGuard], (guard: UnitpropertiesActivateGuard) => {
+  it('should ...', inject([UnitPropertiesActivateGuard], (guard: UnitPropertiesActivateGuard) => {
     expect(guard).toBeTruthy();
   }));
 });
@@ -18,11 +18,11 @@ describe('UnitpropertiesActivateGuard', () => {
 describe('UnitpropertiesDeactivateGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UnitpropertiesDeactivateGuard]
+      providers: [UnitPropertiesDeactivateGuard]
     });
   });
 
-  it('should ...', inject([UnitpropertiesDeactivateGuard], (guard: UnitpropertiesDeactivateGuard) => {
+  it('should ...', inject([UnitPropertiesDeactivateGuard], (guard: UnitPropertiesDeactivateGuard) => {
     expect(guard).toBeTruthy();
   }));
 });

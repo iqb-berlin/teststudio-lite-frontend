@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnDestroy, QueryList, ViewChildren, Input, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, QueryList, ViewChildren, Input, Output } from '@angular/core';
 import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -15,9 +15,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 
     @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
-    private files: Array<any> = [];
-    private numberOfErrors = 0;
-    private numberOfUploads = 0;
+    files: Array<any> = [];
     private disableClearButton = true;
 
     /* Http request input bindings */

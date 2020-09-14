@@ -1,4 +1,4 @@
-import { MainDatastoreService } from './../maindatastore.service';
+import { MainDatastoreService } from '../maindatastore.service';
 import { Component, Inject, OnInit } from '@angular/core';
 
 @Component({
@@ -8,9 +8,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 export class AboutComponent implements OnInit {
 
   constructor(
-    @Inject('APP_NAME') private appName: string,
-    @Inject('APP_PUBLISHER') private appPublisher: string,
-    @Inject('APP_VERSION') private appVersion: string,
+    @Inject('APP_NAME') public appName: string,
+    @Inject('APP_PUBLISHER') public appPublisher: string,
+    @Inject('APP_VERSION') public appVersion: string,
     private mds: MainDatastoreService
   ) { }
 

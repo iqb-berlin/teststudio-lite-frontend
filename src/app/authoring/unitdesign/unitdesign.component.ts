@@ -1,16 +1,14 @@
-import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
-import { Router, ActivatedRoute, Resolve } from '@angular/router';
-import { DatastoreService, SaveDataComponent } from './../datastore.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MainDatastoreService } from './../../maindatastore.service';
-import { Subscriber, Subscription, Observable, BehaviorSubject, of } from 'rxjs';
-import { BackendService, UnitDesignData, StrIdLabelSelectedData, ServerError } from './../backend.service';
-import { Component, OnInit, Inject } from '@angular/core';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { DatastoreService, SaveDataComponent } from '../datastore.service';
+import { FormBuilder } from '@angular/forms';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { Subscription, Observable, BehaviorSubject, of } from 'rxjs';
+import { BackendService, UnitDesignData } from '../backend.service';
+import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
 import { Location } from '@angular/common';
-import { switchMap, map, filter } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-unitdesign',
@@ -21,7 +19,7 @@ import { switchMap, map, filter } from 'rxjs/operators';
 export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent {
   private routingSubscription: Subscription;
   private myUnitDesign$ = new BehaviorSubject<UnitDesignData>(null);
-  private hasAuthoringToolDef = false;
+  hasAuthoringToolDef = false;
   private hasChanged$ = new BehaviorSubject<boolean>(false);
   private authoringSessionId = '';
   private currentAuthoringTool = '';
@@ -42,7 +40,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private selectAuthoringToolDialog: MatDialog,
     public confirmDialog: MatDialog
   ) {
 
@@ -154,7 +151,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
     });
 
     this.routingSubscription = this.route.params.subscribe(
-      params => {
+      () => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         const newUnit = this.route.snapshot.data['unitDesignData'] as UnitDesignData;
 

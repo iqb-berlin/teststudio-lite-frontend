@@ -1,4 +1,3 @@
-import { WorkspaceData } from './backend.service';
 import { routingUnitResponsesProviders } from './unitresponses/unitresponses-routing';
 import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,10 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -36,7 +32,6 @@ import { routingUnitDesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
-import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
 
 @NgModule({
@@ -61,8 +56,7 @@ import { MoveUnitComponent } from './moveunit/moveunit.component';
     MatCardModule,
     MatSnackBarModule,
     MatTableModule,
-    MatCheckboxModule,
-    ScrollDispatchModule
+    MatCheckboxModule
   ],
   declarations: [
     AuthoringComponent,

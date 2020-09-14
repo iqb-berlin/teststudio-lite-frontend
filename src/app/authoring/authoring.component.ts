@@ -1,17 +1,12 @@
 import { MoveUnitComponent } from './moveunit/moveunit.component';
-import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common/message-dialog/message-dialog.component';
-import { SelectionModel } from '@angular/cdk/collections';
-import { RouterTestingModule } from '@angular/router/testing';
+import { MessageDialogComponent, MessageDialogData, MessageType } from '../iqb-common';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
-import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
-import { Router, ActivatedRoute, Resolve } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
 import { FormGroup } from '@angular/forms';
-import { MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MainDatastoreService } from './../maindatastore.service';
-import { BehaviorSubject } from 'rxjs';
+import { MainDatastoreService } from '../maindatastore.service';
 import { UnitShortData, BackendService, WorkspaceData, UnitProperties } from './backend.service';
 import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
 import { FormControl } from '@angular/forms';
@@ -24,9 +19,9 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./authoring.component.css']
 })
 export class AuthoringComponent implements OnInit {
-  private dataLoading = false;
-  private unitList: UnitShortData[] = [];
-  private workspaceList: WorkspaceData[] = [];
+  dataLoading = false;
+  unitList: UnitShortData[] = [];
+  workspaceList: WorkspaceData[] = [];
 
   private _disablePreviewButton = true;
   get disablePreviewButton() {
@@ -39,9 +34,9 @@ export class AuthoringComponent implements OnInit {
   }
 
   // private wsSelector = new FormControl();
-  private unitSelector = new FormControl();
-  private unitviewSelector = new FormControl();
-  private unitViewModes: UnitViewMode[] = [];
+  unitSelector = new FormControl();
+  unitviewSelector = new FormControl();
+  unitViewModes: UnitViewMode[] = [];
 
 
   constructor(

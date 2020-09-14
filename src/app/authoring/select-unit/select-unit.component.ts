@@ -1,7 +1,7 @@
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DatastoreService } from './../datastore.service';
-import { MainDatastoreService } from './../../maindatastore.service';
-import { BackendService, UnitShortData, ServerError } from './../backend.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DatastoreService } from '../datastore.service';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { BackendService, UnitShortData } from '../backend.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit, Inject } from '@angular/core';
@@ -15,7 +15,7 @@ export class SelectUnitComponent implements OnInit {
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<UnitShortData>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
+  tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
 
   constructor(
     private bs: BackendService,
@@ -31,7 +31,7 @@ export class SelectUnitComponent implements OnInit {
         this.objectsDatasource = new MatTableDataSource(dataresponse);
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-      }, (err: ServerError) => {
+      }, () => {
         this.objectsDatasource = new MatTableDataSource([]);
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;

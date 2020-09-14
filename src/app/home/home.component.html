@@ -1,7 +1,4 @@
 <div class="page-body">
-  <div class="spinner-container" *ngIf="dataLoading">
-    <mat-spinner></mat-spinner>
-  </div>
   <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="padding: 30px;">
 
 
@@ -27,7 +24,7 @@
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="isLoggedIn">
       <mat-card-title>Arbeitsbereich wählen</mat-card-title>
       <mat-card-content>
-        <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+        <div fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="workspaceList.length === 0">
             Für diese Anmeldung wurden keine Arbeitsbereiche gefunden.
           </p>

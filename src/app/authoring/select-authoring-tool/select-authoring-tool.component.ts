@@ -1,6 +1,6 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
-import { BackendService, StrIdLabelSelectedData, ServerError } from './../backend.service';
+import { BackendService, StrIdLabelSelectedData, ServerError } from '../backend.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
@@ -9,7 +9,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 
 export class SelectAuthoringToolComponent implements OnInit {
-  private authoringToolList: StrIdLabelSelectedData[] = [];
+  authoringToolList: StrIdLabelSelectedData[] = [];
   selectform: FormGroup;
 
   constructor(private fb: FormBuilder,

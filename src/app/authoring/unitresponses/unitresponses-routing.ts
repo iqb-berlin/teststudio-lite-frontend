@@ -1,18 +1,15 @@
-import { MessageDialogComponent } from './../../iqb-common/message-dialog/message-dialog.component';
-import { MainDatastoreService } from './../../maindatastore.service';
+import { MessageDialogComponent } from '../../iqb-common';
 import { switchMap } from 'rxjs/operators';
-import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { Injectable, Component } from '@angular/core';
-import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 
 @Injectable()
 export class UnitResponsesActivateGuard implements CanActivate {
   constructor(
-    private selectResponseHandlerDialog: MatDialog,
-    private mds: MainDatastoreService
+    private selectResponseHandlerDialog: MatDialog
   ) {}
 
   canActivate(
@@ -30,7 +27,7 @@ export class UnitResponsesActivateGuard implements CanActivate {
           }
         });
         return dialogRef.afterClosed().pipe(
-          switchMap(dialogResult => {
+          switchMap(() => {
             return of(false);
           })
         );

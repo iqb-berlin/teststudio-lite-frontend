@@ -1,15 +1,14 @@
-import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
-import { DatastoreService, SaveDataComponent } from './../datastore.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { SelectAuthoringToolComponent } from '../select-authoring-tool/select-authoring-tool.component';
+import { DatastoreService, SaveDataComponent } from '../datastore.service';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common';
 import { MatDialog } from '@angular/material/dialog';
-import { switchMap, map, filter } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MainDatastoreService } from './../../maindatastore.service';
-import { BehaviorSubject, Subscriber, Subscription, Observable, of } from 'rxjs';
-import { BackendService, UnitProperties, ServerError } from './../backend.service';
-import { Component, OnInit, Pipe } from '@angular/core';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
+import { BackendService, UnitProperties, ServerError } from '../backend.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 
 @Component({
   templateUrl: './unitproperties.component.html',
@@ -17,7 +16,7 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataComponent {
   private routingSubscription: Subscription;
-  private myUnitProps: UnitProperties = null;
+  myUnitProps: UnitProperties = null;
   private unitpropsForm: FormGroup;
   public hasChanged$ = new BehaviorSubject<boolean>(false);
 
@@ -40,7 +39,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
     });
 
     this.routingSubscription = this.route.params.subscribe(
-      params => {
+      () => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         const newUnit: UnitProperties | ServerError = this.route.snapshot.data['unitProperties'];
 
@@ -77,7 +76,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
         }
       });
 
-    this.unitpropsForm.valueChanges.subscribe(val => {
+    this.unitpropsForm.valueChanges.subscribe(() => {
       this.hasChanged$.next(true);
       this.ds.unitPropertiesToSave$.next(this);
     });

@@ -1,7 +1,7 @@
 import { EditItemAuthoringToolComponent } from './edit-item-authoring-tool/edit-item-authoring-tool.component';
 import { NewItemAuthoringToolComponent } from './new-item-authoring-tool/new-item-authoring-tool.component';
 
-import { BackendService, GetUserDataResponse, StrIdLabelSelectedData, ServerError, GetFileResponseData } from '../backend.service';
+import { BackendService, StrIdLabelSelectedData, ServerError, GetFileResponseData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
@@ -23,13 +23,13 @@ export class ItemauthoringComponent implements OnInit {
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<StrIdLabelSelectedData> = null;
   public displayedColumns = ['selectCheckbox', 'id', 'name'];
-  private tableselectionCheckbox = new SelectionModel <StrIdLabelSelectedData>(true, []);
+  tableselectionCheckbox = new SelectionModel <StrIdLabelSelectedData>(true, []);
   private tableselectionRow = new SelectionModel <StrIdLabelSelectedData>(false, []);
-  private selectedItemAuthoringToolId = '';
+  selectedItemAuthoringToolId = '';
 
   private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
-  private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
+  tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -212,7 +212,7 @@ export class ItemauthoringComponent implements OnInit {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           this.objectsDatasource = null;
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
@@ -279,7 +279,7 @@ export class ItemauthoringComponent implements OnInit {
           this.filesDatasource = new MatTableDataSource(filedataresponse);
           this.filesDatasource.sort = this.sort;
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           this.filesDatasource = null;
           this.dataLoading = false;
         }

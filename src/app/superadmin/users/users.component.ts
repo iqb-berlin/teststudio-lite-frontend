@@ -1,7 +1,7 @@
-import { DatastoreService } from './../datastore.service';
+import { DatastoreService } from '../datastore.service';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
+import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
@@ -25,7 +25,7 @@ export class UsersComponent implements OnInit {
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
   private tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
-  private selectedUser = '';
+  selectedUser = '';
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
@@ -193,7 +193,7 @@ export class UsersComponent implements OnInit {
         (dataresponse: IdLabelSelectedData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
         });
@@ -239,7 +239,7 @@ export class UsersComponent implements OnInit {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           // this.ass.updateAdminStatus('', '', [], err.label);
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();

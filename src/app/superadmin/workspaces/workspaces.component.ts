@@ -1,6 +1,6 @@
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
+import { BackendService, IdLabelSelectedData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
@@ -24,7 +24,7 @@ export class WorkspacesComponent implements OnInit {
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
   private tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
-  private selectedWorkspaceId = 0;
+  selectedWorkspaceId = 0;
   private selectedWorkspaceName = '';
 
   private pendingUserChanges = false;
@@ -197,7 +197,7 @@ export class WorkspacesComponent implements OnInit {
         (dataresponse: IdLabelSelectedData[]) => {
           this.UserlistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
         });
@@ -244,7 +244,7 @@ export class WorkspacesComponent implements OnInit {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;

@@ -1,7 +1,7 @@
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DatastoreService } from './../datastore.service';
-import { MainDatastoreService } from './../../maindatastore.service';
-import { BackendService, UnitShortData, ServerError, WorkspaceData } from './../backend.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DatastoreService } from '../datastore.service';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { BackendService, UnitShortData, WorkspaceData } from '../backend.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit, Inject } from '@angular/core';
@@ -18,7 +18,7 @@ export class MoveUnitComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<UnitShortData>;
   public displayedColumns = ['selectCheckbox', 'name'];
   public tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
-  private workspaceList: WorkspaceData[] = [];
+  workspaceList: WorkspaceData[] = [];
   public selectform: FormGroup;
 
   constructor(
@@ -48,7 +48,7 @@ export class MoveUnitComponent implements OnInit {
         this.objectsDatasource = new MatTableDataSource(dataresponse);
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-      }, (err: ServerError) => {
+      }, () => {
         this.objectsDatasource = new MatTableDataSource([]);
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;

@@ -1,6 +1,6 @@
-import { TestBed, async, inject } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 
-import { PreviewActivateGuard, PreviewDeactivateGuard } from './preview-routing';
+import { PreviewActivateGuard } from './preview-routing';
 
 describe('PreviewActivateGuard', () => {
   beforeEach(() => {
@@ -15,14 +15,3 @@ describe('PreviewActivateGuard', () => {
 });
 
 
-describe('PreviewDeactivateGuard', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [PreviewDeactivateGuard]
-    });
-  });
-
-  it('should ...', inject([PreviewDeactivateGuard], (guard: PreviewDeactivateGuard) => {
-    expect(guard).toBeTruthy();
-  }));
-});

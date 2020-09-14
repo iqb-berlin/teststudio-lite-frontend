@@ -1,11 +1,11 @@
 import { switchMap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
-import { SelectAuthoringToolComponent } from './../select-authoring-tool/select-authoring-tool.component';
+import { SelectAuthoringToolComponent } from '../select-authoring-tool/select-authoring-tool.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DatastoreService, SaveDataComponent } from './../datastore.service';
-import { MainDatastoreService } from './../../maindatastore.service';
-import { BackendService, ServerError, UnitDesignData } from './../backend.service';
-import { Injectable, Component } from '@angular/core';
+import { DatastoreService, SaveDataComponent } from '../datastore.service';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { BackendService, ServerError, UnitDesignData } from '../backend.service';
+import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
 

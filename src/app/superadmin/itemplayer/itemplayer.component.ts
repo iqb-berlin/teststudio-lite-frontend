@@ -1,4 +1,4 @@
-import { BackendService, GetUserDataResponse, StrIdLabelSelectedData, ServerError, GetFileResponseData } from '../backend.service';
+import { BackendService, ServerError, GetFileResponseData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
@@ -7,7 +7,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
@@ -20,7 +19,7 @@ export class ItemplayerComponent implements OnInit {
   public dataLoading = false;
   private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
-  private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
+  tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -80,7 +79,7 @@ export class ItemplayerComponent implements OnInit {
         this.filesDatasource = new MatTableDataSource(filedataresponse);
         this.filesDatasource.sort = this.sort;
         this.dataLoading = false;
-      }, (err: ServerError) => {
+      }, () => {
         this.filesDatasource = null;
         this.dataLoading = false;
       }

@@ -1,5 +1,5 @@
 import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
-import { UnitPropertiesActivateGuard,
+import {
   UnitPropertiesDeactivateGuard, UnitPropertiesResolver } from './unitproperties/unitproperties-routing';
 import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
 import { UnitDesignActivateGuard,
