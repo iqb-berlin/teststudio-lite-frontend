@@ -1,6 +1,11 @@
 {
-  "name": "items",
-  "version": "0.0.0",
+  "name": "iqb-teststudio-lite",
+  "version": "2.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/teststudio-lite-frontend"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
