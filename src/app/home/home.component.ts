@@ -1,9 +1,12 @@
-import { DatastoreService } from './../authoring/datastore.service';
-import { WorkspaceData } from './../authoring';
+import { DatastoreService } from '../authoring/datastore.service';
+import { WorkspaceData } from '../authoring';
 import { MainDatastoreService } from '../maindatastore.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {ConfirmDialogComponent, ConfirmDialogData} from "iqb-components";
+import {BackendService, ServerError} from "../backend.service";
+import {MatDialog} from "@angular/material/dialog";
 
 
 @Component({
@@ -21,7 +24,9 @@ export class HomeComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private mds: MainDatastoreService,
+    private bs: BackendService,
     private ds: DatastoreService,
+    public confirmDialog: MatDialog,
     private router: Router) { }
 
   ngOnInit() {
@@ -63,7 +68,29 @@ export class HomeComponent implements OnInit {
   }
 
   changeLogin() {
-    this.mds.logout();
+    const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      height: '300px',
+      data:  <ConfirmDialogData>{
+        title: 'Abmelden',
+        content: 'Möchten Sie sich abmelden?',
+        confirmbuttonlabel: 'Abmelden',
+        showcancel: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.logout(this.mds.token$.getValue()).subscribe(
+          () => {
+            this.mds.updateStatus('', '', false, '');
+            this.router.navigateByUrl('/');
+          }, (err: ServerError) => {
+            this.mds.updateStatus('', '', false, err.label);
+            this.router.navigateByUrl('/');
+          }
+        );
+      }
+    });
   }
 
   buttonGotoWorkspace(selectedWorkspace: WorkspaceData) {

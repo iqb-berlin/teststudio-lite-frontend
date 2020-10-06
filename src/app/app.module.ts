@@ -1,16 +1,15 @@
-import { PreviewModule } from './preview/preview.module';
+import { PreviewModule } from './preview';
 import { AuthoringModule } from './authoring';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import {NgModule, ApplicationModule} from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -25,10 +24,12 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { BackendService } from './backend.service';
 import { AboutComponent } from './about/about.component';
-import { IqbCommonModule } from './iqb-common';
 import { HomeComponent } from './home/home.component';
-import { SuperadminModule } from './superadmin/superadmin.module';
+import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import {IqbComponentsModule} from "iqb-components";
+import {RouterModule} from "@angular/router";
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     AboutComponent
   ],
   imports: [
+    ApplicationModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatButtonModule,
@@ -48,19 +50,24 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatTooltipModule,
     MatDialogModule,
     MatCardModule,
+    MatIconModule,
     MatTabsModule,
+    MatTableModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     FlexLayoutModule,
+    RouterModule,
+    ReactiveFormsModule,
     HttpClientModule,
     SuperadminModule,
     AppRoutingModule,
-    IqbCommonModule,
     AuthoringModule,
-    PreviewModule
+    PreviewModule,
+    IqbComponentsModule
   ],
   providers: [
     BackendService,
+    MatDialog,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

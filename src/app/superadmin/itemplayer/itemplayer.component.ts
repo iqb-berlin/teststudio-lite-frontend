@@ -8,8 +8,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  MessageDialogComponent,
+  MessageDialogData,
+  MessageType
+} from "iqb-components";
 
 @Component({
   templateUrl: './itemplayer.component.html',
@@ -104,7 +109,8 @@ export class ItemplayerComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Löschen von Dateien',
           content: prompt + ' diese gelöscht werden?',
-          confirmbuttonlabel: 'Löschen'
+          confirmbuttonlabel: 'Löschen',
+          showcancel: true
         }
       });
 

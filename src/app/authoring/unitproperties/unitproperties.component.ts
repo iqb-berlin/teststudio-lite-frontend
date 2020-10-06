@@ -1,6 +1,5 @@
 import { SelectAuthoringToolComponent } from '../select-authoring-tool/select-authoring-tool.component';
 import { DatastoreService, SaveDataComponent } from '../datastore.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common';
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -9,6 +8,7 @@ import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
 import { BackendService, UnitProperties, ServerError } from '../backend.service';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import {ConfirmDialogComponent, ConfirmDialogData} from "iqb-components";
 
 @Component({
   templateUrl: './unitproperties.component.html',
@@ -46,7 +46,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
         this.hasChanged$.next(false);
         this.ds.unitPropertiesToSave$.next(null);
         this.ds.unitViewMode$.next('up');
-        if (newUnit !== null) {
+        if (newUnit) {
           if ((newUnit as UnitProperties).id !== undefined) {
             this.myUnitProps = newUnit as UnitProperties;
             this.unitpropsForm.setValue(
@@ -126,7 +126,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
             content: 'Sie haben Daten dieser Aufgabe geändert, diese Änderungen sind aber ungültig und ' +
                 'können nicht gespeichert werden. Möchten Sie diese Änderungen verwerfen?',
             confirmbuttonlabel: 'Änderungen verwerfen',
-            confirmbuttonreturn: true
+            showcancel: true
           }
         });
         return dialogRef.afterClosed().pipe(
@@ -146,9 +146,7 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
             title: 'Speichern',
             content: 'Sie haben Daten dieser Aufgabe geändert. Möchten Sie diese Änderungen speichern?',
             confirmbuttonlabel: 'Speichern',
-            confirmbuttonreturn: 'YES',
-            confirmbutton2label: 'Änderungen verwerfen',
-            confirmbutton2return: 'NO'
+            showcancel: true
           }
         });
         return dialogRef.afterClosed().pipe(

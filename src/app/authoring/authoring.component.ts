@@ -1,5 +1,4 @@
 import { MoveUnitComponent } from './moveunit/moveunit.component';
-import { MessageDialogComponent, MessageDialogData, MessageType } from '../iqb-common';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewunitComponent } from './newunit/newunit.component';
@@ -12,6 +11,7 @@ import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.s
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver';
+import {MessageDialogComponent, MessageDialogData, MessageType} from "iqb-components";
 
 
 @Component({
@@ -183,17 +183,20 @@ export class AuthoringComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           const dialogComponent = dialogRef.componentInstance;
-          this.bs.moveUnits(
-            this.mds.token$.getValue(),
-            this.ds.workspaceId$.getValue(),
-            (dialogComponent.tableselectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
-            dialogComponent.selectform.get('wsSelector').value).subscribe(
+          const wsSelected = dialogComponent.selectform.get('wsSelector');
+          if (wsSelected) {
+            this.bs.moveUnits(
+              this.mds.token$.getValue(),
+              this.ds.workspaceId$.getValue(),
+              (dialogComponent.tableselectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
+              wsSelected.value).subscribe(
               ok => {
                 if (ok) {
                   this.ds.updateUnitList();
                   this.snackBar.open('Aufgabe(n) verschoben', '', {duration: 1000});
                 }
               });
+          }
         }
       }
     });

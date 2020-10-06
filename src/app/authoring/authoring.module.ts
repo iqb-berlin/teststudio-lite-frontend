@@ -33,6 +33,8 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
 import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
+import {HttpClientModule} from "@angular/common/http";
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   imports: [
@@ -48,9 +50,11 @@ import { MoveUnitComponent } from './moveunit/moveunit.component';
     MatButtonToggleModule,
     MatChipsModule,
     MatMenuModule,
+    MatSortModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
+    HttpClientModule,
     MatProgressSpinnerModule,
     MatInputModule,
     MatCardModule,

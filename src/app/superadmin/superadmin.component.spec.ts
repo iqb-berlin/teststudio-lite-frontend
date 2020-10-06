@@ -1,17 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SuperadminComponent } from './superadmin.component';
+import {HttpClientModule} from "@angular/common/http";
 
 describe('SuperadminComponent', () => {
   let component: SuperadminComponent;
   let fixture: ComponentFixture<SuperadminComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ SuperadminComponent ]
+      declarations: [ SuperadminComponent ],
+      imports: [HttpClientModule]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SuperadminComponent);

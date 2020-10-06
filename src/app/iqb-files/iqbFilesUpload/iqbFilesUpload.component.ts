@@ -1,5 +1,4 @@
-import { BytesPipe } from '../../iqb-common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef, HostBinding } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, HostBinding } from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpErrorResponse, HttpEvent } from '@angular/common/http';
 
@@ -31,7 +30,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
     // ''''''''''''''''''''''''
     private requestResponseText: string;
     get statustext(): string {
-      let myreturn = '';
+      let myreturn = this.requestResponseText;
       switch (this._status) {
         case UploadStatus.busy: {
           myreturn = 'Bitte warten';
@@ -39,10 +38,6 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
         }
         case UploadStatus.ready: {
           myreturn = 'Bereit';
-          break;
-        }
-        default: {
-          myreturn = this.requestResponseText;
           break;
         }
       }

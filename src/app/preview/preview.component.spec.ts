@@ -1,6 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PreviewComponent } from './preview.component';
+import { ReactiveFormsModule} from "@angular/forms";
+import { MatDialogModule} from "@angular/material/dialog";
+import {HttpClientModule} from "@angular/common/http";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {AppRoutingModule} from "../app-routing.module";
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -8,7 +13,9 @@ describe('PreviewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreviewComponent ]
+      declarations: [ PreviewComponent ],
+      imports: [HttpClientModule, MatDialogModule, MatSnackBarModule, AppRoutingModule],
+      providers: [ReactiveFormsModule]
     })
     .compileComponents();
   }));

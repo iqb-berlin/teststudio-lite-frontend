@@ -11,8 +11,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  MessageDialogComponent,
+  MessageDialogData,
+  MessageType
+} from "iqb-components";
 
 
 @Component({
@@ -158,7 +163,8 @@ export class UsersComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
           content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Nutzer löschen'
+          confirmbuttonlabel: 'Nutzer löschen',
+          showcancel: true
         }
       });
 

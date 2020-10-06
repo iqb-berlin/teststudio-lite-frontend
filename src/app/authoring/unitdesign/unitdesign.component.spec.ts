@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UnitDesignComponent } from './unitdesign.component';
+import {HttpClientModule} from "@angular/common/http";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AppRoutingModule} from "../../app-routing.module";
+import {MatDialogModule} from "@angular/material/dialog";
 
 describe('UnitdesignComponent', () => {
   let component: UnitDesignComponent;
@@ -8,7 +12,8 @@ describe('UnitdesignComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnitDesignComponent ]
+      declarations: [ UnitDesignComponent ],
+      imports: [HttpClientModule, ReactiveFormsModule, AppRoutingModule, MatDialogModule]
     })
     .compileComponents();
   }));

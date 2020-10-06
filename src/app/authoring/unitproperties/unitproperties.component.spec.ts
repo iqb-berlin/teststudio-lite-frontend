@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UnitPropertiesComponent } from './unitproperties.component';
+import {HttpClientModule} from "@angular/common/http";
+import {AppRoutingModule} from "../../app-routing.module";
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatDialogModule} from "@angular/material/dialog";
 
 describe('UnitpropertiesComponent', () => {
   let component: UnitPropertiesComponent;
@@ -8,7 +12,8 @@ describe('UnitpropertiesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnitPropertiesComponent ]
+      declarations: [ UnitPropertiesComponent ],
+      imports: [HttpClientModule, AppRoutingModule, ReactiveFormsModule, MatDialogModule]
     })
     .compileComponents();
   }));

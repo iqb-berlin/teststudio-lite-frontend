@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ItemplayerComponent } from './itemplayer.component';
+import {HttpClientModule} from "@angular/common/http";
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 describe('ItemplayerComponent', () => {
   let component: ItemplayerComponent;
@@ -8,7 +11,8 @@ describe('ItemplayerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ItemplayerComponent ]
+      declarations: [ ItemplayerComponent ],
+      imports: [HttpClientModule, MatDialogModule, MatSnackBarModule]
     })
     .compileComponents();
   }));

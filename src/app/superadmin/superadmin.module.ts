@@ -1,4 +1,4 @@
-import { IqbFilesModule } from './../iqb-files';
+import { IqbFilesModule } from '../iqb-files';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -28,13 +28,13 @@ import { ItemplayerComponent } from './itemplayer/itemplayer.component';
 import { SuperadminComponent } from './superadmin.component';
 import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
-import { IqbCommonModule } from '../iqb-common/iqb-common.module';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
 import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authoring-tool/new-item-authoring-tool.component';
 import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
+import {IqbComponentsModule} from "iqb-components";
 
 
 
@@ -43,7 +43,7 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
     CommonModule,
     SuperadminRoutingModule,
     IqbFilesModule,
-    IqbCommonModule,
+    IqbComponentsModule,
     MatTableModule,
     MatTabsModule,
     MatIconModule,

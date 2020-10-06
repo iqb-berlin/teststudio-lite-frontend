@@ -12,8 +12,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  MessageDialogComponent,
+  MessageDialogData,
+  MessageType
+} from "iqb-components";
 
 @Component({
   templateUrl: './itemauthoring.component.html',
@@ -172,7 +177,8 @@ export class ItemauthoringComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Löschen von Autorenmodulen',
           content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Autorenmodul/e löschen'
+          confirmbuttonlabel: 'Autorenmodul/e löschen',
+          showcancel: true
         }
       });
 

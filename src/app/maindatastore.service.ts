@@ -1,10 +1,5 @@
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { FormGroup } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-
-import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
 import { BackendService, LoginStatusResponseData, ServerError } from './backend.service';
 
 
@@ -20,15 +15,8 @@ export class MainDatastoreService {
   public token$ = new BehaviorSubject<string>('');
   public postMessage$ = new Subject<MessageEvent>();
 
-  // .................................................................................
-  private _lastloginname = '';
-
   constructor(
-    public loginDialog: MatDialog,
-    public confirmDialog: MatDialog,
     private bs: BackendService,
-    private router: Router,
-    private route: ActivatedRoute
   ) {
     const myToken = localStorage.getItem('t');
     if ((myToken === null) || (myToken === undefined)) {
@@ -53,32 +41,6 @@ export class MainDatastoreService {
         this.updateStatus('', '', false, err.label);
       }
     );
-  }
-
-  // *******************************************************************************************************
-  logout() {
-    const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      height: '300px',
-      data:  <ConfirmDialogData>{
-        title: 'Abmelden',
-        content: 'Möchten Sie sich abmelden?',
-        confirmbuttonlabel: 'Abmelden'
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== false) {
-        this.bs.logout(this.token$.getValue()).subscribe(
-          logoutresponse => {
-            this.updateStatus('', '', false, '');
-            this.router.navigateByUrl('/');
-          }, (err: ServerError) => {
-            this.updateStatus('', '', false, err.label);
-            this.router.navigateByUrl('/');
-          }
-        );
-      }
-    });
   }
 
   // *******************************************************************************************************

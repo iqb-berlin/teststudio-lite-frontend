@@ -1,9 +1,9 @@
-import { MessageDialogComponent } from '../../iqb-common';
 import { switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import { Observable, of } from 'rxjs';
+import {MessageDialogComponent} from "iqb-components";
 
 
 @Injectable()

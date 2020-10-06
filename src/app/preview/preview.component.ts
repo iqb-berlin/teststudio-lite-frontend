@@ -110,33 +110,35 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(
       params => {
-        const paramSplit = params['u'].split('##');
-        this.ds.updatePageTitle(paramSplit[1]);
-        this.dataLoading = true;
-        this.setPageList([], '');
-        this.setPresentationStatus('');
-        this.setResponsesStatus('');
+        if (params['u']) {
+          const paramSplit = params['u'].split('##');
+          this.ds.updatePageTitle(paramSplit[1]);
+          this.dataLoading = true;
+          this.setPageList([], '');
+          this.setPresentationStatus('');
+          this.setResponsesStatus('');
 
-        this.bs.getUnitDesignData(this.mds.token$.getValue(), paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
-          // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-          while (this.iFrameHostElement.hasChildNodes()) {
-            this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
-          }
+          this.bs.getUnitDesignData(this.mds.token$.getValue(), paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
+            // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+            while (this.iFrameHostElement.hasChildNodes()) {
+              this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+            }
 
-          this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-          this.iFrameItemplayer.setAttribute('srcdoc', data.player);
-          this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-          this.iFrameItemplayer.setAttribute('class', 'unitHost');
-          this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+            this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+            this.iFrameItemplayer.setAttribute('srcdoc', data.player);
+            this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+            this.iFrameItemplayer.setAttribute('class', 'unitHost');
+            this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
 
-          this.ds.pendingItemDefinition$.next(data.def);
+            this.ds.pendingItemDefinition$.next(data.def);
 
-          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-          this.ds.updatePageTitle(data.key + '-' + data.label);
-          this.dataLoading = false;
-          this.player = data.player_id;
-        });
-    });
+            this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+            this.ds.updatePageTitle(data.key + '-' + data.label);
+            this.dataLoading = false;
+            this.player = data.player_id;
+          });
+        }
+      });
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

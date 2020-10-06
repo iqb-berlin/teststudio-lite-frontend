@@ -1,5 +1,4 @@
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DatastoreService, SaveDataComponent } from '../datastore.service';
 import { FormBuilder } from '@angular/forms';
@@ -9,6 +8,7 @@ import { BackendService, UnitDesignData } from '../backend.service';
 import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
 import { Location } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
+import {ConfirmDialogComponent, ConfirmDialogData} from "iqb-components";
 
 @Component({
   selector: 'app-unitdesign',
@@ -158,7 +158,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
         this.hasChanged$.next(false);
         this.ds.unitDesignToSave$.next(null);
         this.ds.unitViewMode$.next('ud');
-        if (newUnit !== null) {
+        if (newUnit) {
           if ((newUnit as UnitDesignData).id !== undefined) {
             this.myUnitDesign$.next(newUnit as UnitDesignData);
           } else {
@@ -196,9 +196,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           title: 'Speichern',
           content: 'Sie haben Daten dieser Aufgabe geändert. Möchten Sie diese Änderungen speichern?',
           confirmbuttonlabel: 'Speichern',
-          confirmbuttonreturn: 'YES',
-          confirmbutton2label: 'Änderungen verwerfen',
-          confirmbutton2return: 'NO'
+          showcancel: true
         }
       });
       return dialogRef.afterClosed().pipe(

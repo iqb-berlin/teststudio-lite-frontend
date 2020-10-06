@@ -1,17 +1,26 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditworkspaceComponent } from './editworkspace.component';
+import {FormBuilder} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog";
+
+const matDialogDataStub = {
+  name: 'name',
+  oldname: 'oldname'
+};
 
 describe('EditworkspaceComponent', () => {
   let component: EditworkspaceComponent;
   let fixture: ComponentFixture<EditworkspaceComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditworkspaceComponent ]
+      declarations: [ EditworkspaceComponent ],
+      providers: [FormBuilder,  MatDialog,
+        { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub }]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(EditworkspaceComponent);

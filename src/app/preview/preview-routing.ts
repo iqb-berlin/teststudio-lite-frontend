@@ -1,11 +1,11 @@
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap } from 'rxjs/operators';
 import { BackendService } from './backend.service';
-import { MessageDialogComponent } from './../iqb-common/message-dialog/message-dialog.component';
-import { MainDatastoreService } from './../maindatastore.service';
+import { MainDatastoreService } from '../maindatastore.service';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
+import {MessageDialogComponent} from "iqb-components";
 
 
 @Injectable()
@@ -40,7 +40,7 @@ export class PreviewActivateGuard implements CanActivate {
                   }
                 });
                 return dialogRef.afterClosed().pipe(
-                  switchMap(dialogResult => {
+                  switchMap(() => {
                     return of(false);
                   })
                 );
