@@ -1,4 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/teststudio-lite-frontend?style=flat-square)
 
 # Teststudio-Lite Frontend
 
