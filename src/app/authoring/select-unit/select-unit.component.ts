@@ -15,7 +15,7 @@ export class SelectUnitComponent implements OnInit {
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<UnitShortData>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
+  public tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
 
   constructor(
     private bs: BackendService,

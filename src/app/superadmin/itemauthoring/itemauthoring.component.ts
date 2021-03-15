@@ -21,9 +21,9 @@ export class ItemauthoringComponent implements OnInit {
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<StrIdLabelSelectedData> = null;
   public displayedColumns = ['selectCheckbox', 'id', 'name'];
-  private tableselectionCheckbox = new SelectionModel <StrIdLabelSelectedData>(true, []);
+  public tableselectionCheckbox = new SelectionModel <StrIdLabelSelectedData>(true, []);
   private tableselectionRow = new SelectionModel <StrIdLabelSelectedData>(false, []);
-  private selectedItemAuthoringToolId = '';
+  public selectedItemAuthoringToolId = '';
 
   private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];

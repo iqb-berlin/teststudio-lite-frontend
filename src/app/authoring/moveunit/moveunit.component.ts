@@ -18,7 +18,7 @@ export class MoveUnitComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<UnitShortData>;
   public displayedColumns = ['selectCheckbox', 'name'];
   public tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
-  private workspaceList: WorkspaceData[] = [];
+  public workspaceList: WorkspaceData[] = [];
   public selectform: FormGroup;
 
   constructor(

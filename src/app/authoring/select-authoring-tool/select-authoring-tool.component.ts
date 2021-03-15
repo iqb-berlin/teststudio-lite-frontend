@@ -9,7 +9,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 })
 
 export class SelectAuthoringToolComponent implements OnInit {
-  private authoringToolList: StrIdLabelSelectedData[] = [];
+  public authoringToolList: StrIdLabelSelectedData[] = [];
   selectform: FormGroup;
 
   constructor(private fb: FormBuilder,

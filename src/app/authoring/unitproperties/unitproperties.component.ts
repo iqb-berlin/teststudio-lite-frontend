@@ -17,7 +17,7 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataComponent {
   private routingSubscription: Subscription;
-  private myUnitProps: UnitProperties = null;
+  public myUnitProps: UnitProperties = null;
   private unitpropsForm: FormGroup;
   public hasChanged$ = new BehaviorSubject<boolean>(false);
 

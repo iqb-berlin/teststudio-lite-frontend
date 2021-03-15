@@ -21,7 +21,7 @@ import { switchMap, map, filter } from 'rxjs/operators';
 export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent {
   private routingSubscription: Subscription;
   private myUnitDesign$ = new BehaviorSubject<UnitDesignData>(null);
-  private hasAuthoringToolDef = false;
+  public hasAuthoringToolDef = false;
   private hasChanged$ = new BehaviorSubject<boolean>(false);
   private authoringSessionId = '';
   private currentAuthoringTool = '';

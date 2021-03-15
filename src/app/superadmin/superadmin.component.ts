@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./superadmin.component.css']
 })
 export class SuperadminComponent {
-  private isSuperadmin = false;
+  public isSuperadmin = false;
   public navLinks = [
     {path: 'itemauthoring', label: 'Autorenmodule'},
     {path: 'itemplayer', label: 'Itemplayer'},

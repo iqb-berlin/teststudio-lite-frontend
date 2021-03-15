@@ -22,8 +22,8 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./authoring.component.css']
 })
 export class AuthoringComponent implements OnInit {
-  private dataLoading = false;
-  private unitList: UnitShortData[] = [];
+  public dataLoading = false;
+  public unitList: UnitShortData[] = [];
   private workspaceList: WorkspaceData[] = [];
 
   private _disablePreviewButton = true;
@@ -37,9 +37,9 @@ export class AuthoringComponent implements OnInit {
   }
 
   // private wsSelector = new FormControl();
-  private unitSelector = new FormControl();
-  private unitviewSelector = new FormControl();
-  private unitViewModes: UnitViewMode[] = [];
+  public unitSelector = new FormControl();
+  public unitviewSelector = new FormControl();
+  public unitViewModes: UnitViewMode[] = [];
 
 
   constructor(

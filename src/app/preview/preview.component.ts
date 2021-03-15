@@ -20,15 +20,15 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private statusVisual: StatusVisual[] = [
+  public statusVisual: StatusVisual[] = [
       {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
       {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
     ];
 
-  private dataLoading = false;
-  private showPageNav = false;
+  public dataLoading = false;
+  public showPageNav = false;
   private pageList: PageData[] = [];
-  private player = '';
+  public player = '';
 
   constructor(
     private mds: MainDatastoreService,

@@ -18,7 +18,7 @@ export class ItemplayerComponent implements OnInit {
   public dataLoading = false;
   private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
   public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
-  private tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
+  public tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
   @ViewChild(MatSort) sort: MatSort;
 

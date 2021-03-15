@@ -22,7 +22,7 @@ export class WorkspacesComponent implements OnInit {
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
   private tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
-  private selectedWorkspaceId = 0;
+  public selectedWorkspaceId = 0;
   private selectedWorkspaceName = '';
 
   private pendingUserChanges = false;

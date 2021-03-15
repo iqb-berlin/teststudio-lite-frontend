@@ -23,7 +23,7 @@ export class UsersComponent implements OnInit {
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
   private tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
-  private selectedUser = '';
+  public selectedUser = '';
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
