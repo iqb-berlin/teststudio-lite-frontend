@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  backendUrl: 'https://itemdb.iqb.hu-berlin.de/',
+  backendUrl: '/api/',
   appName: 'IQB-ItemDB',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
   appVersion: '0 (dev)'
