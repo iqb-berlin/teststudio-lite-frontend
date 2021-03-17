@@ -13,8 +13,11 @@ down:
 build:
 	docker-compose -f docker/docker-compose.yml build
 
-docker-release:
-	docker/scripts/release.sh
+new-version-major:
+	scripts/new_version.py major
 
-docker-release-tag:
-	docker/scripts/release.sh tag
+new-version-minor:
+	scripts/new_version.py minor
+
+new-version-patch:
+	scripts/new_version.py patch
