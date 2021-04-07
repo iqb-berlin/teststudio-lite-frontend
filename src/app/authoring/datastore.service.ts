@@ -1,29 +1,29 @@
-import { MainDatastoreService } from './../maindatastore.service';
-import { BackendService, UnitShortData, WorkspaceData } from './backend.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { MainDatastoreService } from '../maindatastore.service';
+import { BackendService, UnitShortData } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatastoreService {
-  public unitList$ = new BehaviorSubject<UnitShortData[]>([]);
+  unitList$ = new BehaviorSubject<UnitShortData[]>([]);
 
-  public unitViewMode$ = new BehaviorSubject<string>('up');
-  public unitViewModes: UnitViewMode[] = [
-    {route: 'up', label: 'Ansicht: Eigenschaften', matIcon: 'edit'},
-    {route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'format_shapes'} // ,
+  unitViewMode$ = new BehaviorSubject<string>('up');
+  unitViewModes: UnitViewMode[] = [
+    { route: 'up', label: 'Ansicht: Eigenschaften', matIcon: 'edit' },
+    { route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'format_shapes' } // ,
     // {route: 'ur', label: 'Ansicht: Antwortverarbeitung', matIcon: 'build'}
   ];
 
-  public unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
-  public unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
-  public selectedUnitId$ = new BehaviorSubject<number>(0);
+  unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
+  unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
+  selectedUnitId$ = new BehaviorSubject<number>(0);
 
   constructor(
     private bs: BackendService,
-    private mds: MainDatastoreService) {
-
+    private mds: MainDatastoreService
+  ) {
     this.workspaceId$.next(+localStorage.getItem('ws'));
 
     this.workspaceId$.subscribe((wsId: number) => {
@@ -80,7 +80,8 @@ export class DatastoreService {
           } else {
             this.workspaceId$.next(0); // to trigger reload
           }
-      });
+        }
+      );
     }
   }
 
@@ -99,7 +100,8 @@ export class DatastoreService {
         (uresponse: UnitShortData[]) => {
           this.unitList$.next(uresponse);
           this.selectedUnitId$.next(0);
-      });
+        }
+      );
     }
   }
 }

@@ -1,8 +1,10 @@
-import { Subject } from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import { Injectable } from '@angular/core';
 import {
   BackendService, LoginData
 } from './backend.service';
+import {HttpErrorResponse} from "@angular/common/http";
+import {ServerError} from "./authoring/backend.service";
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +24,15 @@ export class MainDatastoreService {
         this.postMessage$.next(postData);
       }
     }
+  }
+
+  static serverErrorMessageText(errCode: number) : string {
+    if (errCode === 401) {
+      return 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
+    }
+    if (errCode === 503) {
+      return 'Fehler: Server meldet Datenbankproblem.';
+    }
+    return `Server meldet Problem ${errCode}`;
   }
 }

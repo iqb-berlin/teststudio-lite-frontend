@@ -10,7 +10,7 @@ import { WorkspaceData } from './authoring';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient
   ) { }
 
