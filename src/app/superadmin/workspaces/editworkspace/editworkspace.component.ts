@@ -10,7 +10,7 @@ export class EditworkspaceComponent implements OnInit {
   editworkspaceform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     this.editworkspaceform = this.fb.group({

@@ -1,7 +1,7 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
-import { BackendService, StrIdLabelSelectedData, ServerError } from '../backend.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { BackendService, StrIdLabelSelectedData } from '../backend.service';
 
 @Component({
   templateUrl: './select-authoring-tool.component.html',
@@ -13,21 +13,19 @@ export class SelectAuthoringToolComponent implements OnInit {
   selectform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    private bs: BackendService,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+              private bs: BackendService,
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     this.selectform = this.fb.group({
       atSelector: this.fb.control(this.data.authoringTool, [Validators.required])
     });
-    this.bs.getItemAuthoringToolList().subscribe((atL: StrIdLabelSelectedData[] | ServerError) => {
-      if (atL !== null) {
-        if ((atL as ServerError).code === undefined) {
+    this.bs.getItemAuthoringToolList().subscribe((atL: StrIdLabelSelectedData[] | number) => {
+      if (typeof atL !== 'number') {
+        if (atL !== null) {
           this.authoringToolList = atL as StrIdLabelSelectedData[];
         }
       }
     });
   }
-
 }

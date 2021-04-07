@@ -1,10 +1,10 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DatastoreService } from '../datastore.service';
-import { MainDatastoreService } from '../../maindatastore.service';
-import { BackendService, UnitShortData } from '../backend.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit, Inject } from '@angular/core';
+import { DatastoreService } from '../datastore.service';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { BackendService, UnitShortData } from '../backend.service';
 
 @Component({
   selector: 'app-select-unit',
@@ -12,9 +12,9 @@ import { Component, OnInit, Inject } from '@angular/core';
   styleUrls: ['./select-unit.component.css']
 })
 export class SelectUnitComponent implements OnInit {
-  public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<UnitShortData>;
-  public displayedColumns = ['selectCheckbox', 'name'];
+  dataLoading = false;
+  objectsDatasource: MatTableDataSource<UnitShortData>;
+  displayedColumns = ['selectCheckbox', 'name'];
   tableselectionCheckbox = new SelectionModel <UnitShortData>(true, []);
 
   constructor(
@@ -26,7 +26,7 @@ export class SelectUnitComponent implements OnInit {
 
   ngOnInit() {
     this.dataLoading = true;
-    this.bs.getUnitList(this.mds.token$.getValue(), this.ds.workspaceId$.getValue()).subscribe(
+    this.bs.getUnitList(this.ds.selectedWorkspace).subscribe(
       (dataresponse: UnitShortData[]) => {
         this.objectsDatasource = new MatTableDataSource(dataresponse);
         this.tableselectionCheckbox.clear();
@@ -35,7 +35,8 @@ export class SelectUnitComponent implements OnInit {
         this.objectsDatasource = new MatTableDataSource([]);
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-      });
+      }
+    );
   }
 
   isAllSelected() {
@@ -46,7 +47,7 @@ export class SelectUnitComponent implements OnInit {
 
   masterToggle() {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 }

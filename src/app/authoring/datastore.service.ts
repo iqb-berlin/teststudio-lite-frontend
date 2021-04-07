@@ -7,7 +7,9 @@ import { BackendService, UnitShortData } from './backend.service';
   providedIn: 'root'
 })
 export class DatastoreService {
+  selectedWorkspace = 0;
   unitList$ = new BehaviorSubject<UnitShortData[]>([]);
+  selectedUnit$ = new BehaviorSubject<number>(0);
 
   unitViewMode$ = new BehaviorSubject<string>('up');
   unitViewModes: UnitViewMode[] = [
@@ -18,12 +20,12 @@ export class DatastoreService {
 
   unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
   unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
-  selectedUnitId$ = new BehaviorSubject<number>(0);
 
   constructor(
     private bs: BackendService,
     private mds: MainDatastoreService
   ) {
+    /*
     this.workspaceId$.next(+localStorage.getItem('ws'));
 
     this.workspaceId$.subscribe((wsId: number) => {
@@ -52,9 +54,13 @@ export class DatastoreService {
     this.mds.token$.subscribe(t => {
       this.updateWorkspaceList();
     });
+
+     */
   }
 
+  // eslint-disable-next-line class-methods-use-this
   private updateWorkspaceList() {
+    /*
     const myToken = this.mds.token$.getValue();
     if (myToken === '') {
       this.workspaceList$.next([]);
@@ -83,26 +89,13 @@ export class DatastoreService {
         }
       );
     }
+
+     */
   }
 
+  // eslint-disable-next-line class-methods-use-this
   updatePageTitle(newTitle: string) {
-    this.mds.updatePageTitle(newTitle);
-  }
-
-  updateUnitList() {
-    const myToken = this.mds.token$.getValue();
-    const myWorkspace = this.workspaceId$.getValue();
-    if ((myToken === '') || (myWorkspace === 0)) {
-      this.unitList$.next([]);
-      // this.unitId$.next(0);
-    } else {
-      this.bs.getUnitList(myToken, myWorkspace).subscribe(
-        (uresponse: UnitShortData[]) => {
-          this.unitList$.next(uresponse);
-          this.selectedUnitId$.next(0);
-        }
-      );
-    }
+    // this.mds.updatePageTitle(newTitle);
   }
 }
 

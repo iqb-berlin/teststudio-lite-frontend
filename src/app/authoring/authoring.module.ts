@@ -1,5 +1,3 @@
-import { routingUnitResponsesProviders } from './unitresponses/unitresponses-routing';
-import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -17,11 +15,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { MatSortModule } from '@angular/material/sort';
+import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 
 import { AuthoringRoutingModule } from './authoring-routing.module';
 import { AuthoringComponent } from './authoring.component';
@@ -30,11 +30,9 @@ import { UnitPropertiesComponent } from './unitproperties/unitproperties.compone
 import { NewunitComponent } from './newunit/newunit.component';
 import { routingUnitDesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
-import { UnitResponsesComponent } from './unitresponses/unitresponses.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
-import {HttpClientModule} from "@angular/common/http";
-import {MatSortModule} from "@angular/material/sort";
+import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 
 @NgModule({
   imports: [
@@ -60,7 +58,8 @@ import {MatSortModule} from "@angular/material/sort";
     MatCardModule,
     MatSnackBarModule,
     MatTableModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    FormsModule
   ],
   declarations: [
     AuthoringComponent,
@@ -69,12 +68,11 @@ import {MatSortModule} from "@angular/material/sort";
     UnitPropertiesComponent,
     NewunitComponent,
     SelectAuthoringToolComponent,
-    UnitResponsesComponent,
     SelectUnitComponent,
     MoveUnitComponent
   ],
   exports: [
-    AuthoringComponent,
+    AuthoringComponent
   ],
   entryComponents: [
     NewunitComponent,
@@ -84,8 +82,7 @@ import {MatSortModule} from "@angular/material/sort";
   ],
   providers: [
     routingUnitPropertiesProviders,
-    routingUnitDesignProviders,
-    routingUnitResponsesProviders
+    routingUnitDesignProviders
   ]
 })
 export class AuthoringModule { }

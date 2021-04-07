@@ -27,9 +27,11 @@
       </button>
     </div>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
-    <mat-button-toggle-group id="unitSelectorGroup" [formControl]="unitSelector" vertical fxFlex>
-        <mat-button-toggle *ngFor="let unit of unitList" [value]="unit.id">{{ unit.key }} - {{ unit.label }}</mat-button-toggle>
-    </mat-button-toggle-group>
+    <mat-selection-list #unitSelector [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex>
+      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id">
+        {{ unit.key }} - {{ unit.label }}
+      </mat-list-option>
+    </mat-selection-list>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <div fxLayout="row">
       <button mat-raised-button (click)="addUnit()" matTooltip="Aufgabe hinzufügen" matTooltipPosition="above" fxFlex="33">
@@ -49,9 +51,9 @@
         <button mat-menu-item (click)="moveUnit()">
           <span>Aufgabe(n) verschieben</span>
         </button>
-        <!-- <button mat-menu-item (click)="dummySorry()">
+        <button mat-menu-item (click)="importUnit()" disabled="disabled">
           <span>Aufgabe(n) importieren</span>
-        </button> -->
+        </button>
         <button mat-menu-item (click)="exportUnit()">
           <span>Aufgabe(n) als Datei speichern</span>
         </button>

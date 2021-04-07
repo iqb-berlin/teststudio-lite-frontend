@@ -1,10 +1,6 @@
-import {Observable, Subject} from 'rxjs';
+import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import {
-  BackendService, LoginData
-} from './backend.service';
-import {HttpErrorResponse} from "@angular/common/http";
-import {ServerError} from "./authoring/backend.service";
+import { BackendService, LoginData } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +8,7 @@ import {ServerError} from "./authoring/backend.service";
 export class MainDatastoreService {
   loginStatus: LoginData = null;
   pageTitle = 'Willkommen!';
+  errorMessage = '';
   postMessage$ = new Subject<MessageEvent>();
 
   constructor(private bs: BackendService) { }

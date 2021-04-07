@@ -32,7 +32,7 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="foreground" *ngIf="mds.loginStatus.isSuperAdmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
+        <button mat-raised-button color="foreground" *ngIf="mds.loginStatus.isSuperAdmin" [routerLink]="['/super-admin']">Nutzer/Arbeitsbereiche</button>
         <button mat-raised-button color="foreground" (click)="logout()">Abmelden</button>
       </mat-card-actions>
     </mat-card>

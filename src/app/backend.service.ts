@@ -3,7 +3,6 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { WorkspaceData } from './authoring';
 
 @Injectable({
   providedIn: 'root'

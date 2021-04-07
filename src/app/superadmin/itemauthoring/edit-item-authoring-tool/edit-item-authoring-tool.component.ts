@@ -11,7 +11,7 @@ export class EditItemAuthoringToolComponent implements OnInit {
   editform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     this.editform = this.fb.group({

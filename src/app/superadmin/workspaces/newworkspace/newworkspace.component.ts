@@ -10,7 +10,7 @@ export class NewworkspaceComponent implements OnInit {
   newworkspaceform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     this.newworkspaceform = this.fb.group({

@@ -3,9 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
-import { BackendService } from '../backend.service';
+import { BackendService, WorkspaceData } from '../backend.service';
 import { MainDatastoreService } from '../maindatastore.service';
-import { WorkspaceData } from '../authoring';
 
 @Component({
   templateUrl: './home.component.html',

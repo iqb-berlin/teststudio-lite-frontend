@@ -1,11 +1,6 @@
-import { DatastoreService } from '../datastore.service';
-import { NewpasswordComponent } from './newpassword/newpassword.component';
-import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
+import { ViewChild, Component, OnInit } from '@angular/core';
 
-import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -17,30 +12,33 @@ import {
   MessageDialogComponent,
   MessageDialogData,
   MessageType
-} from "iqb-components";
-
+} from 'iqb-components';
+import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../backend.service';
+import { NewuserComponent } from './newuser/newuser.component';
+import { NewpasswordComponent } from './newpassword/newpassword.component';
+import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<GetUserDataResponse>;
-  public displayedColumns = ['selectCheckbox', 'name'];
+  dataLoading = false;
+  objectsDatasource: MatTableDataSource<GetUserDataResponse>;
+  displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
   private tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
   selectedUser = '';
 
   private pendingWorkspaceChanges = false;
-  public WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
-  public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
+  WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
+  displayedWorkspaceColumns = ['selectCheckbox', 'label'];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
+    private mds: MainDatastoreService,
     private bs: BackendService,
-    private ds: DatastoreService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
@@ -56,12 +54,13 @@ export class UsersComponent implements OnInit {
         }
 
         this.updateWorkspaceList();
-      });
+      }
+    );
   }
 
   ngOnInit() {
     this.updateObjectList();
-    this.ds.updatePageTitle('Nutzer');
+    this.mds.pageTitle = 'Nutzer';
   }
 
   // ***********************************************************************************
@@ -77,17 +76,18 @@ export class UsersComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.bs.addUser(
-              this.ds.token$.getValue(),
-              (<FormGroup>result).get('name').value,
-              (<FormGroup>result).get('pw').value).subscribe(
-                respOk => {
-                  if (respOk) {
-                    this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
-                    this.updateObjectList();
-                  } else {
-                    this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', {duration: 1000});
-                  }
-                });
+            (<FormGroup>result).get('name').value,
+            (<FormGroup>result).get('pw').value
+          ).subscribe(
+            respOk => {
+              if (respOk) {
+                this.snackBar.open('Nutzer hinzugefügt', '', { duration: 1000 });
+                this.updateObjectList();
+              } else {
+                this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', { duration: 1000 });
+              }
+            }
+          );
         }
       }
     });
@@ -111,7 +111,7 @@ export class UsersComponent implements OnInit {
       const dialogRef = this.newpasswordDialog.open(NewpasswordComponent, {
         width: '600px',
         data: {
-          name: selectedRows[0]['name']
+          name: selectedRows[0].name
         }
       });
 
@@ -120,17 +120,18 @@ export class UsersComponent implements OnInit {
           if (result !== false) {
             this.dataLoading = true;
             this.bs.changePassword(
-                this.ds.token$.getValue(),
-                selectedRows[0]['name'],
-                (<FormGroup>result).get('pw').value).subscribe(
-                  respOk => {
-                    if (respOk) {
-                      this.snackBar.open('Kennwort geändert', '', {duration: 1000});
-                    } else {
-                      this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
-                    }
-                    this.dataLoading = false;
-                  });
+              selectedRows[0].name,
+              (<FormGroup>result).get('pw').value
+            ).subscribe(
+              respOk => {
+                if (respOk) {
+                  this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
+                } else {
+                  this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', { duration: 1000 });
+                }
+                this.dataLoading = false;
+              }
+            );
           }
         }
       });
@@ -154,15 +155,15 @@ export class UsersComponent implements OnInit {
     } else {
       let prompt = 'Soll';
       if (selectedRows.length > 1) {
-        prompt = prompt + 'en ' + selectedRows.length + ' Nutzer ';
+        prompt = `${prompt}en ${selectedRows.length} Nutzer `;
       } else {
-        prompt = prompt + ' Nutzer "' + selectedRows[0].name + '" ';
+        prompt = `${prompt} Nutzer "${selectedRows[0].name}" `;
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
-          content: prompt + 'gelöscht werden?',
+          content: `${prompt}gelöscht werden?`,
           confirmbuttonlabel: 'Nutzer löschen',
           showcancel: true
         }
@@ -174,17 +175,18 @@ export class UsersComponent implements OnInit {
           this.dataLoading = true;
           const usersToDelete = [];
           selectedRows.forEach((r: GetUserDataResponse) => usersToDelete.push(r.name));
-          this.bs.deleteUsers(this.ds.token$.getValue(), usersToDelete).subscribe(
+          this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk) {
-                this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
+                this.snackBar.open('Nutzer gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 1000});
+                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', { duration: 1000 });
                 this.dataLoading = false;
               }
-          });
+            }
+          );
         }
       });
     }
@@ -195,14 +197,15 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.getWorkspacesByUser(this.ds.token$.getValue(), this.selectedUser).subscribe(
+      this.bs.getWorkspacesByUser(this.selectedUser).subscribe(
         (dataresponse: IdLabelSelectedData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
         }, () => {
           // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
-        });
+        }
+      );
     } else {
       this.WorkspacelistDatasource = null;
     }
@@ -217,15 +220,16 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.setWorkspacesByUser(this.ds.token$.getValue(), this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
+      this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
-            this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
+            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 1000 });
           }
           this.dataLoading = false;
-        });
+        }
+      );
     } else {
       this.WorkspacelistDatasource = null;
     }
@@ -236,9 +240,9 @@ export class UsersComponent implements OnInit {
     this.selectedUser = '';
     this.updateWorkspaceList();
 
-    if (this.ds.isSuperadmin$.getValue()) {
+    if (this.mds.loginStatus.isSuperAdmin) {
       this.dataLoading = true;
-      this.bs.getUsers(this.ds.token$.getValue()).subscribe(
+      this.bs.getUsers().subscribe(
         (dataresponse: GetUserDataResponse[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;
@@ -263,8 +267,8 @@ export class UsersComponent implements OnInit {
 
   masterToggle() {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
   selectRow(row) {

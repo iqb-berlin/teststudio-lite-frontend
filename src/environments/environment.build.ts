@@ -3,7 +3,7 @@
 export const environment = {
   production: false,
   backendUrl: '/',
-  appName: 'IQB-ItemDB',
+  appName: 'IQB-Teststudio',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  appVersion: '0.8.4 - 11.3.2019'
+  appVersion: '2.0.0-beta - April 2021'
 };

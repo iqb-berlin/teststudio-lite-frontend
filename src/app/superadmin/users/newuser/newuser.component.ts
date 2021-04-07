@@ -10,11 +10,11 @@ export class NewuserComponent implements OnInit {
   newuserform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     this.newuserform = this.fb.group({
-      name: this.fb.control('', [Validators.required,  Validators.minLength(3), Validators.pattern(/^\S+$/)]),
+      name: this.fb.control('', [Validators.required, Validators.minLength(3), Validators.pattern(/^\S+$/)]),
       pw: this.fb.control('', [Validators.required, Validators.minLength(3), Validators.pattern(/^\S+$/)])
     });
   }

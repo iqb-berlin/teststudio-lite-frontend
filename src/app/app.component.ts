@@ -10,7 +10,7 @@ import { BackendService } from './backend.service';
 
 export class AppComponent implements OnInit {
   constructor(
-    private mds: MainDatastoreService,
+    public mds: MainDatastoreService,
     private bs: BackendService
   ) { }
 

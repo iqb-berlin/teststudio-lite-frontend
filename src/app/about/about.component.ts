@@ -1,20 +1,13 @@
-import { MainDatastoreService } from '../maindatastore.service';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
 @Component({
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css']
 })
-export class AboutComponent implements OnInit {
-
+export class AboutComponent {
   constructor(
     @Inject('APP_NAME') public appName: string,
     @Inject('APP_PUBLISHER') public appPublisher: string,
-    @Inject('APP_VERSION') public appVersion: string,
-    private mds: MainDatastoreService
+    @Inject('APP_VERSION') public appVersion: string
   ) { }
-
-  ngOnInit() {
-    this.mds.pageTitle$.next('');
-  }
 }

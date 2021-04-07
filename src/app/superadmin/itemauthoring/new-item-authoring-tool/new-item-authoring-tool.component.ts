@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {Component, Inject, AfterViewInit} from '@angular/core';
+import { Component, Inject, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
@@ -10,7 +10,7 @@ export class NewItemAuthoringToolComponent implements AfterViewInit {
   newform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngAfterViewInit() {
     setTimeout(() => {

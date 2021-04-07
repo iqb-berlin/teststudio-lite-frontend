@@ -1,9 +1,8 @@
-import { BackendService, ServerError, GetFileResponseData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
+import {
+  ViewChild, Component, OnInit, Inject
+} from '@angular/core';
 
-import { DatastoreService } from '../datastore.service';
-import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -14,27 +13,29 @@ import {
   MessageDialogComponent,
   MessageDialogData,
   MessageType
-} from "iqb-components";
+} from 'iqb-components';
+import { BackendService, ServerError, GetFileResponseData } from '../backend.service';
+import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
   templateUrl: './itemplayer.component.html',
   styleUrls: ['./itemplayer.component.css']
 })
 export class ItemplayerComponent implements OnInit {
-  public dataLoading = false;
+  dataLoading = false;
   private filesDatasource: MatTableDataSource<GetFileResponseData> = null;
-  public displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
+  displayedColumnsFiles = ['selectCheckbox', 'filename', 'filedatetime', 'filesize'];
   tableselectionCheckboxFiles = new SelectionModel <GetFileResponseData>(true, []);
 
   @ViewChild(MatSort) sort: MatSort;
 
   // for FileUpload
-  public uploadUrl = '';
-  public token = '';
+  uploadUrl = '';
+  token = '';
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private ds: DatastoreService,
+    private mds: MainDatastoreService,
     private bs: BackendService,
     private newItemAuthoringToolDialog: MatDialog,
     private editItemAuthoringToolDialog: MatDialog,
@@ -42,13 +43,13 @@ export class ItemplayerComponent implements OnInit {
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.uploadUrl = this.serverUrl + 'php_superadmin/uploadItemPlayerFile.php';
-    this.ds.token$.subscribe(t => this.token = t);
+    this.uploadUrl = `${this.serverUrl}php_superadmin/uploadItemPlayerFile.php`;
   }
 
   ngOnInit() {
-    this.ds.updatePageTitle('Item-Player');
+    this.mds.pageTitle = 'Item-Player';
     this.updateFileList();
+    this.token = localStorage.getItem('t');
   }
 
   isAllSelectedFiles() {
@@ -59,27 +60,26 @@ export class ItemplayerComponent implements OnInit {
 
   masterToggleFiles() {
     this.isAllSelectedFiles() ?
-        this.tableselectionCheckboxFiles.clear() :
-        this.filesDatasource.data.forEach(row => this.tableselectionCheckboxFiles.select(row));
+      this.tableselectionCheckboxFiles.clear() :
+      this.filesDatasource.data.forEach(row => this.tableselectionCheckboxFiles.select(row));
   }
 
   hasFiles() {
     if (this.filesDatasource == null) {
       return false;
-    } else {
-      return this.filesDatasource.data.length > 0;
     }
+    return this.filesDatasource.data.length > 0;
   }
 
   // ***********************************************************************************
   getDownloadRef(element: GetFileResponseData): string {
-    return this.serverUrl
-        + 'itemplayers/' + element.filename;
+    return `${this.serverUrl
+    }itemplayers/${element.filename}`;
   }
 
   updateFileList() {
     this.dataLoading = true;
-    this.bs.getItemPlayerFiles(this.ds.token$.getValue()).subscribe(
+    this.bs.getItemPlayerFiles().subscribe(
       (filedataresponse: GetFileResponseData[]) => {
         this.filesDatasource = new MatTableDataSource(filedataresponse);
         this.filesDatasource.sort = this.sort;
@@ -100,15 +100,15 @@ export class ItemplayerComponent implements OnInit {
     if (filesToDelete.length > 0) {
       let prompt = 'Sie haben ';
       if (filesToDelete.length > 1) {
-        prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
+        prompt = `${prompt + filesToDelete.length} Dateien ausgewählt. Sollen`;
       } else {
-        prompt = prompt + ' eine Datei ausgewählt. Soll';
+        prompt += ' eine Datei ausgewählt. Soll';
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Dateien',
-          content: prompt + ' diese gelöscht werden?',
+          content: `${prompt} diese gelöscht werden?`,
           confirmbuttonlabel: 'Löschen',
           showcancel: true
         }
@@ -118,17 +118,18 @@ export class ItemplayerComponent implements OnInit {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteItemPlayerFiles(this.ds.token$.getValue(), filesToDelete).subscribe(
+          this.bs.deleteItemPlayerFiles(filesToDelete).subscribe(
             (deletefilesresponse: string) => {
               if ((deletefilesresponse.length > 5) && (deletefilesresponse.substr(0, 2) === 'e:')) {
-                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', {duration: 1000});
+                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', { duration: 1000 });
               } else {
-                this.snackBar.open(deletefilesresponse, '', {duration: 1000});
+                this.snackBar.open(deletefilesresponse, '', { duration: 1000 });
                 this.updateFileList();
               }
             }, (err: ServerError) => {
-              this.snackBar.open(err.label, '', {duration: 1000});
-            });
+              this.snackBar.open(err.label, '', { duration: 1000 });
+            }
+          );
           // =========================================================
         }
       });

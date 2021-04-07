@@ -1,14 +1,18 @@
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DatastoreService, SaveDataComponent } from '../datastore.service';
 import { FormBuilder } from '@angular/forms';
-import { MainDatastoreService } from '../../maindatastore.service';
-import { Subscription, Observable, BehaviorSubject, of } from 'rxjs';
-import { BackendService, UnitDesignData } from '../backend.service';
-import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
+import {
+  Subscription, Observable, BehaviorSubject, of
+} from 'rxjs';
+import {
+  Component, OnInit, Inject, OnDestroy
+} from '@angular/core';
 import { Location } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
-import {ConfirmDialogComponent, ConfirmDialogData} from "iqb-components";
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { BackendService, UnitDesignData } from '../backend.service';
+import { MainDatastoreService } from '../../maindatastore.service';
+import { DatastoreService, SaveDataComponent } from '../datastore.service';
 
 @Component({
   selector: 'app-unitdesign',
@@ -23,7 +27,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   private hasChanged$ = new BehaviorSubject<boolean>(false);
   private authoringSessionId = '';
   private currentAuthoringTool = '';
-
 
   private iFrameHostElement: HTMLElement;
   private iFrameElement: HTMLElement = null;
@@ -42,65 +45,61 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
     private route: ActivatedRoute,
     public confirmDialog: MatDialog
   ) {
-
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
-        const msgData = m.data;
-        const msgType = msgData['type'];
+      const msgData = m.data;
+      const msgType = msgData.type;
 
-        if ((msgType !== undefined) && (msgType !== null)) {
-          this.unitWindow = m.source as Window;
-          switch (msgType) {
-
-            // // // // // // //
-            case 'vo.FromAuthoringModule.ReadyNotification':
-              this.unitWindow.postMessage({
-                type: 'vo.ToAuthoringModule.DataTransfer',
-                unitDefinition: this.pendingUnitDefinition,
-                sessionId: this.authoringSessionId,
-              }, '*');
-              this.pendingUnitDefinition = null;
-              break;
-
-            // // // // // // //
-            case 'vo.FromAuthoringModule.ChangedNotification':
-              if (msgData['sessionId'] === this.authoringSessionId) {
-                this.hasChanged$.next(true);
-                this.ds.unitDesignToSave$.next(this);
-              }
-              break;
+      if ((msgType !== undefined) && (msgType !== null)) {
+        this.unitWindow = m.source as Window;
+        switch (msgType) {
+          // // // // // // //
+          case 'vo.FromAuthoringModule.ReadyNotification':
+            this.unitWindow.postMessage({
+              type: 'vo.ToAuthoringModule.DataTransfer',
+              unitDefinition: this.pendingUnitDefinition,
+              sessionId: this.authoringSessionId
+            }, '*');
+            this.pendingUnitDefinition = null;
+            break;
 
             // // // // // // //
-            case 'vo.FromAuthoringModule.DataTransfer':
-              if (msgData['sessionId'] === this.authoringSessionId) {
-                const UnitDef = msgData['unitDefinition'];
-                const myLocalUnitdata = this.myUnitDesign$.getValue();
-                if ((myLocalUnitdata !== null) &&
+          case 'vo.FromAuthoringModule.ChangedNotification':
+            if (msgData.sessionId === this.authoringSessionId) {
+              this.hasChanged$.next(true);
+              this.ds.unitDesignToSave$.next(this);
+            }
+            break;
+
+            // // // // // // //
+          case 'vo.FromAuthoringModule.DataTransfer':
+            if (msgData.sessionId === this.authoringSessionId) {
+              const UnitDef = msgData.unitDefinition;
+              const myLocalUnitdata = this.myUnitDesign$.getValue();
+              if ((myLocalUnitdata !== null) &&
                           (UnitDef !== undefined) && (UnitDef !== null)) {
-                  this.bs.setUnitDefinition(
-                    this.mds.token$.getValue(),
-                    this.ds.workspaceId$.getValue(),
-                    myLocalUnitdata.id,
-                    UnitDef,
-                    msgData['player']
-                  ).subscribe(saveResult => {
-                      const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
-                      if (myreturn) {
-                        this.hasChanged$.next(false);
-                        this.ds.unitDesignToSave$.next(null);
-                      }
-                    });
-                }
+                this.bs.setUnitDefinition(
+                  this.ds.selectedWorkspace,
+                  myLocalUnitdata.id,
+                  UnitDef,
+                  msgData.player
+                ).subscribe(saveResult => {
+                  const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
+                  if (myreturn) {
+                    this.hasChanged$.next(false);
+                    this.ds.unitDesignToSave$.next(null);
+                  }
+                });
               }
-              break;
+            }
+            break;
 
             // // // // // // //
-            default:
-              console.log('processMessagePost ignored message: ' + msgType);
-              break;
-          }
+          default:
+            console.log(`processMessagePost ignored message: ${msgType}`);
+            break;
         }
+      }
     });
-
   }
 
   ngOnInit() {
@@ -124,7 +123,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
             unitDefinition: ud.def,
             sessionId: this.authoringSessionId
           }, '*');
-
         } else {
           while (this.iFrameHostElement.hasChildNodes()) {
             this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
@@ -144,7 +142,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
           // pending unit definition
           this.hasChanged$.next(false);
         }
-
       } else {
         console.log('hasAuthoringToolDef is false');
       }
@@ -153,7 +150,7 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
     this.routingSubscription = this.route.params.subscribe(
       () => {
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-        const newUnit = this.route.snapshot.data['unitDesignData'] as UnitDesignData;
+        const newUnit = this.route.snapshot.data.unitDesignData as UnitDesignData;
 
         this.hasChanged$.next(false);
         this.ds.unitDesignToSave$.next(null);
@@ -170,12 +167,13 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
 
         if (this.myUnitDesign$.getValue() === null) {
           this.ds.updatePageTitle('Ändern Gestaltung');
-          this.ds.selectedUnitId$.next(0);
+          this.ds.selectedUnit$.next(0);
         } else {
-          this.ds.updatePageTitle('Ändern Gestaltung: ' + (newUnit as UnitDesignData).key);
-          this.ds.selectedUnitId$.next((newUnit as UnitDesignData).id);
+          this.ds.updatePageTitle(`Ändern Gestaltung: ${(newUnit as UnitDesignData).key}`);
+          this.ds.selectedUnit$.next((newUnit as UnitDesignData).id);
         }
-      });
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -188,32 +186,29 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
   saveOrDiscard(): Observable<boolean> | Promise<boolean> | boolean {
     if (this.hasChanged$.getValue() === false) {
       return true;
-    } else {
-      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        height: '300px',
-        data:  <ConfirmDialogData>{
-          title: 'Speichern',
-          content: 'Sie haben Daten dieser Aufgabe geändert. Möchten Sie diese Änderungen speichern?',
-          confirmbuttonlabel: 'Speichern',
-          showcancel: true
-        }
-      });
-      return dialogRef.afterClosed().pipe(
-        switchMap(result => {
-            if (result === false) {
-              return of(false);
-            } else {
-              if (result === 'NO') {
-                return of(true);
-              } else { // 'YES'
-
-                return this.saveData();
-              }
-            }
-          }
-      ));
     }
+    const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      height: '300px',
+      data: <ConfirmDialogData>{
+        title: 'Speichern',
+        content: 'Sie haben Daten dieser Aufgabe geändert. Möchten Sie diese Änderungen speichern?',
+        confirmbuttonlabel: 'Speichern',
+        showcancel: true
+      }
+    });
+    return dialogRef.afterClosed().pipe(
+      switchMap(result => {
+        if (result === false) {
+          return of(false);
+        }
+        if (result === 'NO') {
+          return of(true);
+        } // 'YES'
+
+        return this.saveData();
+      })
+    );
   }
 
   // not nice: Just sending get unitdata request an hope
