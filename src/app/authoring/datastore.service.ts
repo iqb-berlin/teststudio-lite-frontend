@@ -7,9 +7,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DatastoreService {
-  public workspaceList$ = new BehaviorSubject<WorkspaceData[]>([]);
-  public workspaceId$ = new BehaviorSubject<number>(0);
-  public workspaceName$ = new BehaviorSubject<string>('');
   public unitList$ = new BehaviorSubject<UnitShortData[]>([]);
 
   public unitViewMode$ = new BehaviorSubject<string>('up');

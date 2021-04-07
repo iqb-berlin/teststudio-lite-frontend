@@ -30,20 +30,6 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getWorkspaceList (sessiontoken: string): Observable<WorkspaceData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<WorkspaceData[]>(this.serverUrl + 'getWorkspaceList.php', {t: sessiontoken}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   public addUnit (sessiontoken: string, workspaceId: number, key: string, label: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -300,7 +286,3 @@ export interface StrIdLabelSelectedData {
   selected: boolean;
 }
 
-export interface WorkspaceData {
-  id: number;
-  name: string;
-}
