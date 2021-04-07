@@ -3,9 +3,12 @@ import { BackendService, UnitPreviewData } from './backend.service';
 import { DatastoreService } from './datastore.service';
 import { MainDatastoreService } from '../maindatastore.service';
 import { Subscription } from 'rxjs';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {KeyValuePairString, PageData, PendingUnitData, StateReportEntry, StatusVisual} from "./preview.interfaces";
+
+declare var srcDoc: any;
 
 @Component({
   templateUrl: './preview.component.html',
@@ -18,6 +21,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
+  private pendingUnitData: PendingUnitData = null;
+  public pageList: PageData[] = [];
   statusVisual: StatusVisual[] = [
       {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
       {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
@@ -25,7 +30,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   dataLoading = false;
   showPageNav = false;
-  private pageList: PageData[] = [];
   player = '';
 
   constructor(
@@ -103,42 +107,118 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+    setTimeout(() => {
+      this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
+        const msgData = m.data;
+        const msgType = msgData['type'];
+        let msgPlayerId = msgData['sessionId'];
+        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+          msgPlayerId = this.itemplayerSessionId;
+        }
 
-    this.iFrameItemplayer = null;
-    this.showPageNav = false;
+        if ((msgType !== undefined) && (msgType !== null)) {
+          switch (msgType) {
+            case 'vopReadyNotification':
+              // TODO add apiVersion check
+              let pendingUnitDef = '';
+              const pendingUnitDataToRestore: KeyValuePairString = {};
+              if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
+                pendingUnitDef = this.pendingUnitData.unitDefinition;
+                pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
+                this.pendingUnitData = null;
+              }
+              this.postMessageTarget = m.source as Window;
+              if (typeof this.postMessageTarget !== 'undefined') {
+                this.postMessageTarget.postMessage({
+                  type: 'vopStartCommand',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: pendingUnitDef,
+                  unitState: {
+                    dataParts: []
+                  },
+                  playerConfig: {
+                    logPolicy: 'rich',
+                    stateReportPolicy: 'eager',
+                  }
+                }, '*');
+              }
+              break;
 
-    this.routingSubscription = this.route.params.subscribe(
-      params => {
+            case 'vopStateChangedNotification':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                if (msgData['playerState']) {
+                  const playerState = msgData['playerState'];
+                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+                }
+                if (msgData['unitState']) {
+                  const unitState = msgData['unitState'];
+                  if (unitState) {
+                    this.setPresentationStatus(unitState['presentationProgress']);
+                    this.setResponsesStatus(unitState['responseProgress']);
+                  }
+                }
+                if (msgData['log']) {
+                  (msgData['log'] as StateReportEntry[]).forEach(entry => {
+                    console.log('PLAYER LOG ' + entry.key + ': ' + entry.content);
+                  });
+                }
+              }
+              break;
+
+            default:
+              console.log('processMessagePost ignored message: ' + msgType);
+              break;
+          }
+        }
+      });
+      this.iFrameItemplayer = null;
+      this.showPageNav = false;
+
+      this.routingSubscription = this.route.params.subscribe(params => {
+        this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+        while (this.iFrameHostElement.hasChildNodes()) {
+          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+        }
         if (params['u']) {
           const paramSplit = params['u'].split('##');
           this.ds.updatePageTitle(paramSplit[1]);
           this.dataLoading = true;
+
+          this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
           this.setPageList([], '');
           this.setPresentationStatus('');
           this.setResponsesStatus('');
 
           this.bs.getUnitDesignData(this.mds.token$.getValue(), paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
-            // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-            while (this.iFrameHostElement.hasChildNodes()) {
-              this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
-            }
-
             this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-            this.iFrameItemplayer.setAttribute('srcdoc', data.player);
             this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
             this.iFrameItemplayer.setAttribute('class', 'unitHost');
-            this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+            this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
-            this.ds.pendingItemDefinition$.next(data.def);
+            this.pendingUnitData = {
+              playerId: this.itemplayerSessionId,
+              unitDefinition: data.def,
+              unitState: null
+            };
 
             this.iFrameHostElement.appendChild(this.iFrameItemplayer);
             this.ds.updatePageTitle(data.key + '-' + data.label);
             this.dataLoading = false;
             this.player = data.player_id;
+            srcDoc.set(this.iFrameItemplayer, data.player);
           });
         }
       });
+    });
+  }
+
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+      // TODO: Why minus 5px?
+    }
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -287,18 +367,4 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.routingSubscription.unsubscribe();
     this.postMessageSubscription.unsubscribe();
   }
-}
-
-export interface PageData {
-  index: number;
-  id: string;
-  type: '#next' | '#previous' | '#goto';
-  disabled: boolean;
-}
-
-export interface StatusVisual {
-  id: string;
-  label: string;
-  color: string;
-  description: string;
 }

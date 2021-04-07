@@ -1,8 +1,6 @@
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
-
 import { PreviewRoutingModule } from './preview-routing.module';
 import { PreviewComponent } from './preview.component';
 import { PreviewActivateGuard } from './preview-routing';
@@ -27,8 +25,7 @@ import {HttpClientModule} from "@angular/common/http";
     FlexLayoutModule
   ],
   declarations: [
-    PreviewComponent,
-    ResizeIFrameChildDirective
+    PreviewComponent
   ],
   providers: [
     PreviewActivateGuard
