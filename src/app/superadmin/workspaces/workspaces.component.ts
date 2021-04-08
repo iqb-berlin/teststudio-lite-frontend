@@ -60,9 +60,11 @@ export class WorkspacesComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
-    this.updateObjectList();
-    this.mds.pageTitle = 'Arbeitsbereiche';
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.updateObjectList();
+      this.mds.pageTitle = 'Arbeitsbereiche';
+    });
   }
 
   // ***********************************************************************************

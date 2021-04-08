@@ -7,18 +7,17 @@ import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 
-
 const routes: Routes = [
   {
-    path: 'superadmin',
+    path: 'super-admin',
     component: SuperadminComponent,
     children: [
-      {path: '', redirectTo: 'itemauthoring', pathMatch: 'full'},
-      {path: 'users', component: UsersComponent},
-      {path: 'itemauthoring', component: ItemauthoringComponent},
-      {path: 'itemplayer', component: ItemplayerComponent},
-      {path: 'workspaces', component: WorkspacesComponent},
-      {path: '**', component: ItemauthoringComponent}
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
+      { path: 'users', component: UsersComponent },
+      { path: 'workspaces', component: WorkspacesComponent },
+      { path: 'editors', component: ItemauthoringComponent },
+      { path: 'players', component: ItemplayerComponent },
+      { path: '**', component: ItemauthoringComponent }
     ]
   }
 ];

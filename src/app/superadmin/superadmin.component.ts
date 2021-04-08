@@ -7,10 +7,10 @@ import { MainDatastoreService } from '../maindatastore.service';
 })
 export class SuperadminComponent {
   navLinks = [
-    { path: 'itemauthoring', label: 'Autorenmodule' },
-    { path: 'itemplayer', label: 'Itemplayer' },
     { path: 'users', label: 'Nutzer' },
-    { path: 'workspaces', label: 'Arbeitsbereiche' }
+    { path: 'workspaces', label: 'Arbeitsbereiche' },
+    { path: 'editors', label: 'Editoren' },
+    { path: 'players', label: 'Player' }
   ];
 
   constructor(

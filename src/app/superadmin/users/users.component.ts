@@ -58,9 +58,11 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
-    this.updateObjectList();
-    this.mds.pageTitle = 'Nutzer';
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.updateObjectList();
+      this.mds.pageTitle = 'Nutzer';
+    });
   }
 
   // ***********************************************************************************

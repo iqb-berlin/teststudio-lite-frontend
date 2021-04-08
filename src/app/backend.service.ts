@@ -21,7 +21,7 @@ export class BackendService {
     const loginStatusResponseData = authData as LoginStatusResponseData;
     localStorage.setItem('t', loginStatusResponseData.token);
     return this.http
-      .put<WorkspaceData[]>(`${this.serverUrl}getWorkspaceList.php`, { t: loginStatusResponseData.token })
+      .put<WorkspaceData[]>(`${this.serverUrl}php_authoring/getWorkspaceList.php`, { t: loginStatusResponseData.token })
       .pipe(
         catchError((err: ApiError) => {
           localStorage.removeItem('t');

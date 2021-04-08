@@ -46,10 +46,12 @@ export class ItemplayerComponent implements OnInit {
     this.uploadUrl = `${this.serverUrl}php_superadmin/uploadItemPlayerFile.php`;
   }
 
-  ngOnInit() {
-    this.mds.pageTitle = 'Item-Player';
-    this.updateFileList();
-    this.token = localStorage.getItem('t');
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.mds.pageTitle = 'Player';
+      this.updateFileList();
+      this.token = localStorage.getItem('t');
+    });
   }
 
   isAllSelectedFiles() {
