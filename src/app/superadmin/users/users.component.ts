@@ -64,7 +64,7 @@ export class UsersComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.updateObjectList();
-      this.mds.pageTitle = 'Nutzer';
+      this.mds.pageTitle = 'Super-Admin: Nutzer';
     });
   }
 
@@ -301,7 +301,7 @@ export class UsersComponent implements OnInit {
             if (typeof afterClosedResult !== 'undefined') {
               if (afterClosedResult !== false) {
                 this.bs.setSuperUserStatus(
-                  selectedRows[0].name,
+                  selectedRows[0].id,
                   !selectedRows[0].is_superadmin,
                   (<FormGroup>afterClosedResult).get('pw').value
                 )

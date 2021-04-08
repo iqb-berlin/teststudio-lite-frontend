@@ -70,7 +70,7 @@ export class ItemauthoringComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.updateObjectList();
-      this.mds.pageTitle = 'Editoren';
+      this.mds.pageTitle = 'Super-Admin: Editoren';
       this.token = localStorage.getItem('t');
     });
   }

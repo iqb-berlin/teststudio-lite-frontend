@@ -66,10 +66,10 @@ export class BackendService {
       );
   }
 
-  setSuperUserStatus(username: string, changeToSuperUser: boolean, password: string): Observable<boolean | number> {
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean | number> {
     return this.http
-      .put<boolean>(`${this.serverUrl}setSuperUserStatus.php`, {
-      t: localStorage.getItem('t'), n: username, s: changeToSuperUser, p: password
+      .put<boolean>(`${this.serverUrl}setSuperAdminStatus.php`, {
+      t: localStorage.getItem('t'), u: userId, s: changeToSuperUser, p: password
     })
       .pipe(
         catchError((err: ApiError) => {
@@ -339,6 +339,7 @@ export interface ServerError {
 }
 
 export interface GetUserDataResponse {
+  id: number;
   name: string;
   is_superadmin: boolean;
 }

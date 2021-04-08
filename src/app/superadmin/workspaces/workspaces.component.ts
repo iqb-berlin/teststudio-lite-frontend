@@ -63,7 +63,7 @@ export class WorkspacesComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.updateObjectList();
-      this.mds.pageTitle = 'Arbeitsbereiche';
+      this.mds.pageTitle = 'Super-Admin: Arbeitsbereiche';
     });
   }
 

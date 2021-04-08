@@ -11,7 +11,7 @@
       </mat-select>
     </mat-form-field>-->
     <mat-button-toggle-group id="unitViewSelector" multiple="false" [formControl]="unitviewSelector"
-        fxLayoutAlign="space-around center" style="height: 50px">
+        fxLayoutAlign="space-around center" fxFlex="50px">
       <mat-button-toggle *ngFor="let uvm of unitViewModes" [matTooltip]="uvm.label" [value]="uvm.route">
         <mat-icon>{{ uvm.matIcon }}</mat-icon>
       </mat-button-toggle>
@@ -27,8 +27,8 @@
       </button>
     </div>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
-    <mat-selection-list #unitSelector [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex>
-      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id">
+    <mat-selection-list #unitSelector [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex cdkScrollable>
+      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label">
         {{ unit.key }} - {{ unit.label }}
       </mat-list-option>
     </mat-selection-list>

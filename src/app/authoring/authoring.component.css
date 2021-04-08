@@ -17,6 +17,16 @@
   margin: 0px;
 }
 
+.no-wrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+mat-selection-list {
+  overflow: auto;
+}
+
 .mat-nav-list, .mat-button-toggle-group {
   overflow-x: hidden;
   overflow-y: auto;

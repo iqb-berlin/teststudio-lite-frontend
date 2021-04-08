@@ -48,7 +48,7 @@ export class ItemplayerComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.pageTitle = 'Player';
+      this.mds.pageTitle = 'Super-Admin: Player';
       this.updateFileList();
       this.token = localStorage.getItem('t');
     });
