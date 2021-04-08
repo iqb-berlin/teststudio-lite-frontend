@@ -74,24 +74,26 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.routingSubscription = this.route.params.subscribe(params => {
-      let selectedWorkspaceName = '';
-      if (this.mds.loginStatus) {
-        const workspaceRoute = Number(params.ws);
-        this.mds.loginStatus.workspaces.forEach(ws => {
-          if (ws.id === workspaceRoute) {
-            selectedWorkspaceName = ws.name;
-            this.ds.selectedWorkspace = workspaceRoute;
-          }
-        });
-      }
-      if (selectedWorkspaceName) {
-        this.mds.pageTitle = `IQB-Teststudio - ${selectedWorkspaceName}`;
-        this.updateUnitList();
-      } else {
-        this.ds.selectedWorkspace = 0;
-        this.unitList = [];
-      }
+    setTimeout(() => {
+      this.routingSubscription = this.route.params.subscribe(params => {
+        let selectedWorkspaceName = '';
+        if (this.mds.loginStatus) {
+          const workspaceRoute = Number(params.ws);
+          this.mds.loginStatus.workspaces.forEach(ws => {
+            if (ws.id === workspaceRoute) {
+              selectedWorkspaceName = ws.name;
+              this.ds.selectedWorkspace = workspaceRoute;
+            }
+          });
+        }
+        if (selectedWorkspaceName) {
+          this.mds.pageTitle = `IQB-Teststudio - ${selectedWorkspaceName}`;
+          this.updateUnitList();
+        } else {
+          this.ds.selectedWorkspace = 0;
+          this.unitList = [];
+        }
+      });
     });
     /*
     this.selectedUnitSubscription = this.ds.selectedUnit$.subscribe((uId: number) => {

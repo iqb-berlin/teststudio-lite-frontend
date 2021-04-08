@@ -67,6 +67,6 @@ export class HomeComponent implements OnInit {
   }
 
   buttonGotoWorkspace(selectedWorkspace: WorkspaceData): void {
-    this.router.navigate(['/a']);
+    this.router.navigate([`/a/${selectedWorkspace.id}`]);
   }
 }

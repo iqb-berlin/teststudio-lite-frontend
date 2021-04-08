@@ -17,6 +17,7 @@ import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../bac
 import { NewuserComponent } from './newuser/newuser.component';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { MainDatastoreService } from '../../maindatastore.service';
+import { SuperadminPasswordRequestComponent } from '../superadmin-password-request/superadmin-password-request.component';
 
 @Component({
   templateUrl: './users.component.html',
@@ -42,6 +43,8 @@ export class UsersComponent implements OnInit {
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
+    private confirmDialog: MatDialog,
+    private superadminPasswordDialog: MatDialog,
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -258,6 +261,75 @@ export class UsersComponent implements OnInit {
           this.dataLoading = false;
         }
       );
+    }
+  }
+
+  changeSuperadminStatus(): void {
+    let selectedRows = this.tableselectionRow.selected;
+    if (selectedRows.length === 0) {
+      selectedRows = this.tableselectionCheckbox.selected;
+    }
+    if (selectedRows.length === 0) {
+      this.messsageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Superadmin-Status ändern',
+          content: 'Bitte markieren Sie erst einen Nutzer!',
+          type: MessageType.error
+        }
+      });
+    } else {
+      const confirmDialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Ändern des Superadmin-Status',
+          content:
+            `Für "${selectedRows[0].name}" den Status auf "${selectedRows[0].is_superadmin ? 'NICHT ' : ''}Superadmin" setzen?`,
+          confirmbuttonlabel: 'Status ändern',
+          showcancel: true
+        }
+      });
+
+      confirmDialogRef.afterClosed().subscribe(result => {
+        if ((typeof result !== 'undefined') && (result !== false)) {
+          const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
+            width: '600px',
+            data: `Superadmin-Status ${selectedRows[0].is_superadmin ? 'entziehen' : 'setzen'}`
+          });
+
+          passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
+            if (typeof afterClosedResult !== 'undefined') {
+              if (afterClosedResult !== false) {
+                this.bs.setSuperUserStatus(
+                  selectedRows[0].name,
+                  !selectedRows[0].is_superadmin,
+                  (<FormGroup>afterClosedResult).get('pw').value
+                )
+                  .subscribe(
+                    respCode => {
+                      if (respCode === 0) {
+                        this.snackBar.open('Status geändert', '', { duration: 1000 });
+                        this.updateObjectList();
+                      } else if (respCode === 403) {
+                        this.snackBar.open(
+                          'Konnte Status nicht ändern (falsches Kennwort?)',
+                          'Fehler',
+                          { duration: 5000 }
+                        );
+                      } else {
+                        this.snackBar.open(
+                          `Konnte Status nicht ändern (Fehlercode ${respCode})`,
+                          'Fehler',
+                          { duration: 5000 }
+                        );
+                      }
+                    }
+                  );
+              }
+            }
+          });
+        }
+      });
     }
   }
 

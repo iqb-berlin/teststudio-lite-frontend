@@ -34,6 +34,7 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
 import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authoring-tool/new-item-authoring-tool.component';
 import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
 import { IqbFilesModule } from '../iqb-files';
+import { SuperadminPasswordRequestComponent } from './superadmin-password-request/superadmin-password-request.component';
 
 @NgModule({
   imports: [
@@ -74,7 +75,8 @@ import { IqbFilesModule } from '../iqb-files';
     NewworkspaceComponent,
     EditworkspaceComponent,
     NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent
+    EditItemAuthoringToolComponent,
+    SuperadminPasswordRequestComponent
   ],
   providers: [
     BackendService
@@ -85,7 +87,8 @@ import { IqbFilesModule } from '../iqb-files';
     NewworkspaceComponent,
     EditworkspaceComponent,
     NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent
+    EditItemAuthoringToolComponent,
+    SuperadminPasswordRequestComponent
   ]
 })
 export class SuperadminModule { }

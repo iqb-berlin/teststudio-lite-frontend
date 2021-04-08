@@ -2,8 +2,9 @@ import { Injectable, Inject } from '@angular/core';
 import {
   HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ApiError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +63,19 @@ export class BackendService {
       .post<boolean>(`${this.serverUrl}setPassword.php`, { t: localStorage.getItem('t'), n: name, p: password }, httpOptions)
       .pipe(
         catchError(this.handleError)
+      );
+  }
+
+  setSuperUserStatus(username: string, changeToSuperUser: boolean, password: string): Observable<boolean | number> {
+    return this.http
+      .put<boolean>(`${this.serverUrl}setSuperUserStatus.php`, {
+      t: localStorage.getItem('t'), n: username, s: changeToSuperUser, p: password
+    })
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          return of(err.code);
+        })
       );
   }
 
@@ -326,6 +340,7 @@ export interface ServerError {
 
 export interface GetUserDataResponse {
   name: string;
+  is_superadmin: boolean;
 }
 
 export interface IdLabelSelectedData {

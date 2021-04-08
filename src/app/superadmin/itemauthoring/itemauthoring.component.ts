@@ -95,10 +95,10 @@ export class ItemauthoringComponent implements OnInit {
           ).subscribe(
             respOk => {
               if (respOk) {
-                this.snackBar.open('Autorenmodul hinzugefügt', '', { duration: 1000 });
+                this.snackBar.open('Editor hinzugefügt', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.snackBar.open('Konnte Autorenmodul nicht hinzufügen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Editor nicht hinzufügen', 'Fehler', { duration: 1000 });
               }
               this.dataLoading = false;
             }
@@ -117,7 +117,7 @@ export class ItemauthoringComponent implements OnInit {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Autorenmodul ändern',
+          title: 'Editor ändern',
           content: 'Bitte markieren Sie erst ein Autorenmodul!',
           type: MessageType.error
         }
