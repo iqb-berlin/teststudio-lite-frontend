@@ -6,15 +6,15 @@
   <!-- ============================================= -->
   <div class="objectlist" fxLayout="column" fxFlex="40">
     <div fxLayout="row">
-        <button mat-raised-button (click)="addObject()" matTooltip="Autorenmodul hinzufügen" matTooltipPosition="above">
+        <button mat-raised-button (click)="addObject()" matTooltip="Editor hinzufügen" matTooltipPosition="above">
             <mat-icon>add</mat-icon>
           </button>
         <button mat-raised-button (click)="deleteObject()" [disabled]="(selectedItemAuthoringToolId.length == 0) && (tableselectionCheckbox.selected.length == 0)"
-            matTooltip="Markierte/s Autorenmodul/e löschen" matTooltipPosition="above">
+            matTooltip="Markierte/n Editor/en löschen" matTooltipPosition="above">
           <mat-icon>delete</mat-icon>
         </button>
         <button mat-raised-button (click)="changeObject()"  [disabled]="(selectedItemAuthoringToolId.length == 0) && (tableselectionCheckbox.selected.length == 0)"
-            matTooltip="Autorenmodul umbenennen" matTooltipPosition="above">
+            matTooltip="Editor umbenennen" matTooltipPosition="above">
           <mat-icon>edit</mat-icon>
         </button>
     </div>

@@ -118,7 +118,7 @@ export class ItemauthoringComponent implements OnInit {
         width: '400px',
         data: <MessageDialogData>{
           title: 'Editor ändern',
-          content: 'Bitte markieren Sie erst ein Autorenmodul!',
+          content: 'Bitte markieren Sie erst einen Editor!',
           type: MessageType.error
         }
       });
@@ -143,10 +143,10 @@ export class ItemauthoringComponent implements OnInit {
             ).subscribe(
               respOk => {
                 if (respOk) {
-                  this.snackBar.open('Autorenmodul geändert', '', { duration: 1000 });
+                  this.snackBar.open('Editor geändert', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
-                  this.snackBar.open('Konnte Autorenmodul nicht ändern', 'Fehler', { duration: 1000 });
+                  this.snackBar.open('Konnte Editor nicht ändern', 'Fehler', { duration: 1000 });
                 }
                 this.dataLoading = false;
               }
@@ -166,24 +166,24 @@ export class ItemauthoringComponent implements OnInit {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Löschen von Autorenmodulen',
-          content: 'Bitte markieren Sie erst Autorenmodul/e!',
+          title: 'Löschen von Editoren',
+          content: 'Bitte markieren Sie erst Editor/en!',
           type: MessageType.error
         }
       });
     } else {
       let prompt = 'Soll';
       if (selectedRows.length > 1) {
-        prompt = `${prompt}en ${selectedRows.length} Autorenmodule `;
+        prompt = `${prompt}en ${selectedRows.length} Editoren `;
       } else {
-        prompt = `${prompt} Autorenmodul "${selectedRows[0].id}" `;
+        prompt = `${prompt} Editor "${selectedRows[0].id}" `;
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
-          title: 'Löschen von Autorenmodulen',
+          title: 'Löschen von Editoren',
           content: `${prompt}gelöscht werden?`,
-          confirmbuttonlabel: 'Autorenmodul/e löschen',
+          confirmbuttonlabel: 'Editor/en löschen',
           showcancel: true
         }
       });
@@ -197,11 +197,11 @@ export class ItemauthoringComponent implements OnInit {
           this.bs.deleteItemAuthoringTools(itemAuthoringToolsToDelete).subscribe(
             respOk => {
               if (respOk) {
-                this.snackBar.open('Autorenmodul/e gelöscht', '', { duration: 1000 });
+                this.snackBar.open('Editor/en gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Autorenmodul/e nicht löschen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Editor/en nicht löschen', 'Fehler', { duration: 1000 });
                 this.dataLoading = false;
               }
             }
