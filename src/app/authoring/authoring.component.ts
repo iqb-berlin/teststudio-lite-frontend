@@ -14,16 +14,18 @@ import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.s
 import { NewunitComponent } from './newunit/newunit.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
+import { WorkspaceData } from '../backend.service';
 
 @Component({
   templateUrl: './authoring.component.html',
   styleUrls: ['./authoring.component.css']
 })
 export class AuthoringComponent implements OnInit, OnDestroy {
-  private routingSubscription: Subscription = null;
-  private selectedUnitSubscription: Subscription = null;
   dataLoading = false;
   unitList: UnitShortData[] = [];
+  private workspaceList: WorkspaceData[] = [];
+  private routingSubscription: Subscription = null;
+  private selectedUnitSubscription: Subscription = null;
   selectedUnits: string[] = [];
 
   private _disablePreviewButton = true;

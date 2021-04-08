@@ -6,6 +6,7 @@ import { MainDatastoreService } from '../maindatastore.service';
   styleUrls: ['./superadmin.component.css']
 })
 export class SuperadminComponent {
+  isSuperadmin = false;
   navLinks = [
     { path: 'users', label: 'Nutzer' },
     { path: 'workspaces', label: 'Arbeitsbereiche' },

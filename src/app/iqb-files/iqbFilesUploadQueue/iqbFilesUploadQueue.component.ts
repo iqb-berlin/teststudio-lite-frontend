@@ -17,6 +17,8 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
   files: Array<any> = [];
+  private numberOfErrors = 0;
+  private numberOfUploads = 0;
   private disableClearButton = true;
 
   /* Http request input bindings */

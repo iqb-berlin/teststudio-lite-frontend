@@ -25,8 +25,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private pendingUnitData: PendingUnitData = null;
-  pageList: PageData[] = [];
   statusVisual: StatusVisual[] = [
     {
       id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'
@@ -36,8 +34,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   ];
 
+  private pendingUnitData: PendingUnitData = null;
   dataLoading = false;
   showPageNav = false;
+  pageList: PageData[] = [];
   player = '';
 
   constructor(

@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  teststudio-lite-frontend-dev:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: teststudio-lite-frontend-dev
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    ports:
+      - '4211:4200'
