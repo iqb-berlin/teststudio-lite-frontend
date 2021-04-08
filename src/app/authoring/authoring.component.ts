@@ -38,8 +38,6 @@ export class AuthoringComponent implements OnInit, OnDestroy {
 
   // private wsSelector = new FormControl();
   unitSelector = new FormControl();
-  unitviewSelector = new FormControl();
-  unitViewModes: UnitViewMode[] = [];
 
   constructor(
     private mds: MainDatastoreService,
@@ -52,13 +50,6 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.ds.unitList$.subscribe(ul => {
-      this.unitList = ul;
-    });
-    this.unitViewModes = this.ds.unitViewModes;
-    this.ds.unitViewMode$.subscribe(uvm => {
-      this.unitviewSelector.setValue(uvm, { emitEvent: false });
-    });
     this.ds.unitDesignToSave$.subscribe(c => {
       this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null);
       if (this._disableSaveButton) {
@@ -76,31 +67,39 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.routingSubscription = this.route.params.subscribe(params => {
+        const workspaceRoute = Number(params.ws);
+        this.ds.selectedWorkspace = workspaceRoute;
         let selectedWorkspaceName = '';
         if (this.mds.loginStatus) {
-          const workspaceRoute = Number(params.ws);
           this.mds.loginStatus.workspaces.forEach(ws => {
             if (ws.id === workspaceRoute) {
               selectedWorkspaceName = ws.name;
-              this.ds.selectedWorkspace = workspaceRoute;
             }
           });
         }
-        if (selectedWorkspaceName) {
-          this.mds.pageTitle = `IQB-Teststudio - ${selectedWorkspaceName}`;
-          this.updateUnitList();
-        } else {
-          this.ds.selectedWorkspace = 0;
-          this.unitList = [];
-        }
+        this.updateUnitList();
+        this.mds.pageTitle = `IQB-Teststudio - ${selectedWorkspaceName}`;
       });
     });
-    /*
     this.selectedUnitSubscription = this.ds.selectedUnit$.subscribe((uId: number) => {
-      // todo häh?
-      this.unitSelector.setValue(uId, { emitEvent: false });
+      console.log(`new unit: ${uId}`);
+      if (uId > 0) {
+        if (this.selectedUnits.length > 0) {
+          const unitId = Number(this.selectedUnits[0]);
+          console.log(`unit in list: ${unitId}`);
+          if (unitId !== uId) {
+            console.log('fn');
+            this.selectedUnits = [uId.toString()];
+          }
+        } else {
+          this.selectedUnits = [uId.toString()];
+        }
+      } else {
+        this.selectedUnits = [];
+      }
     });
 
+    /*
     this.unitSelector.valueChanges.subscribe(uId => {
       this.router.navigate([`${this.ds.unitViewMode$.getValue()}/${uId}`], { relativeTo: this.route })
         .then(naviresult => {
@@ -109,8 +108,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
           }
         });
     });
+     */
 
+    /*
     this.unitviewSelector.valueChanges.subscribe(uvm => {
+      console.log(uvm);
       this.router.navigate([`${uvm}/${this.ds.selectedUnitId$.getValue()}`], { relativeTo: this.route })
         .then(naviresult => {
           if (naviresult === false) {
@@ -118,7 +120,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
           }
         });
     });
-     */
+       */
   }
 
   updateUnitList(): void {
@@ -144,6 +146,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   onUnitSelectionChange(event: Event): void {
+    if (this.selectedUnits.length > 0) {
+      const unitId = this.selectedUnits[0];
+      this.router.navigate([`u/${unitId}`], { relativeTo: this.route });
+    }
     console.info('l8\tListSelectionExample::onNgModelChange::selectedOptions:', this.selectedUnits, ';');
   }
 
@@ -171,7 +177,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
               if (respOk) {
                 this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
                 this.updateUnitList();
-                this.router.navigate(['a/']);
+                // this.router.navigate(['a/']);
               } else {
                 this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 1000 });
               }

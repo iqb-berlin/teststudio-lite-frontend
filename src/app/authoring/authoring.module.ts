@@ -21,6 +21,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSortModule } from '@angular/material/sort';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 
 import { AuthoringRoutingModule } from './authoring-routing.module';
@@ -33,6 +34,9 @@ import { SelectAuthoringToolComponent } from './select-authoring-tool/select-aut
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
 import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
+import { UnitComponent } from './unit/unit.component';
+import { UnitMetadataComponent } from './unit/unit-metadata/unit-metadata.component';
+import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
 
 @NgModule({
   imports: [
@@ -59,7 +63,8 @@ import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-
     MatSnackBarModule,
     MatTableModule,
     MatCheckboxModule,
-    FormsModule
+    FormsModule,
+    MatTabsModule
   ],
   declarations: [
     AuthoringComponent,
@@ -69,7 +74,10 @@ import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-
     NewunitComponent,
     SelectAuthoringToolComponent,
     SelectUnitComponent,
-    MoveUnitComponent
+    MoveUnitComponent,
+    UnitComponent,
+    UnitMetadataComponent,
+    UnitEditorComponent
   ],
   exports: [
     AuthoringComponent

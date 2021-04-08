@@ -310,7 +310,7 @@ export class UsersComponent implements OnInit {
                       if (respCode === 0) {
                         this.snackBar.open('Status geändert', '', { duration: 1000 });
                         this.updateObjectList();
-                      } else if (respCode === 403) {
+                      } else if (respCode === 401) {
                         this.snackBar.open(
                           'Konnte Status nicht ändern (falsches Kennwort?)',
                           'Fehler',

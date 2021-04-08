@@ -86,7 +86,6 @@ export class UnitDesignResolver implements Resolve<UnitDesignData | number> {
 
   resolve(next: ActivatedRouteSnapshot,
           state: RouterStateSnapshot): Observable<UnitDesignData | number> {
-    this.ds.unitViewMode$.next('ud');
     if ((next.params.u === null) || (next.params.u === 0) || (next.params.u === '0')) {
       return null; // no unit-data
     }

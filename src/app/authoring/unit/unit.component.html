@@ -1,0 +1,17 @@
+<mat-tab-group animationDuration="0ms">
+  <mat-tab label="Allgemein">
+    <ng-template matTabContent>
+      <app-unit-metadata [workspaceId]="ds.selectedWorkspace" [unitId]="ds.selectedUnit$ | async"></app-unit-metadata>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Editor">
+    <ng-template matTabContent>
+      <app-unit-editor [workspaceId]="ds.selectedWorkspace" [unitId]="ds.selectedUnit$ | async"></app-unit-editor>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Vorschau">
+    <ng-template matTabContent>
+      Vorschau: {{ds.selectedUnit$ | async}}
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

@@ -8,16 +8,7 @@ import { BackendService, UnitShortData } from './backend.service';
 })
 export class DatastoreService {
   selectedWorkspace = 0;
-  unitList$ = new BehaviorSubject<UnitShortData[]>([]);
   selectedUnit$ = new BehaviorSubject<number>(0);
-
-  unitViewMode$ = new BehaviorSubject<string>('up');
-  unitViewModes: UnitViewMode[] = [
-    { route: 'up', label: 'Ansicht: Eigenschaften', matIcon: 'edit' },
-    { route: 'ud', label: 'Ansicht: Gestaltung', matIcon: 'format_shapes' } // ,
-    // {route: 'ur', label: 'Ansicht: Antwortverarbeitung', matIcon: 'build'}
-  ];
-
   unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
   unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
 

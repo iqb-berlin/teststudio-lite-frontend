@@ -44,7 +44,6 @@ export class UnitPropertiesResolver implements Resolve<UnitProperties | number> 
 
   resolve(next: ActivatedRouteSnapshot,
           state: RouterStateSnapshot): Observable<UnitProperties | number> {
-    this.ds.unitViewMode$.next('up');
     if ((next.params.u === null) || (next.params.u === 0) || (next.params.u === '0')) {
       return null; // no unit-data
     }

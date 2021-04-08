@@ -42,12 +42,10 @@ export class UnitPropertiesComponent implements OnInit, OnDestroy, SaveDataCompo
 
     this.routingSubscription = this.route.params.subscribe(
       () => {
-        // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         const newUnit: UnitProperties | number = this.route.snapshot.data.unitProperties;
 
         this.hasChanged$.next(false);
         this.ds.unitPropertiesToSave$.next(null);
-        this.ds.unitViewMode$.next('up');
         if (newUnit) {
           if ((newUnit as UnitProperties).id !== undefined) {
             this.myUnitProps = newUnit as UnitProperties;

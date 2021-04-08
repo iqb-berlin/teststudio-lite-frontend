@@ -154,7 +154,6 @@ export class UnitDesignComponent implements OnInit, OnDestroy, SaveDataComponent
 
         this.hasChanged$.next(false);
         this.ds.unitDesignToSave$.next(null);
-        this.ds.unitViewMode$.next('ud');
         if (newUnit) {
           if ((newUnit as UnitDesignData).id !== undefined) {
             this.myUnitDesign$.next(newUnit as UnitDesignData);

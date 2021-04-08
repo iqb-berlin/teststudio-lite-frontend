@@ -3,32 +3,14 @@
     <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
-    <!--<mat-form-field>
-      <mat-select placeholder="Arbeitsbereich" [formControl]="wsSelector">
-        <mat-option *ngFor="let ws of workspaceList" [value]="ws.id">
-            {{ws.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>-->
-    <mat-button-toggle-group id="unitViewSelector" multiple="false" [formControl]="unitviewSelector"
-        fxLayoutAlign="space-around center" fxFlex="50px">
-      <mat-button-toggle *ngFor="let uvm of unitViewModes" [matTooltip]="uvm.label" [value]="uvm.route">
-        <mat-icon>{{ uvm.matIcon }}</mat-icon>
-      </mat-button-toggle>
-    </mat-button-toggle-group>
-    <div fxLayout="row">
-      <button mat-raised-button (click)="previewUnit()" matTooltip="Voransicht"
-            [disabled]="disablePreviewButton" matTooltipPosition="above" fxFlex>
-        <mat-icon>visibility</mat-icon>
-      </button>
-      <button mat-raised-button (click)="saveUnit()" matTooltip="Aufgabe speichern"
-            [disabled]="disableSaveButton" matTooltipPosition="above" fxFlex>
-          <mat-icon>save</mat-icon>
-      </button>
-    </div>
+    <button mat-raised-button (click)="saveUnit()" matTooltip="Aufgabe speichern" style="margin: 2px"
+            [disabled]="disableSaveButton" matTooltipPosition="above">
+        Speichern <mat-icon>save</mat-icon>
+    </button>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <mat-selection-list #unitSelector [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex cdkScrollable>
-      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label">
+      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label"
+      [class]="unit.id === (ds.selectedUnit$ | async) ? 'selected' : 'not-selected'">
         {{ unit.key }} - {{ unit.label }}
       </mat-list-option>
     </mat-selection-list>
