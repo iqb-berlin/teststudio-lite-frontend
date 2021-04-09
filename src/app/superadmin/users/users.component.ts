@@ -69,7 +69,7 @@ export class UsersComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  addObject() {
+  addObject(): void {
     const dialogRef = this.newuserDialog.open(NewuserComponent, {
       width: '600px',
       data: {
@@ -98,7 +98,7 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  changePassword() {
+  changePassword(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -143,7 +143,7 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -198,7 +198,7 @@ export class UsersComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateWorkspaceList() {
+  updateWorkspaceList(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
@@ -216,12 +216,12 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  selectWorkspace(ws?: IdLabelSelectedData) {
+  selectWorkspace(ws?: IdLabelSelectedData): void {
     ws.selected = !ws.selected;
     this.pendingWorkspaceChanges = true;
   }
 
-  saveWorkspaces() {
+  saveWorkspaces(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
@@ -241,7 +241,7 @@ export class UsersComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateObjectList() {
+  updateObjectList(): void {
     this.selectedUser = '';
     this.updateWorkspaceList();
 
@@ -307,7 +307,7 @@ export class UsersComponent implements OnInit {
                 )
                   .subscribe(
                     respCode => {
-                      if (respCode === 0) {
+                      if (respCode === true) {
                         this.snackBar.open('Status geändert', '', { duration: 1000 });
                         this.updateObjectList();
                       } else if (respCode === 401) {
