@@ -3,8 +3,8 @@
     <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
-    <button mat-raised-button (click)="saveUnit()" matTooltip="Aufgabe speichern" style="margin: 2px"
-            [disabled]="disableSaveButton" matTooltipPosition="above">
+    <button mat-raised-button (click)="saveUnitData()" matTooltip="Aufgabe speichern" style="margin: 2px"
+            [disabled]="!ds.unitDefinitionChanged && !ds.unitMetaDataChanged" matTooltipPosition="above">
         Speichern <mat-icon>save</mat-icon>
     </button>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->

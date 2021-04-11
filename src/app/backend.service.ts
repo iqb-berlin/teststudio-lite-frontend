@@ -121,3 +121,9 @@ export class ApiError {
     this.info = info;
   }
 }
+
+export interface AppConfig {
+  standardEditor: string;
+  standardPlayer: string;
+  selected: boolean;
+}

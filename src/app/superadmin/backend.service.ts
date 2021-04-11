@@ -60,7 +60,8 @@ export class BackendService {
       })
     };
     return this.http
-      .post<boolean>(`${this.serverUrl}setPassword.php`, { t: localStorage.getItem('t'), n: name, p: password }, httpOptions)
+      .post<boolean>(`${this.serverUrl}setPassword.php`,
+      { t: localStorage.getItem('t'), n: name, p: password }, httpOptions)
       .pipe(
         catchError(this.handleError)
       );
@@ -69,7 +70,7 @@ export class BackendService {
   setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean | number> {
     return this.http
       .put<boolean>(`${this.serverUrl}setSuperAdminStatus.php`, {
-      t: localStorage.getItem('t'), u: userId, s: changeToSuperUser, p: password
+      t: localStorage.getItem('t'), u: userId, s: changeToSuperUser ? 'true' : 'false', p: password
     })
       .pipe(
         catchError((err: ApiError) => {

@@ -26,17 +26,14 @@ import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameCh
 
 import { AuthoringRoutingModule } from './authoring-routing.module';
 import { AuthoringComponent } from './authoring.component';
-import { UnitDesignComponent } from './unitdesign/unitdesign.component';
-import { UnitPropertiesComponent } from './unitproperties/unitproperties.component';
 import { NewunitComponent } from './newunit/newunit.component';
-import { routingUnitDesignProviders } from './unitdesign/unitdesign-routing';
 import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
-import { routingUnitPropertiesProviders } from './unitproperties/unitproperties-routing';
 import { UnitComponent } from './unit/unit.component';
 import { UnitMetadataComponent } from './unit/unit-metadata/unit-metadata.component';
 import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
+import { SaveOrDiscardComponent } from './save-or-discard/save-or-discard.component';
 
 @NgModule({
   imports: [
@@ -69,15 +66,14 @@ import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
   declarations: [
     AuthoringComponent,
     ResizeIFrameChildDirective,
-    UnitDesignComponent,
-    UnitPropertiesComponent,
     NewunitComponent,
     SelectAuthoringToolComponent,
     SelectUnitComponent,
     MoveUnitComponent,
     UnitComponent,
     UnitMetadataComponent,
-    UnitEditorComponent
+    UnitEditorComponent,
+    SaveOrDiscardComponent
   ],
   exports: [
     AuthoringComponent
@@ -86,11 +82,9 @@ import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
     NewunitComponent,
     SelectAuthoringToolComponent,
     SelectUnitComponent,
-    MoveUnitComponent
-  ],
-  providers: [
-    routingUnitPropertiesProviders,
-    routingUnitDesignProviders
+    MoveUnitComponent,
+    SaveOrDiscardComponent
   ]
+  // providers: [  ]
 })
 export class AuthoringModule { }

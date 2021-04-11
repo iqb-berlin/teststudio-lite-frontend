@@ -1,20 +1,34 @@
 <form [formGroup]="selectform">
-    <h1 mat-dialog-title>Autorenmodul zuweisen</h1>
+    <h1 mat-dialog-title>Editor und Player zuweisen</h1>
 
     <mat-dialog-content fxLayout="column">
-      <div [hidden]="authoringToolList.length > 0">
+      <p>
+        {{data.prompt}}
+      </p>
+      <div [hidden]="editorList.length > 0">
         <p>
-          Es sind keine Autorenmodule in diesem System verfügbar!
+          Es sind keine Editoren in diesem System verfügbar!
         </p>
       </div>
-      <div [hidden]="authoringToolList.length === 0" fxLayout="column">
-        <p>
-          {{data.prompt}}
-        </p>
+      <div [hidden]="editorList.length === 0" fxLayout="column">
         <mat-form-field>
-          <mat-select placeholder="Autorenmodul" formControlName="atSelector" [(value)]="data.authoringTool">
-            <mat-option *ngFor="let a of authoringToolList" [value]="a.id">
+          <mat-select placeholder="Editor" formControlName="editorSelector" [(value)]="data.editor">
+            <mat-option *ngFor="let a of editorList" [value]="a.id">
                 {{a.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div [hidden]="playerList.length > 0">
+        <p>
+          Es sind keine Player in diesem System verfügbar!
+        </p>
+      </div>
+      <div [hidden]="playerList.length === 0" fxLayout="column">
+        <mat-form-field>
+          <mat-select placeholder="Player" formControlName="playerSelector" [(value)]="data.player">
+            <mat-option *ngFor="let a of playerList" [value]="a.id">
+              {{a.label}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -22,7 +36,7 @@
     </mat-dialog-content>
 
     <mat-dialog-actions>
-      <button *ngIf="authoringToolList.length > 0" mat-raised-button color="primary" type="submit" [mat-dialog-close]="selectform" [disabled]="selectform.invalid">Speichern</button>
+      <button *ngIf="editorList.length > 0" mat-raised-button color="primary" type="submit" [mat-dialog-close]="selectform" [disabled]="selectform.invalid">Speichern</button>
       <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
     </mat-dialog-actions>
 

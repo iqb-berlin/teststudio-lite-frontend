@@ -1,7 +1,6 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { MainDatastoreService } from '../maindatastore.service';
-import { BackendService, UnitShortData } from './backend.service';
+import { BackendService, UnitProperties } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,94 +8,39 @@ import { BackendService, UnitShortData } from './backend.service';
 export class DatastoreService {
   selectedWorkspace = 0;
   selectedUnit$ = new BehaviorSubject<number>(0);
-  unitPropertiesToSave$ = new BehaviorSubject<SaveDataComponent>(null);
-  unitDesignToSave$ = new BehaviorSubject<SaveDataComponent>(null);
+  unitMetadata: { [unitId: number]: UnitProperties } = {};
+  unitMetaDataChanged = false;
+  unitDefinition: { [unitId: number]: string } = {};
+  unitDefinitionChanged = false;
 
-  constructor(
-    private bs: BackendService,
-    private mds: MainDatastoreService
-  ) {
-    /*
-    this.workspaceId$.next(+localStorage.getItem('ws'));
+  constructor(private bs: BackendService) {}
 
-    this.workspaceId$.subscribe((wsId: number) => {
-      this.updateUnitList();
-
-      localStorage.setItem('ws', String(wsId));
-      if (wsId > 0) {
-        let wsFound = false;
-        const myWorkspaces = this.workspaceList$.getValue();
-        for (let i = 0; i < myWorkspaces.length; i++) {
-          if (myWorkspaces[i].id === wsId) {
-            this.workspaceName$.next(myWorkspaces[i].name);
-            wsFound = true;
-            break;
-          }
+  saveUnitData(unitId: number): void {
+    if (this.unitMetaDataChanged && this.unitMetadata[unitId]) {
+      const myMetadata = this.unitMetadata[unitId];
+      this.bs.setUnitMetaData(
+        this.selectedWorkspace,
+        myMetadata.id, myMetadata.key, myMetadata.label, myMetadata.description
+      ).subscribe(result => {
+        if (result === true) {
+          this.unitMetaDataChanged = false;
+        } else {
+          console.error('changeUnitProperties failed');
         }
-
-        if (!wsFound) {
-          this.workspaceName$.next('');
-        }
-      } else {
-        this.workspaceName$.next('');
-      }
-    });
-
-    this.mds.token$.subscribe(t => {
-      this.updateWorkspaceList();
-    });
-
-     */
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private updateWorkspaceList() {
-    /*
-    const myToken = this.mds.token$.getValue();
-    if (myToken === '') {
-      this.workspaceList$.next([]);
-      this.workspaceId$.next(this.workspaceId$.getValue()); // to trigger reload
-    } else {
-      this.bs.getWorkspaceList(this.mds.token$.getValue()).subscribe(
-        (wsresponse: WorkspaceData[]) => {
-          this.workspaceList$.next(wsresponse);
-          const wsId = this.workspaceId$.getValue();
-          if (wsId > 0) {
-            let wsFound = false;
-            for (let i = 0; i < wsresponse.length; i++) {
-              if (wsresponse[i].id === wsId) {
-                this.workspaceId$.next(wsId); // to trigger reload
-                wsFound = true;
-                break;
-              }
-            }
-
-            if (!wsFound) {
-              this.workspaceId$.next(0);
-            }
-          } else {
-            this.workspaceId$.next(0); // to trigger reload
-          }
-        }
-      );
+      });
     }
-
-     */
+    if (this.unitDefinitionChanged && this.unitDefinition[unitId]) {
+      this.bs.setUnitDefinition(
+        this.selectedWorkspace,
+        unitId,
+        this.unitDefinition[unitId],
+        this.unitMetadata[unitId].playerid
+      ).subscribe(saveResult => {
+        const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
+        if (myreturn) {
+          this.unitDefinitionChanged = false;
+        }
+      });
+    }
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  updatePageTitle(newTitle: string) {
-    // this.mds.updatePageTitle(newTitle);
-  }
-}
-
-export interface UnitViewMode {
-  route: string;
-  label: string;
-  matIcon: string;
-}
-
-export interface SaveDataComponent {
-  saveData: () => Observable<boolean>;
-  saveOrDiscard: () => Observable<boolean> | Promise<boolean> | boolean;
 }

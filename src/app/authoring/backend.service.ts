@@ -167,7 +167,8 @@ export class BackendService {
       );
   }
 
-  changeUnitProperties(workspaceId: number, props: UnitProperties): Observable<boolean | number> {
+  setUnitMetaData(workspaceId: number, unitId: number, unitKey: string,
+                  unitLabel: string, unitDescription: string): Observable<boolean | number> {
     const authToken = localStorage.getItem('t');
     if (!authToken) {
       return of(401);
@@ -176,10 +177,10 @@ export class BackendService {
       .put<boolean>(`${this.serverUrl}changeUnitProperties.php`, {
       t: authToken,
       ws: workspaceId,
-      u: props.id,
-      k: props.key,
-      l: props.label,
-      d: props.description
+      u: unitId,
+      k: unitKey,
+      l: unitLabel,
+      d: unitDescription
     })
       .pipe(
         catchError((err: ApiError) => {
@@ -231,6 +232,27 @@ export class BackendService {
         })
       );
   }
+
+  setUnitPlayer(workspaceId: number,
+                unitId: number, unitPlayerId: string): Observable<boolean | number> {
+    const authToken = localStorage.getItem('t');
+    if (!authToken) {
+      return of(401);
+    }
+    return this.http
+      .put<boolean>(`${this.serverUrl}setUnitPlayer.php`, {
+      t: authToken,
+      ws: workspaceId,
+      u: unitId,
+      pl: unitPlayerId
+    })
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          return of(err.code);
+        })
+      );
+  }
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -244,7 +266,7 @@ export interface UnitProperties {
   id: number;
   key: string;
   label: string;
-  lastchangeStr: string;
+  lastchangedStr: string;
   authoringtoolid: string;
   playerid: string;
   description: string;

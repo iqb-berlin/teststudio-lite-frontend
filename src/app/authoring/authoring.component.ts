@@ -9,7 +9,7 @@ import { MainDatastoreService } from '../maindatastore.service';
 import {
   UnitShortData, BackendService, UnitProperties
 } from './backend.service';
-import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
+import { DatastoreService } from './datastore.service';
 
 import { NewunitComponent } from './newunit/newunit.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
@@ -23,27 +23,13 @@ import { WorkspaceData } from '../backend.service';
 export class AuthoringComponent implements OnInit, OnDestroy {
   dataLoading = false;
   unitList: UnitShortData[] = [];
-  private workspaceList: WorkspaceData[] = [];
   private routingSubscription: Subscription = null;
   private selectedUnitSubscription: Subscription = null;
   selectedUnits: string[] = [];
 
-  private _disablePreviewButton = true;
-  get disablePreviewButton() {
-    return this._disablePreviewButton;
-  }
-
-  private _disableSaveButton = true;
-  get disableSaveButton() {
-    return this._disableSaveButton;
-  }
-
-  // private wsSelector = new FormControl();
-  unitSelector = new FormControl();
-
   constructor(
     private mds: MainDatastoreService,
-    private ds: DatastoreService,
+    public ds: DatastoreService,
     private bs: BackendService,
     private newunitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
@@ -51,20 +37,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.ds.unitDesignToSave$.subscribe(c => {
-      this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null);
-      if (this._disableSaveButton) {
-        this.dataLoading = false;
-      }
-    });
-    this.ds.unitPropertiesToSave$.subscribe(c => {
-      this._disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null);
-      if (this._disableSaveButton) {
-        this.dataLoading = false;
-      }
-    });
-  }
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -84,13 +57,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       });
     });
     this.selectedUnitSubscription = this.ds.selectedUnit$.subscribe((uId: number) => {
-      console.log(`new unit: ${uId}`);
       if (uId > 0) {
         if (this.selectedUnits.length > 0) {
           const unitId = Number(this.selectedUnits[0]);
-          console.log(`unit in list: ${unitId}`);
           if (unitId !== uId) {
-            console.log('fn');
             this.selectedUnits = [uId.toString()];
           }
         } else {
@@ -257,24 +227,6 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  saveUnit(): void {
-    let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
-    if (componentToSaveData !== null) {
-      this.dataLoading = true;
-      componentToSaveData.saveData().subscribe(result => {
-        if (result) {
-          this.updateUnitList();
-        }
-      });
-    }
-    componentToSaveData = this.ds.unitDesignToSave$.getValue();
-    if (componentToSaveData !== null) {
-      this.dataLoading = true;
-      componentToSaveData.saveData().subscribe();
-    }
-  }
-
   previewUnit(): void {
     this.router.navigate([`p/${this.ds.selectedWorkspace}##${this.ds.selectedUnit$.getValue()}`]);
   }
@@ -362,6 +314,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  saveUnitData(): void {
+    this.ds.saveUnitData(this.ds.selectedUnit$.getValue());
   }
 
   ngOnDestroy(): void {

@@ -54,19 +54,19 @@ export class ItemplayerComponent implements OnInit {
     });
   }
 
-  isAllSelectedFiles() {
+  isAllSelectedFiles(): boolean {
     const numSelected = this.tableselectionCheckboxFiles.selected.length;
     const numRows = this.filesDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggleFiles() {
+  masterToggleFiles(): void {
     this.isAllSelectedFiles() ?
       this.tableselectionCheckboxFiles.clear() :
       this.filesDatasource.data.forEach(row => this.tableselectionCheckboxFiles.select(row));
   }
 
-  hasFiles() {
+  hasFiles(): boolean {
     if (this.filesDatasource == null) {
       return false;
     }
@@ -79,7 +79,7 @@ export class ItemplayerComponent implements OnInit {
     }itemplayers/${element.filename}`;
   }
 
-  updateFileList() {
+  updateFileList(): void {
     this.dataLoading = true;
     this.bs.getItemPlayerFiles().subscribe(
       (filedataresponse: GetFileResponseData[]) => {
@@ -93,7 +93,7 @@ export class ItemplayerComponent implements OnInit {
     );
   }
 
-  deleteFiles() {
+  deleteFiles(): void {
     const filesToDelete = [];
     this.tableselectionCheckboxFiles.selected.forEach(element => {
       filesToDelete.push(element.filename);
