@@ -1,4 +1,6 @@
-import { BehaviorSubject } from 'rxjs';
+import {
+  BehaviorSubject, forkJoin, Observable, of
+} from 'rxjs';
 import { Injectable } from '@angular/core';
 import { BackendService, StrIdLabelSelectedData, UnitProperties } from './backend.service';
 import { UnitData } from './authoring.classes';
@@ -9,10 +11,6 @@ import { UnitData } from './authoring.classes';
 export class DatastoreService {
   selectedWorkspace = 0;
   selectedUnit$ = new BehaviorSubject<number>(0);
-  unitMetadata: { [unitId: number]: UnitProperties } = {};
-  unitMetaDataChanged = false;
-  unitDefinition: { [unitId: number]: string } = {};
-  unitDefinitionChanged = false;
   editorList: StrIdLabelSelectedData[] = [];
   playerList: StrIdLabelSelectedData[] = [];
   unitDataOld: UnitData = null;
@@ -21,40 +19,54 @@ export class DatastoreService {
 
   constructor(private bs: BackendService) {}
 
-  saveUnitData(unitId: number): boolean {
-    if (this.unitMetaDataChanged && this.unitMetadata[unitId]) {
-      const myMetadata = this.unitMetadata[unitId];
-      this.bs.setUnitMetaData(
-        this.selectedWorkspace,
-        myMetadata.id, myMetadata.key, myMetadata.label, myMetadata.description
-      ).subscribe(result => {
-        if (result === true) {
-          this.unitMetaDataChanged = false;
-          return true;
-        }
-        return false;
-        console.error('changeUnitProperties failed');
-      });
+  saveUnitData(): Observable<boolean> {
+    if (this.unitDataNew && this.unitDataOld) {
+      const saveSubscriptions: Observable<number | boolean>[] = [];
+      if (
+        (this.unitDataNew.key !== this.unitDataOld.key) ||
+        (this.unitDataNew.label !== this.unitDataOld.label) ||
+        (this.unitDataNew.description !== this.unitDataOld.description)
+      ) {
+        saveSubscriptions.push(this.bs.setUnitMetaData(
+          this.selectedWorkspace,
+          this.unitDataNew.id, this.unitDataNew.key, this.unitDataNew.label, this.unitDataNew.description
+        ));
+      }
+      if (this.unitDataOld.editorId !== this.unitDataNew.editorId) {
+        saveSubscriptions.push(this.bs.setUnitEditor(
+          this.selectedWorkspace, this.unitDataNew.id, this.unitDataNew.editorId
+        ));
+      }
+      if (this.unitDataOld.playerId !== this.unitDataNew.playerId) {
+        saveSubscriptions.push(this.bs.setUnitPlayer(
+          this.selectedWorkspace, this.unitDataNew.id, this.unitDataNew.playerId
+        ));
+      }
+      // todo unit-def
+      if (saveSubscriptions.length > 0) {
+        forkJoin(saveSubscriptions).subscribe(results => {
+          console.log(results);
+          this.unitDataOld = {
+            id: this.unitDataNew.id,
+            key: this.unitDataNew.key,
+            label: this.unitDataNew.label,
+            description: this.unitDataNew.description,
+            editorId: this.unitDataNew.editorId,
+            playerId: this.unitDataNew.playerId,
+            lastChangedStr: this.unitDataNew.lastChangedStr,
+            def: this.unitDataNew.def
+          };
+          this.unitDataChanged = false;
+          return of(true);
+        });
+      } else {
+        return of(true);
+      }
     }
-    if (this.unitDefinitionChanged && this.unitDefinition[unitId]) {
-      this.bs.setUnitDefinition(
-        this.selectedWorkspace,
-        unitId,
-        this.unitDefinition[unitId],
-        this.unitMetadata[unitId].playerid
-      ).subscribe(saveResult => {
-        const myreturn = (typeof saveResult === 'boolean') ? saveResult : false;
-        if (myreturn) {
-          this.unitDefinitionChanged = false;
-          return true;
-        }
-        return false;
-      });
-    }
-    return true;
+    return of(true);
   }
 
-  setUnitDataChanged() {
+  setUnitDataChanged(): void {
     this.unitDataChanged = this.getUnitDataChanged();
   }
 

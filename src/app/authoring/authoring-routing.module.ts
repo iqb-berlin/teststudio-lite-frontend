@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthoringComponent } from './authoring.component';
 import { UnitComponent } from './unit/unit.component';
+import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
 
 const routes: Routes = [
   {
@@ -10,11 +11,8 @@ const routes: Routes = [
     children: [
       {
         path: 'u/:u',
-        component: UnitComponent
-        // canActivate: [UnitDesignActivateGuard],
-        // canDeactivate: [UnitDesignDeactivateGuard],
-        // resolve: {
-        //   unitDesignData: UnitDesignResolver
+        component: UnitComponent,
+        canDeactivate: [UnitRoutingCanDeactivateGuard]
       }
     ]
   }];

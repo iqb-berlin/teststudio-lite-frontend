@@ -34,6 +34,7 @@ import { UnitComponent } from './unit/unit.component';
 import { UnitMetadataComponent } from './unit/unit-metadata/unit-metadata.component';
 import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
 import { SaveOrDiscardComponent } from './save-or-discard/save-or-discard.component';
+import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
 
 @NgModule({
   imports: [
@@ -84,7 +85,9 @@ import { SaveOrDiscardComponent } from './save-or-discard/save-or-discard.compon
     SelectUnitComponent,
     MoveUnitComponent,
     SaveOrDiscardComponent
+  ],
+  providers: [
+    UnitRoutingCanDeactivateGuard
   ]
-  // providers: [  ]
 })
 export class AuthoringModule { }

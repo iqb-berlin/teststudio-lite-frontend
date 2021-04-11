@@ -340,7 +340,13 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   saveUnitData(): void {
-    this.ds.saveUnitData(this.ds.selectedUnit$.getValue());
+    this.ds.saveUnitData().subscribe(saveResult => {
+      if (saveResult) {
+        this.snackBar.open('Aufgabendaten gespeichert', '', { duration: 1000 });
+      } else {
+        this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 1000 });
+      }
+    });
   }
 
   ngOnDestroy(): void {

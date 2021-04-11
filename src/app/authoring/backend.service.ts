@@ -24,7 +24,7 @@ export class BackendService {
       .put<UnitShortData[]>(`${this.serverUrl}getUnitList.php`, { t: authToken, ws: workspaceId })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`getUnitList Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -42,7 +42,7 @@ export class BackendService {
       })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`addUnit Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -61,7 +61,7 @@ export class BackendService {
       })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`copyUnit Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -76,7 +76,7 @@ export class BackendService {
       .put<boolean>(`${this.serverUrl}deleteUnits.php`, { t: authToken, ws: workspaceId, u: units })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`deleteUnits Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -95,7 +95,7 @@ export class BackendService {
       })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`moveUnits Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -124,7 +124,7 @@ export class BackendService {
       .put<UnitProperties>(`${this.serverUrl}getUnitProperties.php`, { t: authToken, ws: workspaceId, u: unitId })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`getUnitProperties Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -139,7 +139,7 @@ export class BackendService {
       .put<UnitDesignData>(`${this.serverUrl}getUnitDesignData.php`, { t: authToken, ws: workspaceId, u: unitId })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`getUnitDesignData Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -150,7 +150,7 @@ export class BackendService {
       .get<StrIdLabelSelectedData[]>(`${this.serverUrl}getItemAuthoringToolList.php`)
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`getItemAuthoringToolList Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -161,7 +161,7 @@ export class BackendService {
       .post<boolean>(`${this.serverUrl}hasValidAuthoringTool.php`, { u: unitId })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`hasValidAuthoringTool Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -184,14 +184,14 @@ export class BackendService {
     })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`setUnitMetaData Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
   }
 
-  setUnitAuthoringTool(workspaceId: number,
-                       unitId: number, authoringtoolId: string): Observable<boolean | number> {
+  setUnitEditor(workspaceId: number,
+                unitId: number, editorId: string): Observable<boolean | number> {
     const authToken = localStorage.getItem('t');
     if (!authToken) {
       return of(401);
@@ -201,11 +201,32 @@ export class BackendService {
       t: authToken,
       ws: workspaceId,
       u: unitId,
-      ati: authoringtoolId
+      ati: editorId
     })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`setUnitEditor Api-Error: ${err.code} ${err.info} `);
+          return of(err.code);
+        })
+      );
+  }
+
+  setUnitPlayer(workspaceId: number,
+                unitId: number, playerId: string): Observable<boolean | number> {
+    const authToken = localStorage.getItem('t');
+    if (!authToken) {
+      return of(401);
+    }
+    return this.http
+      .post<boolean>(`${this.serverUrl}setUnitPlayer.php`, {
+      t: authToken,
+      ws: workspaceId,
+      u: unitId,
+      pl: playerId
+    })
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`setUnitPlayer Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -227,28 +248,7 @@ export class BackendService {
     })
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
-      );
-  }
-
-  setUnitPlayer(workspaceId: number,
-                unitId: number, unitPlayerId: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
-    return this.http
-      .put<boolean>(`${this.serverUrl}setUnitPlayer.php`, {
-      t: authToken,
-      ws: workspaceId,
-      u: unitId,
-      pl: unitPlayerId
-    })
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
+          console.warn(`setUnitDefinition Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );

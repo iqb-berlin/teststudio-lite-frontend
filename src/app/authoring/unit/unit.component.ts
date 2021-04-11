@@ -49,6 +49,7 @@ export class UnitComponent implements OnInit {
               def: ''
             };
           }
+          this.ds.unitDataChanged = false;
         });
       });
     });

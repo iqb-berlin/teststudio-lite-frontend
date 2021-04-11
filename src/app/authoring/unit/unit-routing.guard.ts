@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot } from '@angular/router';
+import { CanDeactivate } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { switchMap } from 'rxjs/operators';
@@ -8,18 +8,14 @@ import { ConfirmDialogData, SaveOrDiscardComponent } from '../save-or-discard/sa
 import { DatastoreService } from '../datastore.service';
 
 @Injectable()
-export class UnitRoutingGuard implements CanDeactivate<UnitComponent> {
+export class UnitRoutingCanDeactivateGuard implements CanDeactivate<UnitComponent> {
   constructor(
     public confirmDialog: MatDialog,
     public ds: DatastoreService
   ) { }
 
-  canDeactivate(
-    component: UnitComponent,
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.ds.unitDefinitionChanged || this.ds.unitMetaDataChanged) {
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+    if (this.ds.unitDataChanged) {
       const dialogRef = this.confirmDialog.open(SaveOrDiscardComponent, {
         width: '500px',
         height: '300px',
@@ -40,7 +36,7 @@ export class UnitRoutingGuard implements CanDeactivate<UnitComponent> {
           if (result === 'NO') {
             return of(true);
           } // 'YES'
-          return of(this.ds.saveUnitData(this.ds.selectedUnit$.getValue()));
+          return this.ds.saveUnitData();
         })
       );
     }
