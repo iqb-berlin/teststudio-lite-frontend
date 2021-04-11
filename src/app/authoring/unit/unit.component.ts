@@ -9,12 +9,6 @@ import { BackendService } from '../backend.service';
   styleUrls: ['./unit.component.css']
 })
 export class UnitComponent implements OnInit {
-  navLinks = [
-    { path: 'props', label: 'Eigenschaften' },
-    { path: 'editor', label: 'Editor' },
-    { path: 'preview', label: 'Voransicht' }
-  ];
-
   private routingSubscription: Subscription = null;
 
   constructor(
@@ -27,7 +21,35 @@ export class UnitComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.routingSubscription = this.route.params.subscribe(params => {
-        this.ds.selectedUnit$.next(Number(params.u));
+        const newUnitId = Number(params.u);
+        this.ds.selectedUnit$.next(newUnitId);
+        this.bs.getUnitProperties(this.ds.selectedWorkspace, newUnitId).subscribe(umd => {
+          if (typeof umd === 'number') {
+            this.ds.unitDataNew = null;
+            this.ds.unitDataOld = null;
+          } else {
+            this.ds.unitDataNew = {
+              id: umd.id,
+              key: umd.key,
+              label: umd.label,
+              description: umd.description,
+              editorId: umd.authoringtoolid,
+              playerId: umd.playerid,
+              lastChangedStr: umd.lastchangedStr,
+              def: ''
+            };
+            this.ds.unitDataOld = {
+              id: umd.id,
+              key: umd.key,
+              label: umd.label,
+              description: umd.description,
+              editorId: umd.authoringtoolid,
+              playerId: umd.playerid,
+              lastChangedStr: umd.lastchangedStr,
+              def: ''
+            };
+          }
+        });
       });
     });
   }

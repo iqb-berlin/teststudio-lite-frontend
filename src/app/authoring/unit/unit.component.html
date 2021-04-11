@@ -1,7 +1,7 @@
 <mat-tab-group animationDuration="0ms">
   <mat-tab label="Allgemein">
     <ng-template matTabContent>
-      <app-unit-metadata [workspaceId]="ds.selectedWorkspace" [unitId]="ds.selectedUnit$ | async"></app-unit-metadata>
+      <app-unit-metadata [unitData]="ds.unitDataNew" (unitDataChanged)="ds.setUnitDataChanged()"></app-unit-metadata>
     </ng-template>
   </mat-tab>
   <mat-tab label="Editor">

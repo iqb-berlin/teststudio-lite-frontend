@@ -1,4 +1,4 @@
-<form [formGroup]="unitForm" *ngIf="unitMetadata" fxLayout="column" style="margin: 10px">
+<form [formGroup]="unitForm" *ngIf="unitData" fxLayout="column" style="margin: 10px">
   <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between start">
     <div fxLayout="column" fxFlex="50">
       <mat-form-field>
@@ -17,13 +17,38 @@
       </mat-form-field>
     </div>
     <div fxLayout="column" fxFlex>
-      <p *ngIf="unitMetadata?.authoringtoolid">Editor: {{ unitMetadata?.authoringtoolid }}</p>
-      <p *ngIf="!unitMetadata?.authoringtoolid">Kein Editor zugewiesen.</p>
-      <p *ngIf="unitMetadata?.playerid">Player: {{ unitMetadata?.playerid }}</p>
-      <p *ngIf="!unitMetadata?.playerid">Kein Player zugewiesen. Der Aufgabe wird automatisch ein Player
+      <div [hidden]="ds.editorList.length > 0">
+        <p>
+          Es sind keine Editoren in diesem System verfügbar!
+        </p>
+      </div>
+      <div [hidden]="ds.editorList.length === 0" fxLayout="column">
+        <mat-form-field>
+          <mat-select placeholder="Editor" formControlName="editorSelector">
+            <mat-option *ngFor="let a of ds.editorList" [value]="a.id">
+              {{a.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div [hidden]="ds.playerList.length > 0">
+        <p>
+          Es sind keine Player in diesem System verfügbar!
+        </p>
+      </div>
+      <div [hidden]="ds.playerList.length === 0" fxLayout="column">
+        <mat-form-field>
+          <mat-select placeholder="Player" formControlName="playerSelector">
+            <mat-option *ngFor="let a of ds.playerList" [value]="a.id">
+              {{a.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <p *ngIf="!unitData?.playerId">Kein Player zugewiesen. Der Aufgabe wird automatisch ein Player
         zugewiesen, wenn Sie das erste Mal die Aufgabe im Editor aufrufen und speichern.</p>
-      <button mat-raised-button (click)="changeEditorPlayer()">Editor/Player ändern</button>
-      <p><em>Letzte Änderung: {{ unitMetadata?.lastchangedStr }}</em></p>
+      <p><em>Letzte Änderung: {{ unitData?.lastChangedStr }}</em></p>
     </div>
   </div>
 

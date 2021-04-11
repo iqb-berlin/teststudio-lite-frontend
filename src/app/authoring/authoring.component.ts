@@ -1,5 +1,5 @@
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -7,14 +7,14 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { MainDatastoreService } from '../maindatastore.service';
 import {
-  UnitShortData, BackendService, UnitProperties
+  BackendService, StrIdLabelSelectedData, UnitProperties, UnitShortData
 } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
 import { NewunitComponent } from './newunit/newunit.component';
 import { SelectUnitComponent } from './select-unit/select-unit.component';
 import { MoveUnitComponent } from './moveunit/moveunit.component';
-import { WorkspaceData } from '../backend.service';
+import { BackendService as SuperAdminBackendService, GetFileResponseData } from '../superadmin/backend.service';
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -31,7 +31,8 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private mds: MainDatastoreService,
     public ds: DatastoreService,
     private bs: BackendService,
-    private newunitDialog: MatDialog,
+    private bsSuper: SuperAdminBackendService,
+    private newUnitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -42,20 +43,12 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.routingSubscription = this.route.params.subscribe(params => {
-        const workspaceRoute = Number(params.ws);
-        this.ds.selectedWorkspace = workspaceRoute;
-        let selectedWorkspaceName = '';
-        if (this.mds.loginStatus) {
-          this.mds.loginStatus.workspaces.forEach(ws => {
-            if (ws.id === workspaceRoute) {
-              selectedWorkspaceName = ws.name;
-            }
-          });
-        }
+        this.ds.selectedWorkspace = Number(params.ws);
         this.updateUnitList();
-        this.mds.pageTitle = `IQB-Teststudio - ${selectedWorkspaceName}`;
       });
     });
+
+    /*
     this.selectedUnitSubscription = this.ds.selectedUnit$.subscribe((uId: number) => {
       if (uId > 0) {
         if (this.selectedUnits.length > 0) {
@@ -71,7 +64,6 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       }
     });
 
-    /*
     this.unitSelector.valueChanges.subscribe(uId => {
       this.router.navigate([`${this.ds.unitViewMode$.getValue()}/${uId}`], { relativeTo: this.route })
         .then(naviresult => {
@@ -102,6 +94,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
           this.mds.errorMessage = MainDatastoreService.serverErrorMessageText(uResponse);
           this.unitList = [];
           this.ds.selectedUnit$.next(0);
+          this.mds.pageTitle = 'IQB-Teststudio - Problem beim Laden der Aufgabenliste';
         } else {
           this.unitList = uResponse;
           const selectedUnit = this.ds.selectedUnit$.getValue();
@@ -112,6 +105,37 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             }
           });
           this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
+          this.bs.getItemAuthoringToolList().subscribe((atL: StrIdLabelSelectedData[] | number) => {
+            if (typeof atL !== 'number') {
+              if (atL !== null) {
+                this.ds.editorList = atL as StrIdLabelSelectedData[];
+              }
+              let selectedWorkspaceName = '';
+              if (this.mds.loginStatus) {
+                this.mds.loginStatus.workspaces.forEach(ws => {
+                  if (ws.id === this.ds.selectedWorkspace) {
+                    selectedWorkspaceName = ws.name;
+                  }
+                });
+              }
+              this.mds.pageTitle = `IQB-Teststudio ${selectedWorkspaceName ? (` - ${selectedWorkspaceName}`) : ''}`;
+            }
+          });
+          this.bsSuper.getItemPlayerFiles().subscribe(
+            (fileDataResponse: GetFileResponseData[]) => {
+              if (typeof fileDataResponse === 'number') {
+                this.ds.playerList = [];
+              } else if (fileDataResponse !== null) {
+                fileDataResponse.forEach(f => {
+                  this.ds.playerList.push({
+                    id: f.filename,
+                    label: f.filename,
+                    selected: false
+                  });
+                });
+              }
+            }
+          );
         }
       }
     );
@@ -122,11 +146,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       const unitId = this.selectedUnits[0];
       this.router.navigate([`u/${unitId}`], { relativeTo: this.route });
     }
-    console.info('l8\tListSelectionExample::onNgModelChange::selectedOptions:', this.selectedUnits, ';');
   }
 
   addUnit(): void {
-    const dialogRef = this.newunitDialog.open(NewunitComponent, {
+    const dialogRef = this.newUnitDialog.open(NewunitComponent, {
       width: '600px',
       data: {
         title: 'Neue Aufgabe',
@@ -241,7 +264,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         if (up !== null) {
           const newUnit = up as UnitProperties;
           if (newUnit.id === myUnitId) {
-            const dialogRef = this.newunitDialog.open(NewunitComponent, {
+            const dialogRef = this.newUnitDialog.open(NewunitComponent, {
               width: '600px',
               data: {
                 title: `Aufgabe ${newUnit.key} in neue Aufgabe kopieren`,
