@@ -2,7 +2,7 @@ import {
   BehaviorSubject, forkJoin, Observable, of
 } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { BackendService, StrIdLabelSelectedData, UnitProperties } from './backend.service';
+import { BackendService, StrIdLabelSelectedData, UnitShortData } from './backend.service';
 import { UnitData } from './authoring.classes';
 
 @Injectable({
@@ -16,17 +16,21 @@ export class DatastoreService {
   unitDataOld: UnitData = null;
   unitDataNew: UnitData = null;
   unitDataChanged = false;
+  unitList: UnitShortData[] = [];
 
   constructor(private bs: BackendService) {}
 
   saveUnitData(): Observable<boolean> {
     if (this.unitDataNew && this.unitDataOld) {
       const saveSubscriptions: Observable<number | boolean>[] = [];
+      let reloadUnitList = false;
       if (
         (this.unitDataNew.key !== this.unitDataOld.key) ||
         (this.unitDataNew.label !== this.unitDataOld.label) ||
         (this.unitDataNew.description !== this.unitDataOld.description)
       ) {
+        reloadUnitList = (this.unitDataNew.key !== this.unitDataOld.key) ||
+          (this.unitDataNew.label !== this.unitDataOld.label);
         saveSubscriptions.push(this.bs.setUnitMetaData(
           this.selectedWorkspace,
           this.unitDataNew.id, this.unitDataNew.key, this.unitDataNew.label, this.unitDataNew.description
@@ -57,6 +61,18 @@ export class DatastoreService {
             def: this.unitDataNew.def
           };
           this.unitDataChanged = false;
+          if (reloadUnitList) {
+            this.bs.getUnitList(this.selectedWorkspace).subscribe(
+              uResponse => {
+                if (typeof uResponse === 'number') {
+                  this.unitList = [];
+                  return false;
+                }
+                this.unitList = uResponse;
+                return true;
+              }
+            );
+          }
           return of(true);
         });
       } else {

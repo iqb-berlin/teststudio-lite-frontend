@@ -3,13 +3,19 @@
     <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
-    <button mat-raised-button (click)="saveUnitData()" matTooltip="Aufgabe speichern" style="margin: 2px"
-            [disabled]="!ds.unitDataChanged" matTooltipPosition="above">
+    <div fxLayout="row" style="margin: 2px">
+      <button mat-button (click)="discardChanges()" matTooltip="Aufgabenänderungen verwerfen"
+              [disabled]="!ds.unitDataChanged" matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button mat-raised-button (click)="saveUnitData()" matTooltip="Aufgabe speichern" fxFlex=""
+              [disabled]="!ds.unitDataChanged" matTooltipPosition="above">
         Speichern <mat-icon>save</mat-icon>
-    </button>
+      </button>
+    </div>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
     <mat-selection-list [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex cdkScrollable>
-      <mat-list-option *ngFor="let unit of unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label"
+      <mat-list-option *ngFor="let unit of ds.unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label"
       [class]="unit.id === (ds.selectedUnit$ | async) ? 'selected' : 'not-selected'">
         {{ unit.key }} - {{ unit.label }}
       </mat-list-option>

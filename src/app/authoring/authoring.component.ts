@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MainDatastoreService } from '../maindatastore.service';
 import {
   BackendService, StrIdLabelSelectedData, UnitProperties, UnitShortData
@@ -22,7 +23,6 @@ import { BackendService as SuperAdminBackendService, GetFileResponseData } from 
 })
 export class AuthoringComponent implements OnInit, OnDestroy {
   dataLoading = false;
-  unitList: UnitShortData[] = [];
   private routingSubscription: Subscription = null;
   private selectedUnitSubscription: Subscription = null;
   selectedUnits: string[] = [];
@@ -35,6 +35,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private newUnitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
     private messsageDialog: MatDialog,
+    private deleteConfirmDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
@@ -44,47 +45,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.routingSubscription = this.route.params.subscribe(params => {
         this.ds.selectedWorkspace = Number(params.ws);
+        this.ds.selectedUnit$.next(0);
         this.updateUnitList();
       });
     });
-
-    /*
-    this.selectedUnitSubscription = this.ds.selectedUnit$.subscribe((uId: number) => {
-      if (uId > 0) {
-        if (this.selectedUnits.length > 0) {
-          const unitId = Number(this.selectedUnits[0]);
-          if (unitId !== uId) {
-            this.selectedUnits = [uId.toString()];
-          }
-        } else {
-          this.selectedUnits = [uId.toString()];
-        }
-      } else {
-        this.selectedUnits = [];
-      }
-    });
-
-    this.unitSelector.valueChanges.subscribe(uId => {
-      this.router.navigate([`${this.ds.unitViewMode$.getValue()}/${uId}`], { relativeTo: this.route })
-        .then(naviresult => {
-          if (naviresult === false) {
-            this.unitSelector.setValue(this.ds.selectedUnitId$.getValue(), { emitEvent: false });
-          }
-        });
-    });
-     */
-
-    /*
-    this.unitviewSelector.valueChanges.subscribe(uvm => {
-      console.log(uvm);
-      this.router.navigate([`${uvm}/${this.ds.selectedUnitId$.getValue()}`], { relativeTo: this.route })
-        .then(naviresult => {
-          if (naviresult === false) {
-            this.unitviewSelector.setValue(this.ds.unitViewMode$.getValue(), { emitEvent: false });
-          }
-        });
-    });
-       */
   }
 
   updateUnitList(): void {
@@ -92,14 +56,14 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       uResponse => {
         if (typeof uResponse === 'number') {
           this.mds.errorMessage = MainDatastoreService.serverErrorMessageText(uResponse);
-          this.unitList = [];
+          this.ds.unitList = [];
           this.ds.selectedUnit$.next(0);
           this.mds.pageTitle = 'IQB-Teststudio - Problem beim Laden der Aufgabenliste';
         } else {
-          this.unitList = uResponse;
+          this.ds.unitList = uResponse;
           const selectedUnit = this.ds.selectedUnit$.getValue();
           let unitExists = false;
-          this.unitList.forEach(u => {
+          this.ds.unitList.forEach(u => {
             if (u.id === selectedUnit) {
               unitExists = true;
             }
@@ -144,6 +108,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   onUnitSelectionChange(event: Event): void {
     if (this.selectedUnits.length > 0) {
       const unitId = this.selectedUnits[0];
+      this.selectedUnits = [];
       this.router.navigate([`u/${unitId}`], { relativeTo: this.route });
     }
   }
@@ -345,6 +310,34 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         this.snackBar.open('Aufgabendaten gespeichert', '', { duration: 1000 });
       } else {
         this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 1000 });
+      }
+    });
+  }
+
+  discardChanges(): void {
+    const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: <ConfirmDialogData>{
+        title: 'Verwerfen der Änderungen',
+        content: 'Die Änderungen an der Aufgabe werden verworfen. Fortsetzen?',
+        confirmbuttonlabel: 'Verwerfen',
+        showcancel: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.ds.unitDataNew = {
+          id: this.ds.unitDataOld.id,
+          key: this.ds.unitDataOld.key,
+          label: this.ds.unitDataOld.label,
+          description: this.ds.unitDataOld.description,
+          editorId: this.ds.unitDataOld.editorId,
+          playerId: this.ds.unitDataOld.playerId,
+          lastChangedStr: this.ds.unitDataOld.lastChangedStr,
+          def: this.ds.unitDataOld.def
+        };
+        this.ds.unitDataChanged = false;
       }
     });
   }
