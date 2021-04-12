@@ -3,7 +3,10 @@
 
   <mat-dialog-content fxLayout="column">
     <mat-form-field>
-      <input matInput formControlName="key" placeholder="Kurzname" [value]="data.key">
+      <input matInput formControlName="key" placeholder="Kurzname" [value]="data.key" >
+      <mat-error *ngIf="newunitform.get('key').invalid">
+        Zu kurz oder schon vorhanden
+      </mat-error>
     </mat-form-field>
     <mat-form-field>
       <input matInput formControlName="label" placeholder="Name" [value]="data.label">

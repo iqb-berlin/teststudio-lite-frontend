@@ -1,4 +1,4 @@
-<mat-tab-group animationDuration="0ms">
+<mat-tab-group animationDuration="0ms" fxLayout="column">
   <mat-tab label="Allgemein">
     <ng-template matTabContent>
       <app-unit-metadata [unitData]="ds.unitDataNew" (unitDataChanged)="ds.setUnitDataChanged()"></app-unit-metadata>
@@ -6,7 +6,8 @@
   </mat-tab>
   <mat-tab label="Editor">
     <ng-template matTabContent>
-      <app-unit-editor [workspaceId]="ds.selectedWorkspace" [unitId]="ds.selectedUnit$ | async"></app-unit-editor>
+      <app-unit-editor [workspaceId]="ds.selectedWorkspace" [unitDataOld]="ds.unitDataOld" fxFlex
+                       [unitDataNew]="ds.unitDataNew" (unitDataChanged)="ds.setUnitDataChanged()"></app-unit-editor>
     </ng-template>
   </mat-tab>
   <mat-tab label="Vorschau">

@@ -2,6 +2,8 @@ import {
   BehaviorSubject, forkJoin, Observable, of
 } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { map, switchMap } from 'rxjs/operators';
 import { BackendService, StrIdLabelSelectedData, UnitShortData } from './backend.service';
 import { UnitData } from './authoring.classes';
 
@@ -48,42 +50,64 @@ export class DatastoreService {
       }
       // todo unit-def
       if (saveSubscriptions.length > 0) {
-        forkJoin(saveSubscriptions).subscribe(results => {
-          console.log(results);
-          this.unitDataOld = {
-            id: this.unitDataNew.id,
-            key: this.unitDataNew.key,
-            label: this.unitDataNew.label,
-            description: this.unitDataNew.description,
-            editorId: this.unitDataNew.editorId,
-            playerId: this.unitDataNew.playerId,
-            lastChangedStr: this.unitDataNew.lastChangedStr,
-            def: this.unitDataNew.def
-          };
-          this.unitDataChanged = false;
-          if (reloadUnitList) {
-            this.bs.getUnitList(this.selectedWorkspace).subscribe(
-              uResponse => {
-                if (typeof uResponse === 'number') {
-                  this.unitList = [];
-                  return false;
-                }
-                this.unitList = uResponse;
-                return true;
-              }
-            );
-          }
-          return of(true);
-        });
-      } else {
-        return of(true);
+        return forkJoin(saveSubscriptions).pipe(
+          switchMap(results => {
+            let isFailing = false;
+            results.forEach(r => {
+              if (r !== true) isFailing = true;
+            });
+            if (isFailing) return of(false);
+            this.unitDataOld = {
+              id: this.unitDataNew.id,
+              key: this.unitDataNew.key,
+              label: this.unitDataNew.label,
+              description: this.unitDataNew.description,
+              editorId: this.unitDataNew.editorId,
+              playerId: this.unitDataNew.playerId,
+              lastChangedStr: this.unitDataNew.lastChangedStr,
+              def: this.unitDataNew.def
+            };
+            this.unitDataChanged = false;
+            if (reloadUnitList) {
+              return this.bs.getUnitList(this.selectedWorkspace)
+                .pipe(
+                  map(uResponse => {
+                    if (typeof uResponse === 'number') {
+                      this.unitList = [];
+                      return false;
+                    }
+                    this.unitList = uResponse;
+                    return true;
+                  })
+                );
+            }
+            return of(true);
+          })
+        );
       }
+      return of(true);
     }
     return of(true);
   }
 
   setUnitDataChanged(): void {
     this.unitDataChanged = this.getUnitDataChanged();
+  }
+
+  static unitKeyUniquenessValidator(unitId: number, unitList: UnitShortData[]): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const newKeyNormalised = control.value.toUpperCase().trim();
+      let isUnique = true;
+      unitList.forEach(u => {
+        if (u.key.toUpperCase().trim() === newKeyNormalised && u.id !== unitId) {
+          isUnique = false;
+        }
+      });
+      if (!isUnique) {
+        return { keyNotUnique: 'Der Kurzname muss eindeutig innerhalb des Arbeitsbereiches sein.' };
+      }
+      return null;
+    };
   }
 
   private getUnitDataChanged(): boolean {

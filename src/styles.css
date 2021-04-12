@@ -34,7 +34,7 @@ body {
   z-index: 999;
   height: 2em;
   width: 2em;
-  overflow: show;
+  overflow: hidden;
   margin: auto;
   top: 0;
   left: 0;
@@ -47,7 +47,6 @@ iframe.unitHost {
   border: none;
 }
 
-#unitSelectorGroup .mat-button-toggle-label-content {
-  padding: 0 4px !important;
-  line-height: 24px !important;
+.mat-tab-body-wrapper{
+  flex-grow: 1;
 }

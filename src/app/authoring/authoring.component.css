@@ -48,11 +48,3 @@ mat-button-toggle {
   margin: 4px;
   color: blue;
 }
-
-#unitViewSelector {
-  background-color: slategray;
-}
-
-#unitViewSelector .mat-button-toggle {
-  color: black;
-}

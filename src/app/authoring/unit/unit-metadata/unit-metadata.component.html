@@ -1,9 +1,12 @@
-<form [formGroup]="unitForm" *ngIf="unitData" fxLayout="column" style="margin: 10px">
-  <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between start">
-    <div fxLayout="column" fxFlex="50">
+<form [formGroup]="unitForm" *ngIf="unitData" fxFlex>
+  <div fxLayout="row wrap" style="margin: 10px" fxLayoutGap="50px" fxLayoutAlign="space-between start" fxFlex>
+    <div fxLayout="column" fxFlex="1 0 300px">
       <mat-form-field>
         <mat-label>Kurzname</mat-label>
         <input matInput formControlName="key" placeholder="Kurzname">
+        <mat-error *ngIf="unitForm.get('key').invalid">
+          Zu kurz oder schon vorhanden
+        </mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Name</mat-label>
@@ -16,7 +19,7 @@
                   cdkAutosizeMinRows="2"></textarea>
       </mat-form-field>
     </div>
-    <div fxLayout="column" fxFlex>
+    <div fxLayout="column" fxFlex="1 0 300px">
       <div [hidden]="ds.editorList.length > 0">
         <p>
           Es sind keine Editoren in diesem System verfügbar!

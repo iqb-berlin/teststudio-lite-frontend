@@ -183,9 +183,9 @@ export class BackendService {
       d: unitDescription
     })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`setUnitMetaData Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
+        catchError(err => {
+          console.warn(`setUnitMetaData Api-Error: ${err.status}.`);
+          return of(err.status);
         })
       );
   }

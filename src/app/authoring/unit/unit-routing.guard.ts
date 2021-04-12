@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { CanDeactivate } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UnitComponent } from './unit.component';
 import { ConfirmDialogData, SaveOrDiscardComponent } from '../save-or-discard/save-or-discard.component';
 import { DatastoreService } from '../datastore.service';
@@ -11,6 +12,7 @@ import { DatastoreService } from '../datastore.service';
 export class UnitRoutingCanDeactivateGuard implements CanDeactivate<UnitComponent> {
   constructor(
     public confirmDialog: MatDialog,
+    private snackBar: MatSnackBar,
     public ds: DatastoreService
   ) { }
 
@@ -35,8 +37,17 @@ export class UnitRoutingCanDeactivateGuard implements CanDeactivate<UnitComponen
           }
           if (result === 'NO') {
             return of(true);
-          } // 'YES'
-          return this.ds.saveUnitData();
+          } // 'YES':
+          return this.ds.saveUnitData().pipe(
+            map(saveResult => {
+              if (saveResult === true) {
+                this.snackBar.open('Änderungen an Aufgabedaten gespeichert', '', { duration: 1000 });
+                return true;
+              }
+              this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 1000 });
+              return false;
+            })
+          );
         })
       );
     }

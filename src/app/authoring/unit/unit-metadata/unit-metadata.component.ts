@@ -9,8 +9,10 @@ import { DatastoreService } from '../../datastore.service';
 @Component({
   selector: 'app-unit-metadata',
   templateUrl: './unit-metadata.component.html',
-  styleUrls: ['./unit-metadata.component.css']
+  styles: ['.mat-tab-body-wrapper {height: 100%;}',
+    'mat-tab-body {height: 100%;}']
 })
+
 export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
   @Input() unitData!: UnitData;
   @Output() unitDataChanged = new EventEmitter();
@@ -24,7 +26,7 @@ export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit(): void {
     this.unitForm = this.fb.group({
-      key: this.fb.control('', [Validators.required, Validators.pattern('[a-zA-Z-0-9_]+'), Validators.minLength(3)]),
+      key: this.fb.control(''),
       label: this.fb.control(''),
       description: this.fb.control(''),
       editorSelector: this.fb.control('', [Validators.required]),
@@ -38,6 +40,9 @@ export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
       this.unitFormDataChangedSubscription.unsubscribe();
     }
     if (this.unitData) {
+      this.unitForm.controls.key.setValidators([Validators.required, Validators.pattern('[a-zA-Z-0-9_]+'),
+        Validators.minLength(3),
+        DatastoreService.unitKeyUniquenessValidator(this.unitData.id, this.ds.unitList)]);
       this.unitForm.setValue({
         key: this.unitData.key,
         label: this.unitData.label,
@@ -47,7 +52,7 @@ export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
       },
       { emitEvent: false });
       this.unitFormDataChangedSubscription = this.unitForm.valueChanges.subscribe(() => {
-        if (this.unitData) {
+        if (this.unitData && this.unitForm.valid) {
           this.unitData.key = this.unitForm.get('key').value;
           this.unitData.label = this.unitForm.get('label').value;
           this.unitData.description = this.unitForm.get('description').value;
@@ -72,8 +77,6 @@ export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    if (this.unitFormDataChangedSubscription !== null) {
-      this.unitFormDataChangedSubscription.unsubscribe();
-    }
+    if (this.unitFormDataChangedSubscription !== null) this.unitFormDataChangedSubscription.unsubscribe();
   }
 }
