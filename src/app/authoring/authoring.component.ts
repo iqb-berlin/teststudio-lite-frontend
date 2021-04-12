@@ -12,9 +12,9 @@ import {
 } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
-import { NewunitComponent } from './newunit/newunit.component';
-import { SelectUnitComponent } from './select-unit/select-unit.component';
-import { MoveUnitComponent } from './moveunit/moveunit.component';
+import { NewunitComponent } from './dialogs/newunit.component';
+import { SelectUnitComponent } from './dialogs/select-unit.component';
+import { MoveUnitComponent } from './dialogs/moveunit.component';
 import { BackendService as SuperAdminBackendService, GetFileResponseData } from '../superadmin/backend.service';
 
 @Component({
@@ -194,21 +194,21 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           const dialogComponent = dialogRef.componentInstance;
-          const wsSelected = dialogComponent.selectform.get('wsSelector');
+          const wsSelected = dialogComponent.selectForm.get('wsSelector');
           if (wsSelected) {
             this.bs.moveUnits(
               this.ds.selectedWorkspace,
-              (dialogComponent.tableselectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
+              (dialogComponent.tableSelectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
               wsSelected.value
-            ).subscribe(
-              ok => {
-                // todo db-error?
-                if (ok) {
-                  this.updateUnitList();
-                  this.snackBar.open('Aufgabe(n) verschoben', '', { duration: 1000 });
-                }
+            ).subscribe(moveResponse => {
+              if (typeof moveResponse === 'number') {
+                this.snackBar.open(`Es konnte(n) ${moveResponse} Aufgabe(n) nicht verschoben werden.`,
+                  'Fehler', { duration: 3000 });
+              } else {
+                this.snackBar.open('Aufgabe(n) verschoben', '', { duration: 1000 });
               }
-            );
+              this.updateUnitList();
+            });
           }
         }
       }
@@ -281,7 +281,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       height: '700px',
       data: {
         title: 'Aufgabe(n) als Datei speichern',
-        buttonlabel: 'Download'
+        buttonLabel: 'Download'
       }
     });
 

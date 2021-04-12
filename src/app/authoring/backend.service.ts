@@ -1,4 +1,4 @@
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
@@ -89,7 +89,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}moveUnits.php`,
+      .put<UnitShortData[]>(`${this.serverUrl}moveUnits.php`,
       {
         t: authToken, ws: workspaceId, u: units, tws: targetWorkspace
       })
@@ -97,6 +97,10 @@ export class BackendService {
         catchError((err: ApiError) => {
           console.warn(`moveUnits Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
+        }),
+        map((unMovableUnits: UnitShortData[]) => {
+          if (unMovableUnits.length === 0) return true;
+          return unMovableUnits.length;
         })
       );
   }

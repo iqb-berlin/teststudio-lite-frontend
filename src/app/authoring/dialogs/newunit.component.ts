@@ -4,18 +4,17 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { DatastoreService } from '../datastore.service';
 
 @Component({
-  templateUrl: './newunit.component.html',
-  styleUrls: ['./newunit.component.css']
+  templateUrl: './newunit.component.html'
 })
 export class NewunitComponent implements OnInit {
-  newunitform: FormGroup;
+  newUnitForm: FormGroup;
 
   constructor(private fb: FormBuilder,
               public ds: DatastoreService,
               @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
-    this.newunitform = this.fb.group({
+    this.newUnitForm = this.fb.group({
       key: this.fb.control('', [Validators.required, Validators.pattern('[a-zA-Z-0-9_]+'),
         Validators.minLength(3),
         DatastoreService.unitKeyUniquenessValidator(0, this.ds.unitList)]),

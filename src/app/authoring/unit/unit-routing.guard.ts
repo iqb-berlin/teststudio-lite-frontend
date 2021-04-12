@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { map, switchMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UnitComponent } from './unit.component';
-import { ConfirmDialogData, SaveOrDiscardComponent } from '../save-or-discard/save-or-discard.component';
+import { ConfirmDialogData, SaveOrDiscardComponent } from '../dialogs/save-or-discard.component';
 import { DatastoreService } from '../datastore.service';
 
 @Injectable()
