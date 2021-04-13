@@ -29,7 +29,6 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
 import { AuthoringModule } from './authoring';
-import { PreviewModule } from './preview';
 
 @NgModule({
   declarations: [
@@ -62,7 +61,6 @@ import { PreviewModule } from './preview';
     SuperadminModule,
     AppRoutingModule,
     AuthoringModule,
-    PreviewModule,
     IqbComponentsModule
   ],
   providers: [

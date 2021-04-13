@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MainDatastoreService } from '../maindatastore.service';
 import {
-  BackendService, EditorList, StrIdLabelSelectedData, UnitProperties, UnitShortData
+  BackendService, EditorData, PlayerData, UnitProperties, UnitShortData
 } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
@@ -69,10 +69,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             }
           });
           this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
-          this.bs.getEditorList().subscribe((atL: EditorList[] | number) => {
+          this.bs.getEditorList().subscribe((atL: EditorData[] | number) => {
             if (typeof atL !== 'number') {
               if (atL !== null) {
-                this.ds.editorList = atL as EditorList[];
+                this.ds.editorList = atL as EditorData[];
               }
               let selectedWorkspaceName = '';
               if (this.mds.loginStatus) {
@@ -91,10 +91,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
                 this.ds.playerList = [];
               } else if (fileDataResponse !== null) {
                 fileDataResponse.forEach(f => {
+                  const fnSplits = f.filename.split('.');
                   this.ds.playerList.push({
-                    id: f.filename,
-                    label: f.filename,
-                    selected: false
+                    id: fnSplits[0],
+                    label: fnSplits[0],
+                    html: ''
                   });
                 });
               }

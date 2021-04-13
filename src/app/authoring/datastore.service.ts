@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { map, switchMap } from 'rxjs/operators';
 import {
-  BackendService, EditorList, StrIdLabelSelectedData, UnitShortData
+  BackendService, EditorData, PlayerData, UnitShortData
 } from './backend.service';
 import { UnitData } from './authoring.classes';
 
@@ -15,8 +15,8 @@ import { UnitData } from './authoring.classes';
 export class DatastoreService {
   selectedWorkspace = 0;
   selectedUnit$ = new BehaviorSubject<number>(0);
-  editorList: EditorList[] = [];
-  playerList: StrIdLabelSelectedData[] = [];
+  editorList: EditorData[] = [];
+  playerList: PlayerData[] = [];
   unitDataOld: UnitData = null;
   unitDataNew: UnitData = null;
   unitDataChanged = false;

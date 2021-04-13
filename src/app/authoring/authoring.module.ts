@@ -33,6 +33,7 @@ import { UnitMetadataComponent } from './unit/unit-metadata/unit-metadata.compon
 import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
 import { SaveOrDiscardComponent } from './dialogs/save-or-discard.component';
 import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
+import { UnitPreviewComponent } from './unit/unit-preview/unit-preview.component';
 
 @NgModule({
   imports: [
@@ -70,7 +71,8 @@ import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
     UnitComponent,
     UnitMetadataComponent,
     UnitEditorComponent,
-    SaveOrDiscardComponent
+    SaveOrDiscardComponent,
+    UnitPreviewComponent
   ],
   exports: [
     AuthoringComponent

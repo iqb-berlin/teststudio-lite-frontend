@@ -1,14 +1,8 @@
-<div class="spinner-container" *ngIf="dataLoading">
-  <mat-spinner></mat-spinner>
-</div>
 <div id="iFrameHost" class="preview-body">
 
 </div>
 <div id="pageNav" fxLayout="row" fxLayoutAlign="space-between center">
   <div fxLayout="row" fxLayoutAlign="space-between center">
-    <button (click)="return()" fxLayout="row" fxLayoutAlign="center center" matTooltip="Zurück zum Autorenmodus">
-      <i class="material-icons">arrow_back</i>
-    </button>
     <div class="statusVisual" fxLayout="row">
       <div *ngFor="let sV of statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
     </div>

@@ -1,30 +1,36 @@
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
 import {
-  Component, HostListener, OnDestroy, OnInit
+  Component, HostListener, Input, OnChanges, OnDestroy, OnInit
 } from '@angular/core';
-import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MainDatastoreService } from '../maindatastore.service';
-import { DatastoreService } from './datastore.service';
-import { BackendService, UnitPreviewData } from './backend.service';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import {
-  KeyValuePairString, PageData, PendingUnitData, StateReportEntry, StatusVisual
-} from './preview.interfaces';
+  PageData,
+  StatusVisual
+} from './unit-preview.classes';
+import { MainDatastoreService } from '../../../maindatastore.service';
+import { BackendService, PlayerData } from '../../backend.service';
+import { DatastoreService } from '../../datastore.service';
+import { UnitData } from '../../authoring.classes';
 
 declare let srcDoc: any;
 
 @Component({
-  templateUrl: './preview.component.html',
-  styleUrls: ['./preview.component.css']
+  selector: 'app-unit-preview',
+  templateUrl: './unit-preview.component.html',
+  styleUrls: ['./unit-preview.component.css']
 })
-export class PreviewComponent implements OnInit, OnDestroy {
-  private routingSubscription: Subscription;
+export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() workspaceId: number;
+  @Input() unitDataOld: UnitData;
+  @Input() unitDataNew!: UnitData;
   private iFrameHostElement: HTMLElement;
-  private iFrameItemplayer: HTMLIFrameElement;
-  private postMessageSubscription: Subscription = null;
-  private itemplayerSessionId = '';
+  private iFramePlayer: HTMLIFrameElement;
+  private readonly postMessageSubscription: Subscription = null;
+  private sessionId = '';
   private postMessageTarget: Window = null;
+  private lastPlayerId = '';
   statusVisual: StatusVisual[] = [
     {
       id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'
@@ -34,8 +40,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   ];
 
-  private pendingUnitData: PendingUnitData = null;
-  dataLoading = false;
   showPageNav = false;
   pageList: PageData[] = [];
   player = '';
@@ -54,56 +58,38 @@ export class PreviewComponent implements OnInit, OnDestroy {
       console.log(msgData);
 
       if ((msgType !== undefined) && (msgType !== null)) {
-        let hasData = false;
-        const pendingSpec = this.ds.pendingItemDefinition$.getValue();
         switch (msgType) {
-          // // // // // // //
           case 'vo.FromPlayer.ReadyNotification':
-            if ((pendingSpec !== null) && (pendingSpec.length > 0)) {
-              hasData = true;
-              this.ds.pendingItemDefinition$.next(null);
-            }
-
-            if (hasData) {
-              this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+            if (this.unitDataNew) {
+              this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
-              this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingSpec
-              }, '*');
+              this.sendUnitDataToPlayer();
             }
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.StartedNotification':
             this.setPageList(msgData.validPages, msgData.currentPage);
             this.setPresentationStatus(msgData.presentationComplete);
             this.setResponsesStatus(msgData.responsesGiven);
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.ChangedDataTransfer':
             this.setPageList(msgData.validPages, msgData.currentPage);
             this.setPresentationStatus(msgData.presentationComplete);
             this.setResponsesStatus(msgData.responsesGiven);
-
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.PageNavigationRequest':
             this.snackBar.open(`Player sendet PageNavigationRequest: "${
               msgData.navigationTarget}"`, '', { duration: 3000 });
             this.gotoPage(msgData.newPage);
             break;
 
-          // // // // // // // ;-)
           case 'vo.FromPlayer.UnitNavigationRequest':
             this.snackBar.open(`Player sendet UnitNavigationRequest: "${
               msgData.navigationTarget}"`, '', { duration: 3000 });
             break;
 
-          // // // // // // //
           default:
             console.log(`processMessagePost ignored message: ${msgType}`);
             break;
@@ -112,123 +98,117 @@ export class PreviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    setTimeout(() => {
-      this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
-        const msgData = m.data;
-        const msgType = msgData.type;
-        let msgPlayerId = msgData.sessionId;
-        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
-          msgPlayerId = this.itemplayerSessionId;
-        }
-
-        if ((msgType !== undefined) && (msgType !== null)) {
-          let pendingUnitDef = '';
-          const pendingUnitDataToRestore: KeyValuePairString = {};
-          switch (msgType) {
-            case 'vopReadyNotification':
-              // TODO add apiVersion check
-              if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitData.unitDefinition;
-                pendingUnitDataToRestore.all = this.pendingUnitData.unitState;
-                this.pendingUnitData = null;
-              }
-              this.postMessageTarget = m.source as Window;
-              if (typeof this.postMessageTarget !== 'undefined') {
-                this.postMessageTarget.postMessage({
-                  type: 'vopStartCommand',
-                  sessionId: this.itemplayerSessionId,
-                  unitDefinition: pendingUnitDef,
-                  unitState: {
-                    dataParts: []
-                  },
-                  playerConfig: {
-                    logPolicy: 'rich',
-                    stateReportPolicy: 'eager'
-                  }
-                }, '*');
-              }
-              break;
-
-            case 'vopStateChangedNotification':
-              if (msgPlayerId === this.itemplayerSessionId) {
-                if (msgData.playerState) {
-                  const playerState = msgData.playerState;
-                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-                }
-                if (msgData.unitState) {
-                  const unitState = msgData.unitState;
-                  if (unitState) {
-                    this.setPresentationStatus(unitState.presentationProgress);
-                    this.setResponsesStatus(unitState.responseProgress);
-                  }
-                }
-                if (msgData.log) {
-                  (msgData.log as StateReportEntry[]).forEach(entry => {
-                    console.log(`PLAYER LOG ${entry.key}: ${entry.content}`);
-                  });
-                }
-              }
-              break;
-
-            default:
-              console.log(`processMessagePost ignored message: ${msgType}`);
-              break;
-          }
-        }
-      });
-      this.iFrameItemplayer = null;
-      this.showPageNav = false;
-
-      this.routingSubscription = this.route.params.subscribe(params => {
-        this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-        while (this.iFrameHostElement.hasChildNodes()) {
-          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
-        }
-        if (params.u) {
-          const paramSplit = params.u.split('##');
-          this.ds.updatePageTitle(paramSplit[1]);
-          this.dataLoading = true;
-
-          this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-          this.setPageList([], '');
-          this.setPresentationStatus('');
-          this.setResponsesStatus('');
-
-          this.bs.getUnitDesignData(paramSplit[0], paramSplit[1]).subscribe((data: UnitPreviewData) => {
-            this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-            this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-            this.iFrameItemplayer.setAttribute('class', 'unitHost');
-            this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
-
-            this.pendingUnitData = {
-              playerId: this.itemplayerSessionId,
-              unitDefinition: data.def,
-              unitState: null
-            };
-
-            this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-            this.ds.updatePageTitle(`${data.key}-${data.label}`);
-            this.dataLoading = false;
-            this.player = data.player_id;
-            srcDoc.set(this.iFrameItemplayer, data.player);
+  sendUnitDataToPlayer(): void {
+    if (this.unitDataNew) {
+      if ((this.unitDataNew.playerId === this.lastPlayerId) && this.postMessageTarget) {
+        if (this.unitDataNew.def) {
+          this.postMessageTarget.postMessage({
+            type: 'vo.ToPlayer.DataTransfer',
+            sessionId: this.sessionId,
+            unitDefinition: this.unitDataNew.def
+          }, '*');
+        } else {
+          this.bs.getUnitDesignData(this.workspaceId, this.unitDataNew.id).subscribe(ued => {
+            if (typeof ued === 'number') {
+              this.snackBar.open('Konnte Aufgabendefinition nicht laden', 'Fehler', { duration: 1000 });
+            } else {
+              this.unitDataOld.def = ued.def;
+              this.unitDataNew.def = ued.def;
+              this.postMessageTarget.postMessage({
+                type: 'vo.ToPlayer.DataTransfer',
+                sessionId: this.sessionId,
+                unitDefinition: this.unitDataNew.def
+              }, '*');
+            }
           });
         }
+      } else {
+        this.buildPlayer(this.unitDataNew.playerId);
+        // player gets unit data via ReadyNotification
+      }
+    } else {
+      this.buildPlayer('');
+    }
+  }
+
+  private buildPlayer(playerId: string) {
+    this.iFramePlayer = null;
+    this.postMessageTarget = null;
+    while (this.iFrameHostElement.hasChildNodes()) {
+      this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+    }
+    if (playerId) {
+      let playerData: PlayerData = null;
+      this.ds.playerList.forEach(p => {
+        console.log(p, playerId);
+        if (p.id === playerId) playerData = p;
       });
-    });
+
+      if (playerData) {
+        if (playerData.html) {
+          this.setupPlayerIFrame(playerData.html);
+          this.lastPlayerId = playerData.id;
+        } else {
+          this.bs.getUnitPlayerByUnitId(this.ds.selectedWorkspace, this.unitDataNew.id).subscribe(playerResponse => {
+            if (typeof playerResponse === 'number') {
+              const messageElement = <HTMLIFrameElement>document.createElement('p');
+              messageElement.innerText = `Für Player "${playerData.label}" konnte kein Modul geladen werden.`;
+              this.iFrameHostElement.appendChild(messageElement);
+              this.lastPlayerId = '';
+            } else {
+              playerData.html = playerResponse;
+              this.setupPlayerIFrame(playerResponse);
+              this.lastPlayerId = playerData.id;
+            }
+          });
+        }
+      } else {
+        const messageElement = <HTMLIFrameElement>document.createElement('p');
+        messageElement.innerText = `Für Player "${playerId}" wurde kein Modul gefunden.`;
+        this.iFrameHostElement.appendChild(messageElement);
+        this.lastPlayerId = '';
+      }
+    } else {
+      const messageElement = <HTMLIFrameElement>document.createElement('p');
+      messageElement.innerText = 'Kein Player festgelegt';
+      this.iFrameHostElement.appendChild(messageElement);
+      this.lastPlayerId = '';
+    }
+  }
+
+  private setupPlayerIFrame(playerHtml: string): void {
+    this.setPageList([], '');
+    this.setPresentationStatus('');
+    this.setResponsesStatus('');
+    this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+    this.iFramePlayer = <HTMLIFrameElement>document.createElement('iframe');
+    this.iFramePlayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+    this.iFramePlayer.setAttribute('class', 'unitHost');
+    this.iFramePlayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+    this.iFrameHostElement.appendChild(this.iFramePlayer);
+    srcDoc.set(this.iFramePlayer, playerHtml);
+  }
+
+  ngOnInit(): void {
+    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+    if (this.unitDataNew) this.sendUnitDataToPlayer();
+  }
+
+  ngOnChanges(): void {
+    if (this.iFrameHostElement) this.sendUnitDataToPlayer();
   }
 
   @HostListener('window:resize')
-  onResize(): any {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
+  onResize(): void {
+    if (this.iFramePlayer && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
-      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+      this.iFramePlayer.setAttribute('height', String(divHeight - 5));
       // TODO: Why minus 5px?
     }
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setPageList(validPages: string[], currentPage: string) {
+  setPageList(validPages: string[], currentPage: string): void {
     if ((validPages instanceof Array)) {
       const newPageList: PageData[] = [];
       if (validPages.length > 1) {
@@ -283,7 +263,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.showPageNav = this.pageList.length > 0;
   }
 
-  gotoPage(action: string, index = 0) {
+  gotoPage(action: string, index = 0): void {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
     if (action === '#next') {
@@ -320,7 +300,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     if (nextPageId.length > 0) {
       this.postMessageTarget.postMessage({
         type: 'vo.ToPlayer.NavigateToPage',
-        sessionId: this.itemplayerSessionId,
+        sessionId: this.sessionId,
         newPage: nextPageId
       }, '*');
     }
@@ -328,7 +308,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // ++++++++++++ Status ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  setPresentationStatus(status: string) { // 'yes' | 'no' | '' | undefined;
+  setPresentationStatus(status: string): void { // 'yes' | 'no' | '' | undefined;
     if (status === 'yes') {
       this.changeStatusColor('presentation', 'LimeGreen');
     } else if (status === 'no') {
@@ -339,7 +319,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     // if undefined: no change
   }
 
-  setResponsesStatus(status: string) { // 'yes' | 'no' | 'all' | '' | undefined
+  setResponsesStatus(status: string): void { // 'yes' | 'no' | 'all' | '' | undefined
     if (status === 'yes') {
       this.changeStatusColor('responses', 'Gold');
     } else if (status === 'no') {
@@ -352,7 +332,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     // if undefined: no change
   }
 
-  changeStatusColor(id: string, newcolor: string) {
+  changeStatusColor(id: string, newcolor: string): void {
     for (let i = 0; i < this.statusVisual.length; i++) {
       if (this.statusVisual[i].id === id) {
         if (this.statusVisual[i].color !== newcolor) {
@@ -363,12 +343,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  return() {
-    this.location.back();
-  }
-
-  ngOnDestroy() {
-    this.routingSubscription.unsubscribe();
-    this.postMessageSubscription.unsubscribe();
+  ngOnDestroy(): void {
+    if (this.postMessageSubscription !== null) this.postMessageSubscription.unsubscribe();
   }
 }

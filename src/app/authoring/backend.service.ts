@@ -9,10 +9,12 @@ import { ApiError } from '../backend.service';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @Inject('SERVER_URL') private readonly serverUrlUnit: string,
+    @Inject('SERVER_URL') private readonly serverUrlPreview: string,
     private http: HttpClient
   ) {
-    this.serverUrl += 'php_authoring/';
+    this.serverUrlUnit += 'php_authoring/';
+    this.serverUrlPreview += 'php_preview/';
   }
 
   getUnitList(workspaceId: number): Observable <UnitShortData[] | number> {
@@ -21,7 +23,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<UnitShortData[]>(`${this.serverUrl}getUnitList.php`, { t: authToken, ws: workspaceId })
+      .put<UnitShortData[]>(`${this.serverUrlUnit}getUnitList.php`, { t: authToken, ws: workspaceId })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getUnitList Api-Error: ${err.code} ${err.info} `);
@@ -36,7 +38,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}addUnit.php`,
+      .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
       {
         t: authToken, ws: workspaceId, k: key, l: label
       })
@@ -55,7 +57,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}addUnit.php`,
+      .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
       {
         t: authToken, ws: workspaceId, u: fromUnit, k: key, l: label
       })
@@ -73,7 +75,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}deleteUnits.php`, { t: authToken, ws: workspaceId, u: units })
+      .put<boolean>(`${this.serverUrlUnit}deleteUnits.php`, { t: authToken, ws: workspaceId, u: units })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`deleteUnits Api-Error: ${err.code} ${err.info} `);
@@ -89,7 +91,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<UnitShortData[]>(`${this.serverUrl}moveUnits.php`,
+      .put<UnitShortData[]>(`${this.serverUrlUnit}moveUnits.php`,
       {
         t: authToken, ws: workspaceId, u: units, tws: targetWorkspace
       })
@@ -116,7 +118,7 @@ export class BackendService {
         options: JSON.stringify({ t: authToken, ws: workspaceId, u: units })
       })
     };
-    return this.http.get<Blob>(`${this.serverUrl}downloadUnits.php`, httpOptions);
+    return this.http.get<Blob>(`${this.serverUrlUnit}downloadUnits.php`, httpOptions);
   }
 
   getUnitProperties(workspaceId: number, unitId: number): Observable<UnitProperties | number> {
@@ -125,7 +127,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<UnitProperties>(`${this.serverUrl}getUnitProperties.php`, { t: authToken, ws: workspaceId, u: unitId })
+      .put<UnitProperties>(`${this.serverUrlUnit}getUnitProperties.php`, { t: authToken, ws: workspaceId, u: unitId })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getUnitProperties Api-Error: ${err.code} ${err.info} `);
@@ -140,7 +142,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<UnitDesignData>(`${this.serverUrl}getUnitDesignData.php`, { t: authToken, ws: workspaceId, u: unitId })
+      .put<UnitDesignData>(`${this.serverUrlUnit}getUnitDesignData.php`, { t: authToken, ws: workspaceId, u: unitId })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getUnitDesignData Api-Error: ${err.code} ${err.info} `);
@@ -149,9 +151,9 @@ export class BackendService {
       );
   }
 
-  getEditorList(): Observable<EditorList[] | number> {
+  getEditorList(): Observable<EditorData[] | number> {
     return this.http
-      .get<EditorList[]>(`${this.serverUrl}getItemAuthoringToolList.php`)
+      .get<EditorData[]>(`${this.serverUrlUnit}getItemAuthoringToolList.php`)
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getEditorList Api-Error: ${err.code} ${err.info} `);
@@ -162,7 +164,7 @@ export class BackendService {
 
   hasValidAuthoringTool(unitId: number): Observable<boolean | number> {
     return this.http
-      .post<boolean>(`${this.serverUrl}hasValidAuthoringTool.php`, { u: unitId })
+      .post<boolean>(`${this.serverUrlUnit}hasValidAuthoringTool.php`, { u: unitId })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`hasValidAuthoringTool Api-Error: ${err.code} ${err.info} `);
@@ -178,7 +180,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}changeUnitProperties.php`, {
+      .put<boolean>(`${this.serverUrlUnit}changeUnitProperties.php`, {
       t: authToken,
       ws: workspaceId,
       u: unitId,
@@ -201,7 +203,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .post<boolean>(`${this.serverUrl}setUnitAuthoringTool.php`, {
+      .post<boolean>(`${this.serverUrlUnit}setUnitAuthoringTool.php`, {
       t: authToken,
       ws: workspaceId,
       u: unitId,
@@ -222,7 +224,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .post<boolean>(`${this.serverUrl}setUnitPlayer.php`, {
+      .post<boolean>(`${this.serverUrlUnit}setUnitPlayer.php`, {
       t: authToken,
       ws: workspaceId,
       u: unitId,
@@ -243,7 +245,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<boolean>(`${this.serverUrl}setUnitDefinition.php`, {
+      .put<boolean>(`${this.serverUrlUnit}setUnitDefinition.php`, {
       t: authToken,
       ws: workspaceId,
       u: unitId,
@@ -255,6 +257,19 @@ export class BackendService {
           console.warn(`setUnitDefinition Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
+      );
+  }
+
+  getUnitPlayerByUnitId(workspaceId: number, unitId: number): Observable<string | number> {
+    return this.http
+      .post<UnitPlayerData>(`${this.serverUrlPreview}getUnitPreviewData.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`setUnitDefinition Api-Error: ${err.code} ${err.info} `);
+          return of(err.code);
+        }),
+        map((playerData: UnitPlayerData) => playerData.player)
       );
   }
 }
@@ -285,14 +300,23 @@ export interface UnitDesignData {
   playerLink: string;
 }
 
-export interface StrIdLabelSelectedData {
+export interface PlayerData {
   id: string;
   label: string;
-  selected: boolean;
+  html: string;
 }
 
-export interface EditorList {
+export interface EditorData {
   id: string;
   label: string;
   link: string;
+}
+
+export interface UnitPlayerData {
+  id: number;
+  key: string;
+  label: string;
+  def: string;
+  player: string;
+  player_id: string;
 }

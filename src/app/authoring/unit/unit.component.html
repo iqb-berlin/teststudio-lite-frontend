@@ -12,7 +12,8 @@
   </mat-tab>
   <mat-tab label="Vorschau">
     <ng-template matTabContent>
-      Vorschau: {{ds.selectedUnit$ | async}}
+      <app-unit-preview [workspaceId]="ds.selectedWorkspace" [unitDataOld]="ds.unitDataOld" fxFlex
+                       [unitDataNew]="ds.unitDataNew"></app-unit-preview>
     </ng-template>
   </mat-tab>
 </mat-tab-group>
