@@ -149,12 +149,12 @@ export class BackendService {
       );
   }
 
-  getItemAuthoringToolList(): Observable<StrIdLabelSelectedData[] | number> {
+  getEditorList(): Observable<EditorList[] | number> {
     return this.http
-      .get<StrIdLabelSelectedData[]>(`${this.serverUrl}getItemAuthoringToolList.php`)
+      .get<EditorList[]>(`${this.serverUrl}getItemAuthoringToolList.php`)
       .pipe(
         catchError((err: ApiError) => {
-          console.warn(`getItemAuthoringToolList Api-Error: ${err.code} ${err.info} `);
+          console.warn(`getEditorList Api-Error: ${err.code} ${err.info} `);
           return of(err.code);
         })
       );
@@ -289,4 +289,10 @@ export interface StrIdLabelSelectedData {
   id: string;
   label: string;
   selected: boolean;
+}
+
+export interface EditorList {
+  id: string;
+  label: string;
+  link: string;
 }

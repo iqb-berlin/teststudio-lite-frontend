@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MainDatastoreService } from '../maindatastore.service';
 import {
-  BackendService, StrIdLabelSelectedData, UnitProperties, UnitShortData
+  BackendService, EditorList, StrIdLabelSelectedData, UnitProperties, UnitShortData
 } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
@@ -69,10 +69,10 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             }
           });
           this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
-          this.bs.getItemAuthoringToolList().subscribe((atL: StrIdLabelSelectedData[] | number) => {
+          this.bs.getEditorList().subscribe((atL: EditorList[] | number) => {
             if (typeof atL !== 'number') {
               if (atL !== null) {
-                this.ds.editorList = atL as StrIdLabelSelectedData[];
+                this.ds.editorList = atL as EditorList[];
               }
               let selectedWorkspaceName = '';
               if (this.mds.loginStatus) {

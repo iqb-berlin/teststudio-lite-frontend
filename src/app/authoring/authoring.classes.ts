@@ -4,7 +4,7 @@ export interface UnitData {
   label: string;
   description: string;
   editorId: string;
-  lastChangedStr: string;
   playerId: string;
+  lastChangedStr: string;
   def: string;
 }

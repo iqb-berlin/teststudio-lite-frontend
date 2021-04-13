@@ -16,9 +16,7 @@ export class MainDatastoreService {
   processMessagePost(postData: MessageEvent): void {
     const msgData = postData.data;
     const msgType = msgData.type;
-    console.log('===================== 1');
     if ((typeof msgType !== 'undefined') && (msgType !== null)) {
-      console.log('===================== 2');
       this.postMessage$.next(postData);
     }
   }
