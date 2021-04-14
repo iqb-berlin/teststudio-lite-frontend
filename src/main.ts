@@ -3,6 +3,9 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { version, name, author } from '../package.json';
 
 if (environment.production) {
   enableProdMode();
@@ -15,15 +18,15 @@ platformBrowserDynamic([
   },
   {
     provide: 'APP_PUBLISHER',
-    useValue: environment.appPublisher
+    useValue: author
   },
   {
     provide: 'APP_NAME',
-    useValue: environment.appName
+    useValue: name
   },
   {
     provide: 'APP_VERSION',
-    useValue: environment.appVersion
+    useValue: version
   }
 ]).bootstrapModule(AppModule)
   .catch(err => console.log(err));
