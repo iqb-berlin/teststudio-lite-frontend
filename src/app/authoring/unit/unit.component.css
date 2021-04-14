@@ -1,7 +1,7 @@
 .mat-tab-group {
   margin: 0px;
-  padding: 5px;
-  height: calc(100% - 10px);
+  padding: 5px 5px 0px 5px;
+  height: 100%;
 }
 .mat-tab-body-wrapper {
   flex-grow: 1;

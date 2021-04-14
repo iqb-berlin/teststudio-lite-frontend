@@ -29,7 +29,7 @@ export class UnitMetadataComponent implements OnInit, OnDestroy, OnChanges {
       key: this.fb.control(''),
       label: this.fb.control(''),
       description: this.fb.control(''),
-      editorSelector: this.fb.control('', [Validators.required]),
+      editorSelector: this.fb.control(''),
       playerSelector: this.fb.control('')
     });
     this.readData();
