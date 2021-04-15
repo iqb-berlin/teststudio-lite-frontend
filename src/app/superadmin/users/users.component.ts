@@ -89,8 +89,11 @@ export class UsersComponent implements OnInit {
                 this.snackBar.open('Nutzer hinzugefügt', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
+            },
+            err => {
+              this.snackBar.open(`Konnte Nutzer nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
             }
           );
         }
@@ -132,8 +135,12 @@ export class UsersComponent implements OnInit {
                 if (respOk) {
                   this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
                 } else {
-                  this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', { duration: 1000 });
+                  this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', { duration: 3000 });
                 }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Kennwort nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
                 this.dataLoading = false;
               }
             );
@@ -187,9 +194,13 @@ export class UsersComponent implements OnInit {
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', { duration: 3000 });
                 this.dataLoading = false;
               }
+            },
+            err => {
+              this.snackBar.open(`Konnte Nutzer nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.dataLoading = false;
             }
           );
         }
@@ -230,8 +241,12 @@ export class UsersComponent implements OnInit {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 1000 });
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 3000 });
           }
+          this.dataLoading = false;
+        },
+        err => {
+          this.snackBar.open(`Konnte Zugriffsrechte nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
           this.dataLoading = false;
         }
       );
@@ -304,27 +319,27 @@ export class UsersComponent implements OnInit {
                   selectedRows[0].id,
                   !selectedRows[0].is_superadmin,
                   (<FormGroup>afterClosedResult).get('pw').value
-                )
-                  .subscribe(
-                    respCode => {
-                      if (respCode === true) {
-                        this.snackBar.open('Status geändert', '', { duration: 1000 });
-                        this.updateObjectList();
-                      } else if (respCode === 401) {
-                        this.snackBar.open(
-                          'Konnte Status nicht ändern (falsches Kennwort?)',
-                          'Fehler',
-                          { duration: 5000 }
-                        );
-                      } else {
-                        this.snackBar.open(
-                          `Konnte Status nicht ändern (Fehlercode ${respCode})`,
-                          'Fehler',
-                          { duration: 5000 }
-                        );
-                      }
+                ).subscribe(
+                  respCode => {
+                    if (respCode === true) {
+                      this.snackBar.open('Status geändert', '', { duration: 1000 });
+                      this.updateObjectList();
+                    } else {
+                      this.snackBar.open(
+                        'Konnte Status nicht ändern (falsches Kennwort?)',
+                        'Fehler',
+                        { duration: 5000 }
+                      );
                     }
-                  );
+                  },
+                  err => {
+                    this.snackBar.open(
+                      `Konnte Status nicht ändern (Fehlercode ${err.code})`,
+                      'Fehler',
+                      { duration: 5000 }
+                    );
+                  }
+                );
               }
             }
           });

@@ -20,14 +20,4 @@ export class MainDatastoreService {
       this.postMessage$.next(postData);
     }
   }
-
-  static serverErrorMessageText(errCode: number) : string {
-    if (errCode === 401) {
-      return 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    }
-    if (errCode === 503) {
-      return 'Fehler: Server meldet Datenbankproblem.';
-    }
-    return `Server meldet Problem ${errCode}`;
-  }
 }

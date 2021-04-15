@@ -14,7 +14,7 @@ import {
   MessageDialogData,
   MessageType
 } from 'iqb-components';
-import { BackendService, ServerError, GetFileResponseData } from '../backend.service';
+import { BackendService, GetFileResponseData } from '../backend.service';
 import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
@@ -123,13 +123,13 @@ export class ItemplayerComponent implements OnInit {
           this.bs.deleteItemPlayerFiles(filesToDelete).subscribe(
             (deletefilesresponse: string) => {
               if ((deletefilesresponse.length > 5) && (deletefilesresponse.substr(0, 2) === 'e:')) {
-                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', { duration: 1000 });
+                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', { duration: 3000 });
               } else {
                 this.snackBar.open(deletefilesresponse, '', { duration: 1000 });
                 this.updateFileList();
               }
-            }, (err: ServerError) => {
-              this.snackBar.open(err.label, '', { duration: 1000 });
+            }, err => {
+              this.snackBar.open(err.msg(), '', { duration: 3000 });
             }
           );
           // =========================================================

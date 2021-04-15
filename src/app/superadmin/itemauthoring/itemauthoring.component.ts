@@ -16,7 +16,7 @@ import {
   MessageType
 } from 'iqb-components';
 import {
-  BackendService, StrIdLabelSelectedData, ServerError, GetFileResponseData
+  BackendService, StrIdLabelSelectedData, GetFileResponseData
 } from '../backend.service';
 import { NewItemAuthoringToolComponent } from './new-item-authoring-tool/new-item-authoring-tool.component';
 import { EditItemAuthoringToolComponent } from './edit-item-authoring-tool/edit-item-authoring-tool.component';
@@ -76,7 +76,7 @@ export class ItemauthoringComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  addObject() {
+  addObject(): void {
     const dialogRef = this.newItemAuthoringToolDialog.open(NewItemAuthoringToolComponent, {
       width: '600px',
       data: {
@@ -98,8 +98,12 @@ export class ItemauthoringComponent implements OnInit {
                 this.snackBar.open('Editor hinzugefügt', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.snackBar.open('Konnte Editor nicht hinzufügen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Editor nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
+              this.dataLoading = false;
+            },
+            err => {
+              this.snackBar.open(`Konnte Editor nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
               this.dataLoading = false;
             }
           );
@@ -108,7 +112,7 @@ export class ItemauthoringComponent implements OnInit {
     });
   }
 
-  changeObject() {
+  changeObject(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -146,8 +150,12 @@ export class ItemauthoringComponent implements OnInit {
                   this.snackBar.open('Editor geändert', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
-                  this.snackBar.open('Konnte Editor nicht ändern', 'Fehler', { duration: 1000 });
+                  this.snackBar.open('Konnte Editor nicht ändern', 'Fehler', { duration: 3000 });
                 }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Editor nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
                 this.dataLoading = false;
               }
             );
@@ -157,7 +165,7 @@ export class ItemauthoringComponent implements OnInit {
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -201,9 +209,13 @@ export class ItemauthoringComponent implements OnInit {
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Editor/en nicht löschen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Editor/en nicht löschen', 'Fehler', { duration: 3000 });
                 this.dataLoading = false;
               }
+            },
+            err => {
+              this.snackBar.open(`Konnte Editor/en nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.dataLoading = false;
             }
           );
         }
@@ -212,7 +224,7 @@ export class ItemauthoringComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateObjectList() {
+  updateObjectList(): void {
     this.selectedItemAuthoringToolId = '';
     this.updateFileList();
 
@@ -237,36 +249,36 @@ export class ItemauthoringComponent implements OnInit {
     }
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
     this.isAllSelected() ?
       this.tableselectionCheckbox.clear() :
       this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 
   // Files ====================================================================
-  isAllSelectedFiles() {
+  isAllSelectedFiles(): boolean {
     const numSelected = this.tableselectionCheckboxFiles.selected.length;
     const numRows = this.filesDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggleFiles() {
+  masterToggleFiles(): void {
     this.isAllSelectedFiles() ?
       this.tableselectionCheckboxFiles.clear() :
       this.filesDatasource.data.forEach(row => this.tableselectionCheckboxFiles.select(row));
   }
 
-  hasFiles() {
+  hasFiles(): boolean {
     if (this.selectedItemAuthoringToolId.length > 0) {
       if (this.filesDatasource == null) {
         return false;
@@ -282,7 +294,7 @@ export class ItemauthoringComponent implements OnInit {
     }itemauthoringtools/${this.selectedItemAuthoringToolId}/${element.filename}`;
   }
 
-  updateFileList() {
+  updateFileList(): void {
     if (this.selectedItemAuthoringToolId.length > 0) {
       this.dataLoading = true;
       this.bs.getItemAuthoringToolFiles(this.selectedItemAuthoringToolId).subscribe(
@@ -300,7 +312,7 @@ export class ItemauthoringComponent implements OnInit {
     }
   }
 
-  deleteFiles() {
+  deleteFiles(): void {
     const filesToDelete = [];
     this.tableselectionCheckboxFiles.selected.forEach(element => {
       filesToDelete.push(element.filename);
@@ -334,8 +346,8 @@ export class ItemauthoringComponent implements OnInit {
                 this.snackBar.open(deletefilesresponse, '', { duration: 1000 });
                 this.updateFileList();
               }
-            }, (err: ServerError) => {
-              this.snackBar.open(err.label, '', { duration: 1000 });
+            }, err => {
+              this.snackBar.open(err.msg(), '', { duration: 3000 });
             }
           );
           // =========================================================

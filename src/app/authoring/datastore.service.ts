@@ -3,7 +3,7 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
-import { map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import {
   BackendService, EditorData, PlayerData, UnitShortData
 } from './backend.service';
@@ -73,11 +73,8 @@ export class DatastoreService {
             if (reloadUnitList) {
               return this.bs.getUnitList(this.selectedWorkspace)
                 .pipe(
+                  catchError(() => []),
                   map(uResponse => {
-                    if (typeof uResponse === 'number') {
-                      this.unitList = [];
-                      return false;
-                    }
                     this.unitList = uResponse;
                     return true;
                   })

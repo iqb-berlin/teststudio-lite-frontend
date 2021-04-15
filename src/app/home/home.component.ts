@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
-import { BackendService, WorkspaceData } from '../backend.service';
+import { AppHttpError, BackendService, WorkspaceData } from '../backend.service';
 import { MainDatastoreService } from '../maindatastore.service';
 
 @Component({
@@ -33,12 +33,11 @@ export class HomeComponent implements OnInit {
     this.errorMessage = '';
     if (this.loginForm.valid) {
       this.bs.login(this.loginForm.get('name').value, this.loginForm.get('pw').value).subscribe(loginData => {
-        if (typeof loginData === 'number') {
-          this.isError = true;
-          this.errorMessage = `Server meldet Problem: ${loginData}`;
-        } else {
-          this.mds.loginStatus = loginData;
-        }
+        this.mds.loginStatus = loginData;
+      },
+      err => {
+        this.isError = true;
+        this.errorMessage = `Server meldet Problem: ${err.msg()}`;
       });
     }
   }

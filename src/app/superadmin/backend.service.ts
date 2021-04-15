@@ -1,25 +1,18 @@
 import { Injectable, Inject } from '@angular/core';
-import {
-  HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiError } from '../backend.service';
+import { AppHttpError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient
   ) {
     this.serverUrl += 'php_superadmin/';
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private errorHandler(error: Error | any): Observable<any> {
-    return Observable.throw(error);
   }
 
   // *******************************************************************
@@ -27,96 +20,65 @@ export class BackendService {
   // users
   // *******************************************************************
   // *******************************************************************
-  getUsers(): Observable<GetUserDataResponse[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getUsers(): Observable<GetUserDataResponse[]> {
     return this.http
-      .post<GetUserDataResponse[]>(`${this.serverUrl}getUsers.php`, { t: localStorage.getItem('t') }, httpOptions)
+      .post<GetUserDataResponse[]>(`${this.serverUrl}getUsers.php`, { t: localStorage.getItem('t') })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  addUser(name: string, password: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  addUser(name: string, password: string): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}addUser.php`, { t: localStorage.getItem('t'), n: name, p: password }, httpOptions)
+      .post<boolean>(`${this.serverUrl}addUser.php`, { t: localStorage.getItem('t'), n: name, p: password })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  changePassword(name: string, password: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  changePassword(name: string, password: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrl}setPassword.php`,
-      { t: localStorage.getItem('t'), n: name, p: password }, httpOptions)
+      { t: localStorage.getItem('t'), n: name, p: password })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean | number> {
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrl}setSuperAdminStatus.php`, {
       t: localStorage.getItem('t'), u: userId, s: changeToSuperUser ? 'true' : 'false', p: password
     })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteUsers(users: string[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteUsers(users: string[]): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}deleteUsers.php`, { t: localStorage.getItem('t'), u: users }, httpOptions)
+      .post<boolean>(`${this.serverUrl}deleteUsers.php`, { t: localStorage.getItem('t'), u: users })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   // *******************************************************************
-  getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(`${this.serverUrl}getUserWorkspaces.php`, { t: localStorage.getItem('t'), u: username }, httpOptions)
+      .post<IdLabelSelectedData[]>(`${this.serverUrl}getUserWorkspaces.php`,
+      { t: localStorage.getItem('t'), u: username })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  setWorkspacesByUser(user: string, accessTo: IdLabelSelectedData[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  setWorkspacesByUser(user: string, accessTo: IdLabelSelectedData[]): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}setUserWorkspaces.php`, { t: localStorage.getItem('t'), u: user, w: accessTo }, httpOptions)
+      .post<boolean>(`${this.serverUrl}setUserWorkspaces.php`,
+      { t: localStorage.getItem('t'), u: user, w: accessTo })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
@@ -125,82 +87,55 @@ export class BackendService {
   // workspaces
   // *******************************************************************
   // *******************************************************************
-  getWorkspaces(): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getWorkspaces(): Observable<IdLabelSelectedData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaces.php`, { t: localStorage.getItem('t') }, httpOptions)
+      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaces.php`, { t: localStorage.getItem('t') })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  addWorkspace(name: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  addWorkspace(name: string): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}addWorkspace.php`, { t: localStorage.getItem('t'), n: name }, httpOptions)
+      .post<boolean>(`${this.serverUrl}addWorkspace.php`, { t: localStorage.getItem('t'), n: name })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  changeWorkspace(wsId: number, wsName: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  changeWorkspace(wsId: number, wsName: string): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}setWorkspace.php`, { t: localStorage.getItem('t'), ws_id: wsId, ws_name: wsName }, httpOptions)
+      .post<boolean>(`${this.serverUrl}setWorkspace.php`,
+      { t: localStorage.getItem('t'), ws_id: wsId, ws_name: wsName })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteWorkspaces(workspaces: number[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteWorkspaces(workspaces: number[]): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}deleteWorkspaces.php`, { t: localStorage.getItem('t'), ws: workspaces }, httpOptions)
+      .post<boolean>(`${this.serverUrl}deleteWorkspaces.php`, { t: localStorage.getItem('t'), ws: workspaces })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   // *******************************************************************
-  getUsersByWorkspace(workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getUsersByWorkspace(workspaceId: number): Observable<IdLabelSelectedData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaceUsers.php`, { t: localStorage.getItem('t'), ws: workspaceId }, httpOptions)
+      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaceUsers.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  setUsersByWorkspace(workspace: number, accessing: IdLabelSelectedData[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  setUsersByWorkspace(workspace: number, accessing: IdLabelSelectedData[]): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}setWorkspaceUsers.php`, { t: localStorage.getItem('t'), w: workspace, u: accessing }, httpOptions)
+      .post<boolean>(`${this.serverUrl}setWorkspaceUsers.php`,
+      { t: localStorage.getItem('t'), w: workspace, u: accessing })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
@@ -209,134 +144,75 @@ export class BackendService {
   // itemauthoringtools
   // *******************************************************************
   // *******************************************************************
-  getItemAuthoringTools(): Observable<StrIdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getItemAuthoringTools(): Observable<StrIdLabelSelectedData[]> {
     return this.http
-      .post<StrIdLabelSelectedData[]>(`${this.serverUrl}getItemAuthoringTools.php`, { t: localStorage.getItem('t') }, httpOptions)
+      .post<StrIdLabelSelectedData[]>(`${this.serverUrl}getItemAuthoringTools.php`, { t: localStorage.getItem('t') })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  addItemAuthoringTool(id: string, name: string): Observable<boolean | ServerError> {
+  addItemAuthoringTool(id: string, name: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrl}addItemAuthoringTool.php`, { t: localStorage.getItem('t'), i: id, n: name })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  changeItemAuthoringTool(oldid: string, id: string, name: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  changeItemAuthoringTool(oldid: string, id: string, name: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrl}renameItemAuthoringTool.php`, {
       t: localStorage.getItem('t'), old_i: oldid, new_i: id, n: name
-    }, httpOptions)
+    })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteItemAuthoringTools(ids: string[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteItemAuthoringTools(ids: string[]): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}deleteItemAuthoringTools.php`, { t: localStorage.getItem('t'), i: ids }, httpOptions)
+      .post<boolean>(`${this.serverUrl}deleteItemAuthoringTools.php`, { t: localStorage.getItem('t'), i: ids })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   // *******************************************************************
   // itemauthoringtools - Files
-  getItemAuthoringToolFiles(id: string): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getItemAuthoringToolFiles(id: string): Observable<GetFileResponseData[]> {
     return this.http
-      .post<GetFileResponseData[]>(`${this.serverUrl}getItemAuthoringToolFiles.php`, { t: localStorage.getItem('t'), i: id }, httpOptions)
+      .post<GetFileResponseData[]>(`${this.serverUrl}getItemAuthoringToolFiles.php`,
+      { t: localStorage.getItem('t'), i: id })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteItemAuthoringToolFiles(id: string, files: string[]): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteItemAuthoringToolFiles(id: string, files: string[]): Observable<string> {
     return this.http
-      .post<string>(`${this.serverUrl}deleteItemAuthoringToolFiles.php`, { t: localStorage.getItem('t'), i: id, f: files }, httpOptions)
+      .post<string>(`${this.serverUrl}deleteItemAuthoringToolFiles.php`,
+      { t: localStorage.getItem('t'), i: id, f: files })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getItemPlayerFiles(): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getItemPlayerFiles(): Observable<GetFileResponseData[]> {
     return this.http
-      .post<GetFileResponseData[]>(`${this.serverUrl}getItemPlayerFiles.php`, { t: localStorage.getItem('t') }, httpOptions)
+      .post<GetFileResponseData[]>(`${this.serverUrl}getItemPlayerFiles.php`, { t: localStorage.getItem('t') })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteItemPlayerFiles(files: string[]): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  deleteItemPlayerFiles(files: string[]): Observable<string> {
     return this.http
-      .post<string>(`${this.serverUrl}deleteItemPlayerFiles.php`, { t: localStorage.getItem('t'), f: files }, httpOptions)
+      .post<string>(`${this.serverUrl}deleteItemPlayerFiles.php`, { t: localStorage.getItem('t'), f: files })
       .pipe(
-        catchError(this.handleError)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-  // eslint-disable-next-line class-methods-use-this
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn: ServerError = {
-      label: 'Fehler bei Datenübertragung',
-      code: errorObj.status
-    };
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = `Fehler: ${(<ErrorEvent>errorObj.error).message}`;
-    } else {
-      myreturn.label = `Fehler: ${errorObj.message}`;
-    }
-
-    return Observable.throw(myreturn.label);
-  }
-}
-
-// / / / / / /
-export interface ServerError {
-  code: number;
-  label: string;
 }
 
 export interface GetUserDataResponse {

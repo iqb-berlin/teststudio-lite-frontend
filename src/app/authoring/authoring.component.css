@@ -12,6 +12,12 @@
   overflow-y: auto;
 }
 
+.import-units-log {
+  background-color:whitesmoke;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .navibar {
   background-color:whitesmoke;
   margin: 0px;

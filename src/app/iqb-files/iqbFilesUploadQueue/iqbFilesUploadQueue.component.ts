@@ -16,7 +16,7 @@ import { UploadStatus } from '../iqb-files-classes';
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
-  files: Array<any> = [];
+  @Output() files: Array<any> = [];
   private numberOfErrors = 0;
   private numberOfUploads = 0;
   private disableClearButton = true;

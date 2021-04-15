@@ -1,8 +1,8 @@
 import { catchError, map } from 'rxjs/operators';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import { ApiError } from '../backend.service';
+import { AppHttpError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,70 +17,42 @@ export class BackendService {
     this.serverUrlPreview += 'php_preview/';
   }
 
-  getUnitList(workspaceId: number): Observable <UnitShortData[] | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  getUnitList(workspaceId: number): Observable <UnitShortData[]> {
     return this.http
-      .put<UnitShortData[]>(`${this.serverUrlUnit}getUnitList.php`, { t: authToken, ws: workspaceId })
+      .put<UnitShortData[]>(`${this.serverUrlUnit}getUnitList.php`, { t: localStorage.getItem('t'), ws: workspaceId })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getUnitList Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  addUnit(workspaceId: number, key: string, label: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  addUnit(workspaceId: number, key: string, label: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
       {
-        t: authToken, ws: workspaceId, k: key, l: label
+        t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label
       })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`addUnit Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   copyUnit(workspaceId: number,
-           fromUnit: number, key: string, label: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+           fromUnit: number, key: string, label: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
       {
-        t: authToken, ws: workspaceId, u: fromUnit, k: key, l: label
+        t: localStorage.getItem('t'), ws: workspaceId, u: fromUnit, k: key, l: label
       })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`copyUnit Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  deleteUnits(workspaceId: number, units: number[]): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  deleteUnits(workspaceId: number, units: number[]): Observable<boolean> {
     return this.http
-      .put<boolean>(`${this.serverUrlUnit}deleteUnits.php`, { t: authToken, ws: workspaceId, u: units })
+      .put<boolean>(`${this.serverUrlUnit}deleteUnits.php`, { t: localStorage.getItem('t'), ws: workspaceId, u: units })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`deleteUnits Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
@@ -96,10 +68,7 @@ export class BackendService {
         t: authToken, ws: workspaceId, u: units, tws: targetWorkspace
       })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`moveUnits Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        }),
+        catchError(err => throwError(new AppHttpError(err))),
         map((unMovableUnits: UnitShortData[]) => {
           if (unMovableUnits.length === 0) return true;
           return unMovableUnits.length;
@@ -107,81 +76,47 @@ export class BackendService {
       );
   }
 
-  downloadUnits(workspaceId: number, units: number[]): Observable<Blob | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  downloadUnits(workspaceId: number, units: number[]): Observable<Blob> {
     const httpOptions = {
       responseType: 'blob' as 'json',
       headers: new HttpHeaders({
-        options: JSON.stringify({ t: authToken, ws: workspaceId, u: units })
+        options: JSON.stringify({ t: localStorage.getItem('t'), ws: workspaceId, u: units })
       })
     };
     return this.http.get<Blob>(`${this.serverUrlUnit}downloadUnits.php`, httpOptions);
   }
 
-  getUnitProperties(workspaceId: number, unitId: number): Observable<UnitProperties | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  getUnitProperties(workspaceId: number, unitId: number): Observable<UnitProperties> {
     return this.http
-      .put<UnitProperties>(`${this.serverUrlUnit}getUnitProperties.php`, { t: authToken, ws: workspaceId, u: unitId })
+      .put<UnitProperties>(`${this.serverUrlUnit}getUnitProperties.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getUnitProperties Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getUnitDesignData(workspaceId: number, unitId: number): Observable<UnitDesignData | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+  getUnitDesignData(workspaceId: number, unitId: number): Observable<UnitDesignData> {
     return this.http
-      .put<UnitDesignData>(`${this.serverUrlUnit}getUnitDesignData.php`, { t: authToken, ws: workspaceId, u: unitId })
+      .put<UnitDesignData>(`${this.serverUrlUnit}getUnitDesignData.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getUnitDesignData Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getEditorList(): Observable<EditorData[] | number> {
+  getEditorList(): Observable<EditorData[]> {
     return this.http
       .get<EditorData[]>(`${this.serverUrlUnit}getItemAuthoringToolList.php`)
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getEditorList Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
-      );
-  }
-
-  hasValidAuthoringTool(unitId: number): Observable<boolean | number> {
-    return this.http
-      .post<boolean>(`${this.serverUrlUnit}hasValidAuthoringTool.php`, { u: unitId })
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`hasValidAuthoringTool Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   setUnitMetaData(workspaceId: number, unitId: number, unitKey: string,
-                  unitLabel: string, unitDescription: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+                  unitLabel: string, unitDescription: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrlUnit}changeUnitProperties.php`, {
-      t: authToken,
+      t: localStorage.getItem('t'),
       ws: workspaceId,
       u: unitId,
       k: unitKey,
@@ -189,86 +124,69 @@ export class BackendService {
       d: unitDescription
     })
       .pipe(
-        catchError(err => {
-          console.warn(`setUnitMetaData Api-Error: ${err.status}.`);
-          return of(err.status);
-        })
+        catchError(err => of(false))
       );
   }
 
   setUnitEditor(workspaceId: number,
-                unitId: number, editorId: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+                unitId: number, editorId: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrlUnit}setUnitAuthoringTool.php`, {
-      t: authToken,
+      t: localStorage.getItem('t'),
       ws: workspaceId,
       u: unitId,
       ati: editorId
     })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`setUnitEditor Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => of(false))
       );
   }
 
   setUnitPlayer(workspaceId: number,
-                unitId: number, playerId: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+                unitId: number, playerId: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrlUnit}setUnitPlayer.php`, {
-      t: authToken,
+      t: localStorage.getItem('t'),
       ws: workspaceId,
       u: unitId,
       pl: playerId
     })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`setUnitPlayer Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => of(false))
+      );
+  }
+
+  startUnitUploadProcessing(processId: number): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrlUnit}startUnitUploadProcessing.php`, {
+      p: processId
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
   setUnitDefinition(workspaceId: number,
-                    unitId: number, unitDef: string, unitPlayerId: string): Observable<boolean | number> {
-    const authToken = localStorage.getItem('t');
-    if (!authToken) {
-      return of(401);
-    }
+                    unitId: number, unitDef: string, unitPlayerId: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrlUnit}setUnitDefinition.php`, {
-      t: authToken,
+      t: localStorage.getItem('t'),
       ws: workspaceId,
       u: unitId,
       ud: unitDef,
       pl: unitPlayerId
     })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`setUnitDefinition Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getUnitPlayerByUnitId(workspaceId: number, unitId: number): Observable<string | number> {
+  getUnitPlayerByUnitId(workspaceId: number, unitId: number): Observable<string> {
     return this.http
       .post<UnitPlayerData>(`${this.serverUrlPreview}getUnitPreviewData.php`,
       { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`setUnitDefinition Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        }),
+        catchError(err => throwError(new AppHttpError(err))),
         map((playerData: UnitPlayerData) => playerData.player)
       );
   }

@@ -14,7 +14,7 @@
       </button>
     </div>
     <!-- # # # # # # # # # # # # # # # # # # # # # # # # -->
-    <mat-selection-list [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange($event)" fxFlex cdkScrollable>
+    <mat-selection-list [multiple]="false" [(ngModel)]="selectedUnits" (ngModelChange)="onUnitSelectionChange()" fxFlex cdkScrollable>
       <mat-list-option *ngFor="let unit of ds.unitList" [value]="unit.id" style="height: 24px;" class="no-wrap" [matTooltip]="unit.label"
       [class]="unit.id === (ds.selectedUnit$ | async) ? 'selected' : 'not-selected'">
         {{ unit.key }} - {{ unit.label }}
@@ -39,7 +39,7 @@
         <button mat-menu-item (click)="moveUnit()">
           <span>Aufgabe(n) verschieben</span>
         </button>
-        <button mat-menu-item (click)="importUnit()" disabled="disabled">
+        <button mat-menu-item (click)="hiddenFileInput.click()">
           <span>Aufgabe(n) importieren</span>
         </button>
         <button mat-menu-item (click)="exportUnit()">
@@ -47,7 +47,18 @@
         </button>
       </mat-menu>
     </div>
-
+    <input #hiddenFileInput type="file" name="unit-file" multiple [iqbFilesUploadInputFor]="fileUploadQueue" hidden="true"/>
+  </div>
+  <div [hidden]="this.fileUploadQueue.files.length<=0" class="import-units-log">
+    <iqb-files-upload-queue #fileUploadQueue
+                            [httpUrl]="uploadUrl"
+                            [fileAlias]="'unit-file'"
+                            [tokenName]="'t'"
+                            [token]="token"
+                            [folderName]="'p'"
+                            [folder]="uploadProcessId"
+                            (uploadCompleteEvent)="finishUnitUpload()">
+    </iqb-files-upload-queue>
   </div>
   <div fxFlex class="unitdatacontainer">
     <router-outlet></router-outlet>

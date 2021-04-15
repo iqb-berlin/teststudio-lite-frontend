@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MainDatastoreService } from './maindatastore.service';
-import { BackendService } from './backend.service';
+import { AppHttpError, BackendService } from './backend.service';
 
 @Component({
   selector: 'app-root',
@@ -17,13 +17,12 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.bs.getStatus().subscribe(newStatus => {
-        if (typeof newStatus === 'number') {
-          this.mds.loginStatus = null;
-          this.mds.pageTitle = 'Willkommen!';
-        } else {
-          this.mds.pageTitle = `Willkommen ${newStatus.name}!`;
-          this.mds.loginStatus = newStatus;
-        }
+        this.mds.pageTitle = `Willkommen ${newStatus.name}!`;
+        this.mds.loginStatus = newStatus;
+      },
+      err => {
+        this.mds.loginStatus = null;
+        this.mds.pageTitle = 'Willkommen!';
       });
 
       window.addEventListener('message', event => {

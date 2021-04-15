@@ -1,8 +1,30 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+
+export class AppHttpError {
+  code: number;
+  info: string;
+  constructor(errorObj?: HttpErrorResponse) {
+    if (errorObj) {
+      this.code = errorObj.status;
+      this.info = errorObj.message;
+      if (errorObj.status === 401) {
+        this.info = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 503) {
+        this.info = 'Server meldet Datenbankproblem.';
+      } else if (errorObj.error instanceof ErrorEvent) {
+        this.info = `Fehler: ${(<ErrorEvent>errorObj.error).message}`;
+      }
+    }
+  }
+
+  msg(): string {
+    return `${this.info} (Fehler ${this.code})`;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,24 +35,16 @@ export class BackendService {
     private http: HttpClient
   ) { }
 
-  private getWorkspaceList(authData: LoginStatusResponseData | number): Observable<LoginData | number> {
-    if (typeof authData === 'number') {
-      localStorage.removeItem('t');
-      return of(authData);
-    }
-    const loginStatusResponseData = authData as LoginStatusResponseData;
+  private getWorkspaceList(loginStatusResponseData: LoginStatusResponseData): Observable<LoginData> {
     localStorage.setItem('t', loginStatusResponseData.token);
     return this.http
       .put<WorkspaceData[]>(`${this.serverUrl}php_authoring/getWorkspaceList.php`, { t: loginStatusResponseData.token })
       .pipe(
-        catchError((err: ApiError) => {
+        catchError((err: HttpErrorResponse) => {
           localStorage.removeItem('t');
-          return of(err.code);
+          return throwError(new AppHttpError(err));
         }),
         switchMap(workspaceList => {
-          if (typeof workspaceList === 'number') {
-            return of(workspaceList);
-          }
           if (workspaceList.length > 1) {
             workspaceList.sort((ws1, ws2) => {
               if (ws1.name.toLowerCase() > ws2.name.toLowerCase()) {
@@ -51,48 +65,43 @@ export class BackendService {
       );
   }
 
-  login(name: string, password: string): Observable<LoginData | number> {
-    if (name && password) {
-      return this.http
-        .put<LoginStatusResponseData>(`${this.serverUrl}login.php`, { n: name, p: password })
-        .pipe(
-          catchError((err: ApiError) => {
-            console.warn(`login Api-Error: ${err.code} ${err.info} `);
-            localStorage.removeItem('t');
-            return of(err.code);
-          }),
-          switchMap(authData => this.getWorkspaceList(authData))
-        );
-    }
-    return of(0);
+  login(name: string, password: string): Observable<LoginData> {
+    return this.http
+      .put<LoginStatusResponseData>(`${this.serverUrl}login.php`, { n: name, p: password })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          localStorage.removeItem('t');
+          return throwError(new AppHttpError(err));
+        }),
+        switchMap(authData => this.getWorkspaceList(authData))
+      );
   }
 
   logout(): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrl}logout.php`, { t: localStorage.getItem('t') })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`login Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
+        catchError(() => of(false))
       );
   }
 
-  getStatus(): Observable<LoginData | number> {
+  getStatus(): Observable<LoginData> {
     const storageEntry = localStorage.getItem('t');
-    if (storageEntry !== null) {
-      return this.http
-        .put<LoginStatusResponseData>(`${this.serverUrl}getStatus.php`, { t: storageEntry })
-        .pipe(
-          catchError((err: ApiError) => {
-            console.warn(`login Api-Error: ${err.code} ${err.info} `);
-            localStorage.removeItem('t');
-            return of(err.code);
-          }),
-          switchMap(authData => this.getWorkspaceList(authData))
-        );
+    if (storageEntry === null) {
+      const appError = new AppHttpError();
+      appError.code = 401;
+      appError.info = 'Bitte anmelden!';
+      return throwError(appError);
     }
-    return of(0);
+    return this.http
+      .put<LoginStatusResponseData>(`${this.serverUrl}getStatus.php`, { t: storageEntry })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          localStorage.removeItem('t');
+          return throwError(new AppHttpError(err));
+        }),
+        switchMap(authData => this.getWorkspaceList(authData))
+      );
   }
 }
 
@@ -111,15 +120,6 @@ export interface LoginData {
   name: string;
   isSuperAdmin: boolean;
   workspaces: WorkspaceData[]
-}
-
-export class ApiError {
-  code: number;
-  info: string;
-  constructor(code: number, info = '') {
-    this.code = code;
-    this.info = info;
-  }
 }
 
 export interface AppConfig {

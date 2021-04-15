@@ -108,10 +108,8 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
             unitDefinition: this.unitDataNew.def
           }, '*');
         } else {
-          this.bs.getUnitDesignData(this.workspaceId, this.unitDataNew.id).subscribe(ued => {
-            if (typeof ued === 'number') {
-              this.snackBar.open('Konnte Aufgabendefinition nicht laden', 'Fehler', { duration: 1000 });
-            } else {
+          this.bs.getUnitDesignData(this.workspaceId, this.unitDataNew.id).subscribe(
+            ued => {
               this.unitDataOld.def = ued.def;
               this.unitDataNew.def = ued.def;
               this.postMessageTarget.postMessage({
@@ -119,8 +117,11 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
                 sessionId: this.sessionId,
                 unitDefinition: this.unitDataNew.def
               }, '*');
+            },
+            err => {
+              this.snackBar.open(`Konnte Aufgabendefinition nicht laden (${err.code})`, 'Fehler', { duration: 3000 });
             }
-          });
+          );
         }
       } else {
         this.buildPlayer(this.unitDataNew.playerId);

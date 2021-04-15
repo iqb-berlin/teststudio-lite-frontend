@@ -23,11 +23,8 @@ export class UnitComponent implements OnInit {
       this.routingSubscription = this.route.params.subscribe(params => {
         const newUnitId = Number(params.u);
         this.ds.selectedUnit$.next(newUnitId);
-        this.bs.getUnitProperties(this.ds.selectedWorkspace, newUnitId).subscribe(umd => {
-          if (typeof umd === 'number') {
-            this.ds.unitDataNew = null;
-            this.ds.unitDataOld = null;
-          } else {
+        this.bs.getUnitProperties(this.ds.selectedWorkspace, newUnitId).subscribe(
+          umd => {
             this.ds.unitDataNew = {
               id: umd.id,
               key: umd.key,
@@ -48,9 +45,13 @@ export class UnitComponent implements OnInit {
               lastChangedStr: umd.lastchangedStr,
               def: ''
             };
+            this.ds.unitDataChanged = false;
+          },
+          err => {
+            this.ds.unitDataNew = null;
+            this.ds.unitDataOld = null;
           }
-          this.ds.unitDataChanged = false;
-        });
+        );
       });
     });
   }

@@ -68,7 +68,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  addObject() {
+  addObject(): void {
     const dialogRef = this.newworkspaceDialog.open(NewworkspaceComponent, {
       width: '600px',
       data: {
@@ -88,8 +88,12 @@ export class WorkspacesComponent implements OnInit {
                 this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
+              this.dataLoading = false;
+            },
+            err => {
+              this.snackBar.open(`Konnte Arbeitsbereich nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
               this.dataLoading = false;
             }
           );
@@ -98,7 +102,7 @@ export class WorkspacesComponent implements OnInit {
     });
   }
 
-  changeObject() {
+  changeObject(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -134,8 +138,12 @@ export class WorkspacesComponent implements OnInit {
                   this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
-                  this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 1000 });
+                  this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 3000 });
                 }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Arbeitsbereich nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
                 this.dataLoading = false;
               }
             );
@@ -145,7 +153,7 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -192,6 +200,10 @@ export class WorkspacesComponent implements OnInit {
                 this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
                 this.dataLoading = false;
               }
+            },
+            err => {
+              this.snackBar.open(`Konnte Arbeitsbereich/e nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.dataLoading = false;
             }
           );
         }
@@ -200,7 +212,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateUserList() {
+  updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
@@ -218,12 +230,12 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectUser(ws?: IdLabelSelectedData) {
+  selectUser(ws?: IdLabelSelectedData): void {
     ws.selected = !ws.selected;
     this.pendingUserChanges = true;
   }
 
-  saveUsers() {
+  saveUsers(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
@@ -232,8 +244,12 @@ export class WorkspacesComponent implements OnInit {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 1000 });
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 3000 });
           }
+          this.dataLoading = false;
+        },
+        err => {
+          this.snackBar.open(`Konnte Zugriffsrechte nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
           this.dataLoading = false;
         }
       );
@@ -243,7 +259,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateObjectList() {
+  updateObjectList(): void {
     this.selectedWorkspaceId = 0;
     this.selectedWorkspaceName = '';
     this.updateUserList();
@@ -266,19 +282,19 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
     this.isAllSelected() ?
       this.tableselectionCheckbox.clear() :
       this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 }

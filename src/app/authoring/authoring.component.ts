@@ -2,20 +2,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, Inject, OnDestroy, OnInit
+} from '@angular/core';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MainDatastoreService } from '../maindatastore.service';
-import {
-  BackendService, EditorData, PlayerData, UnitProperties, UnitShortData
-} from './backend.service';
+import { BackendService, UnitShortData } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
 import { NewunitComponent } from './dialogs/newunit.component';
 import { SelectUnitComponent } from './dialogs/select-unit.component';
 import { MoveUnitComponent } from './dialogs/moveunit.component';
-import { BackendService as SuperAdminBackendService, GetFileResponseData } from '../superadmin/backend.service';
+import { BackendService as SuperAdminBackendService } from '../superadmin/backend.service';
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -26,8 +26,12 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   private selectedUnitSubscription: Subscription = null;
   selectedUnits: string[] = [];
+  uploadUrl = '';
+  token = '';
+  uploadProcessId = '';
 
   constructor(
+    @Inject('SERVER_URL') private serverUrl: string,
     private mds: MainDatastoreService,
     public ds: DatastoreService,
     private bs: BackendService,
@@ -39,7 +43,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    this.uploadUrl = `${this.serverUrl}php_authoring/uploadUnitFile.php`;
+    this.token = localStorage.getItem('t');
+    this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+  }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -54,59 +62,56 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   updateUnitList(): void {
     this.bs.getUnitList(this.ds.selectedWorkspace).subscribe(
       uResponse => {
-        if (typeof uResponse === 'number') {
-          this.mds.errorMessage = MainDatastoreService.serverErrorMessageText(uResponse);
-          this.ds.unitList = [];
-          this.ds.selectedUnit$.next(0);
-          this.mds.pageTitle = 'IQB-Teststudio - Problem beim Laden der Aufgabenliste';
-        } else {
-          this.ds.unitList = uResponse;
-          const selectedUnit = this.ds.selectedUnit$.getValue();
-          let unitExists = false;
-          this.ds.unitList.forEach(u => {
-            if (u.id === selectedUnit) {
-              unitExists = true;
-            }
-          });
-          this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
-          this.bs.getEditorList().subscribe((atL: EditorData[] | number) => {
-            if (typeof atL !== 'number') {
-              if (atL !== null) {
-                this.ds.editorList = atL as EditorData[];
+        this.ds.unitList = uResponse;
+        const selectedUnit = this.ds.selectedUnit$.getValue();
+        let unitExists = false;
+        this.ds.unitList.forEach(u => {
+          if (u.id === selectedUnit) {
+            unitExists = true;
+          }
+        });
+        this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
+        this.bs.getEditorList().subscribe(atL => {
+          this.ds.editorList = atL;
+          let selectedWorkspaceName = '';
+          if (this.mds.loginStatus) {
+            this.mds.loginStatus.workspaces.forEach(ws => {
+              if (ws.id === this.ds.selectedWorkspace) {
+                selectedWorkspaceName = ws.name;
               }
-              let selectedWorkspaceName = '';
-              if (this.mds.loginStatus) {
-                this.mds.loginStatus.workspaces.forEach(ws => {
-                  if (ws.id === this.ds.selectedWorkspace) {
-                    selectedWorkspaceName = ws.name;
-                  }
-                });
-              }
-              this.mds.pageTitle = `IQB-Teststudio ${selectedWorkspaceName ? (` - ${selectedWorkspaceName}`) : ''}`;
-            }
-          });
-          this.bsSuper.getItemPlayerFiles().subscribe(
-            (fileDataResponse: GetFileResponseData[]) => {
-              if (typeof fileDataResponse === 'number') {
-                this.ds.playerList = [];
-              } else if (fileDataResponse !== null) {
-                fileDataResponse.forEach(f => {
-                  const fnSplits = f.filename.split('.');
-                  this.ds.playerList.push({
-                    id: fnSplits[0],
-                    label: fnSplits[0],
-                    html: ''
-                  });
-                });
-              }
-            }
-          );
-        }
+            });
+          }
+          this.mds.pageTitle = `IQB-Teststudio ${selectedWorkspaceName ? (` - ${selectedWorkspaceName}`) : ''}`;
+        },
+        () => {
+          this.ds.editorList = [];
+        });
+        this.bsSuper.getItemPlayerFiles().subscribe(
+          fileDataResponse => {
+            fileDataResponse.forEach(f => {
+              const fnSplits = f.filename.split('.');
+              this.ds.playerList.push({
+                id: fnSplits[0],
+                label: fnSplits[0],
+                html: ''
+              });
+            });
+          },
+          () => {
+            this.ds.playerList = [];
+          }
+        );
+      },
+      err => {
+        this.mds.errorMessage = err.msg();
+        this.ds.unitList = [];
+        this.ds.selectedUnit$.next(0);
+        this.mds.pageTitle = 'IQB-Teststudio - Problem beim Laden der Aufgabenliste';
       }
     );
   }
 
-  onUnitSelectionChange(event: Event): void {
+  onUnitSelectionChange(): void {
     if (this.selectedUnits.length > 0) {
       const unitId = this.selectedUnits[0];
       this.selectedUnits = [];
@@ -134,14 +139,17 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             (<FormGroup>result).get('label').value
           ).subscribe(
             respOk => {
-              // todo db-error?
               if (respOk) {
                 this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
                 this.updateUnitList();
                 // this.router.navigate(['a/']);
               } else {
-                this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 1000 });
+                this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
+              this.dataLoading = false;
+            },
+            err => {
+              this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
               this.dataLoading = false;
             }
           );
@@ -172,7 +180,14 @@ export class AuthoringComponent implements OnInit, OnDestroy {
               if (ok) {
                 this.updateUnitList();
                 this.snackBar.open('Aufgabe(n) gelöscht', '', { duration: 1000 });
+              } else {
+                this.snackBar.open('Konnte Aufgabe(n) nicht löschen.', 'Fehler', { duration: 3000 });
+                this.dataLoading = false;
               }
+            },
+            err => {
+              this.snackBar.open(`Konnte Aufgabe(n) nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.dataLoading = false;
             }
           );
         }
@@ -201,15 +216,20 @@ export class AuthoringComponent implements OnInit, OnDestroy {
               this.ds.selectedWorkspace,
               (dialogComponent.tableSelectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
               wsSelected.value
-            ).subscribe(moveResponse => {
-              if (typeof moveResponse === 'number') {
-                this.snackBar.open(`Es konnte(n) ${moveResponse} Aufgabe(n) nicht verschoben werden.`,
-                  'Fehler', { duration: 3000 });
-              } else {
-                this.snackBar.open('Aufgabe(n) verschoben', '', { duration: 1000 });
+            ).subscribe(
+              moveResponse => {
+                if (typeof moveResponse === 'number') {
+                  this.snackBar.open(`Es konnte(n) ${moveResponse} Aufgabe(n) nicht verschoben werden.`,
+                    'Fehler', { duration: 3000 });
+                } else {
+                  this.snackBar.open('Aufgabe(n) verschoben', '', { duration: 1000 });
+                }
+                this.updateUnitList();
+              },
+              err => {
+                this.snackBar.open(`Konnte Aufgabe nicht verschieben (${err.code})`, 'Fehler', { duration: 3000 });
               }
-              this.updateUnitList();
-            });
+            );
           }
         }
       }
@@ -226,9 +246,8 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       this.bs.getUnitProperties(
         this.ds.selectedWorkspace,
         myUnitId
-      ).subscribe(up => {
-        if (up !== null) {
-          const newUnit = up as UnitProperties;
+      ).subscribe(
+        newUnit => {
           if (newUnit.id === myUnitId) {
             const dialogRef = this.newUnitDialog.open(NewunitComponent, {
               width: '600px',
@@ -254,10 +273,15 @@ export class AuthoringComponent implements OnInit, OnDestroy {
                       if (respOk) {
                         this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
                         this.updateUnitList();
-                        // todo select new unit
+                        this.selectedUnits = [];
                       } else {
-                        this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 1000 });
+                        this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
                       }
+                      this.dataLoading = false;
+                    },
+                    err => {
+                      this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.msg()})`,
+                        'Fehler', { duration: 3000 });
                       this.dataLoading = false;
                     }
                   );
@@ -265,15 +289,16 @@ export class AuthoringComponent implements OnInit, OnDestroy {
               }
             });
           }
+        },
+        err => {
+          this.snackBar.open(`Fehler beim Laden der Aufgabeneigenschaften (${err.msg()})`,
+            'Fehler', { duration: 3000 });
+          this.dataLoading = false;
         }
-      });
+      );
     } else {
       this.snackBar.open('Bitte erst Aufgabe auswählen', 'Hinweis', { duration: 3000 });
     }
-  }
-
-  importUnit(): void {
-    this.snackBar.open('Funktion ist deaktiviert', '', { duration: 1000 });
   }
 
   exportUnit(): void {
@@ -310,9 +335,14 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       if (saveResult === true) {
         this.snackBar.open('Änderungen an Aufgabedaten gespeichert', '', { duration: 1000 });
       } else {
-        this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 1000 });
+        this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 3000 });
       }
     });
+  }
+
+  finishUnitUpload() : void {
+    this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+    this.snackBar.open('Dateien wurden an den Server gesendet - bitte warten', '', { duration: 3000 });
   }
 
   discardChanges(): void {

@@ -34,6 +34,7 @@ import { UnitEditorComponent } from './unit/unit-editor/unit-editor.component';
 import { SaveOrDiscardComponent } from './dialogs/save-or-discard.component';
 import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
 import { UnitPreviewComponent } from './unit/unit-preview/unit-preview.component';
+import { IqbFilesModule } from '../iqb-files';
 
 @NgModule({
   imports: [
@@ -61,7 +62,8 @@ import { UnitPreviewComponent } from './unit/unit-preview/unit-preview.component
     MatTableModule,
     MatCheckboxModule,
     FormsModule,
-    MatTabsModule
+    MatTabsModule,
+    IqbFilesModule
   ],
   declarations: [
     AuthoringComponent,
