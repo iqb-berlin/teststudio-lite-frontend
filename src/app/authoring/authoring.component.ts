@@ -340,13 +340,15 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     this.bs.startUnitUploadProcessing(this.ds.selectedWorkspace, this.uploadProcessId).subscribe(
       ok => {
         if (ok === true) {
-          this.snackBar.open('Änderungen an Aufgabedaten gespeichert', '', { duration: 1000 });
+          this.snackBar.open('Aufgaben wurden importiert gespeichert', '', { duration: 1000 });
+          this.updateUnitList();
+          this.selectedUnits = [];
         } else {
-          this.snackBar.open('Problem: Konnte Aufgabendaten nicht hochladen', '', { duration: 3000 });
+          this.snackBar.open('Problem: Konnte Aufgabendateien nicht hochladen', '', { duration: 3000 });
         }
       },
       err => {
-        this.snackBar.open(`Problem: Konnte Aufgabendaten nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
+        this.snackBar.open(`Problem: Konnte Aufgabendateien nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
       }
     );
     this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
