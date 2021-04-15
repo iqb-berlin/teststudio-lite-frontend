@@ -29,18 +29,18 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   private iFramePlayer: HTMLIFrameElement;
   private readonly postMessageSubscription: Subscription = null;
   private sessionId = '';
-  private postMessageTarget: Window = null;
+  postMessageTarget: Window = null;
   private lastPlayerId = '';
-  private playerVersion = 3;
+  playerVersion = 3;
   statusVisual: StatusVisual[] = [
     {
-      id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'
+      id: 'presentation', label: 'P', color: 'DarkGray', description: 'Status: Vollständigkeit der Präsentation'
     },
     {
-      id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'
+      id: 'responses', label: 'R', color: 'DarkGray', description: 'Status: Vollständigkeit der Antworten'
     },
     {
-      id: 'focus', label: 'F', color: 'Teal', description: 'Status: Player hat Fenster-Fokus'
+      id: 'focus', label: 'F', color: 'DarkGray', description: 'Status: Player hat Fenster-Fokus'
     }
   ];
 
@@ -64,7 +64,17 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
         switch (msgType) {
           case 'vopReadyNotification':
           case 'vo.FromPlayer.ReadyNotification':
-            this.playerVersion = msgType === 'vopReadyNotification' ? 3 : 1;
+            if (msgType === 'vopReadyNotification') {
+              const majorVersion = msgData.apiVersion.match(/\d+/);
+              if (majorVersion.length > 0) {
+                const majorVersionNumber = Number(majorVersion[0]);
+                this.playerVersion = majorVersionNumber > 2 ? 3 : 2;
+              } else {
+                this.playerVersion = 2;
+              }
+            } else {
+              this.playerVersion = 1;
+            }
             if (this.unitDataNew) {
               this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
@@ -180,6 +190,14 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
         unitDefinition: this.unitDataNew.def
       }, '*');
     }
+  }
+
+  postNavigationDenied(): void {
+    this.postMessageTarget.postMessage({
+      type: 'vopNavigationDeniedNotification',
+      sessionId: this.sessionId,
+      reason: ['presentationIncomplete', 'responsesIncomplete']
+    }, '*');
   }
 
   private buildPlayer(playerId: string) {

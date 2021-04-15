@@ -6,6 +6,9 @@
     <div class="statusVisual" fxLayout="row">
       <div *ngFor="let sV of statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
     </div>
+    <button mat-raised-button (click)="postNavigationDenied()"
+            [disabled]="(playerVersion < 3) || (postMessageTarget === null)"
+            matTooltip="Sende die Nachricht 'Verweigerte Navigation'">Validieren</button>
     <p>{{ player }}</p>
   </div>
 
