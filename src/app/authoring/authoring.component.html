@@ -47,7 +47,7 @@
         </button>
       </mat-menu>
     </div>
-    <input #hiddenFileInput type="file" name="unit-file" multiple [iqbFilesUploadInputFor]="fileUploadQueue" hidden="true"/>
+    <input #hiddenFileInput type="file" name="unit-file" accept=".xml,.voud,.zip" multiple [iqbFilesUploadInputFor]="fileUploadQueue" hidden="true"/>
   </div>
   <div [hidden]="this.fileUploadQueue.files.length<=0" class="import-units-log">
     <iqb-files-upload-queue #fileUploadQueue
