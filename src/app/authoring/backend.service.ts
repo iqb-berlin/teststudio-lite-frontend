@@ -124,7 +124,7 @@ export class BackendService {
       d: unitDescription
     })
       .pipe(
-        catchError(err => of(false))
+        catchError(() => of(false))
       );
   }
 
@@ -138,7 +138,7 @@ export class BackendService {
       ati: editorId
     })
       .pipe(
-        catchError(err => of(false))
+        catchError(() => of(false))
       );
   }
 
@@ -152,13 +152,15 @@ export class BackendService {
       pl: playerId
     })
       .pipe(
-        catchError(err => of(false))
+        catchError(() => of(false))
       );
   }
 
-  startUnitUploadProcessing(processId: number): Observable<boolean> {
+  startUnitUploadProcessing(workspaceId: number, processId: string): Observable<boolean> {
     return this.http
       .post<boolean>(`${this.serverUrlUnit}startUnitUploadProcessing.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
       p: processId
     })
       .pipe(

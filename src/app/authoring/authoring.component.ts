@@ -236,10 +236,6 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  previewUnit(): void {
-    this.router.navigate([`p/${this.ds.selectedWorkspace}##${this.ds.selectedUnit$.getValue()}`]);
-  }
-
   copyUnit(): void {
     const myUnitId = this.ds.selectedUnit$.getValue();
     if (myUnitId > 0) {
@@ -341,8 +337,20 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   finishUnitUpload() : void {
+    this.bs.startUnitUploadProcessing(this.ds.selectedWorkspace, this.uploadProcessId).subscribe(
+      ok => {
+        if (ok === true) {
+          this.snackBar.open('Änderungen an Aufgabedaten gespeichert', '', { duration: 1000 });
+        } else {
+          this.snackBar.open('Problem: Konnte Aufgabendaten nicht hochladen', '', { duration: 3000 });
+        }
+      },
+      err => {
+        this.snackBar.open(`Problem: Konnte Aufgabendaten nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
+      }
+    );
     this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-    this.snackBar.open('Dateien wurden an den Server gesendet - bitte warten', '', { duration: 3000 });
+    this.snackBar.open('Dateien wurden an den Server gesendet - bitte warten', '', { duration: 10000 });
   }
 
   discardChanges(): void {
