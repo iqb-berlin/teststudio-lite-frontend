@@ -26,7 +26,6 @@ export class AppComponent implements OnInit {
       });
 
       window.addEventListener('message', event => {
-        console.log('window.addEventListener', event);
         this.mds.processMessagePost(event);
       }, false);
     });

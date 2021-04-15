@@ -31,12 +31,16 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   private sessionId = '';
   private postMessageTarget: Window = null;
   private lastPlayerId = '';
+  private playerVersion = 3;
   statusVisual: StatusVisual[] = [
     {
       id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'
     },
     {
       id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'
+    },
+    {
+      id: 'focus', label: 'F', color: 'Teal', description: 'Status: Player hat Fenster-Fokus'
     }
   ];
 
@@ -55,11 +59,12 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData.type;
-      console.log(msgData);
 
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
+          case 'vopReadyNotification':
           case 'vo.FromPlayer.ReadyNotification':
+            this.playerVersion = msgType === 'vopReadyNotification' ? 3 : 1;
             if (this.unitDataNew) {
               this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
@@ -73,6 +78,17 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
             this.setResponsesStatus(msgData.responsesGiven);
             break;
 
+          case 'vopStateChangedNotification':
+            if (msgData.playerState) {
+              const pages = msgData.playerState.validPages;
+              this.setPageList(Object.keys(pages), msgData.playerState.currentPage);
+            }
+            if (msgData.unitState) {
+              this.setPresentationStatus(msgData.unitState.presentationProgress);
+              this.setResponsesStatus(msgData.unitState.responseProgress);
+            }
+            break;
+
           case 'vo.FromPlayer.ChangedDataTransfer':
             this.setPageList(msgData.validPages, msgData.currentPage);
             this.setPresentationStatus(msgData.presentationComplete);
@@ -81,8 +97,14 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
 
           case 'vo.FromPlayer.PageNavigationRequest':
             this.snackBar.open(`Player sendet PageNavigationRequest: "${
-              msgData.navigationTarget}"`, '', { duration: 3000 });
+              msgData.newPage}"`, '', { duration: 3000 });
             this.gotoPage(msgData.newPage);
+            break;
+
+          case 'vopPageNavigationCommand':
+            this.snackBar.open(`Player sendet PageNavigationRequest: "${
+              msgData.target}"`, '', { duration: 3000 });
+            this.gotoPage(msgData.target);
             break;
 
           case 'vo.FromPlayer.UnitNavigationRequest':
@@ -90,8 +112,17 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
               msgData.navigationTarget}"`, '', { duration: 3000 });
             break;
 
+          case 'vopUnitNavigationRequestedNotification':
+            this.snackBar.open(`Player sendet UnitNavigationRequest: "${
+              msgData.target}"`, '', { duration: 3000 });
+            break;
+
+          case 'vopWindowFocusChangedNotification':
+            this.setFocusStatus(msgData.hasFocus);
+            break;
+
           default:
-            console.log(`processMessagePost ignored message: ${msgType}`);
+            console.warn(`processMessagePost ignored message: ${msgType}`);
             break;
         }
       }
@@ -99,24 +130,19 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   sendUnitDataToPlayer(): void {
+    this.setPresentationStatus('none');
+    this.setResponsesStatus('none');
+    this.setPageList([], '');
     if (this.unitDataNew) {
       if ((this.unitDataNew.playerId === this.lastPlayerId) && this.postMessageTarget) {
         if (this.unitDataNew.def) {
-          this.postMessageTarget.postMessage({
-            type: 'vo.ToPlayer.DataTransfer',
-            sessionId: this.sessionId,
-            unitDefinition: this.unitDataNew.def
-          }, '*');
+          this.postUnitDef(this.unitDataNew.def);
         } else {
           this.bs.getUnitDesignData(this.workspaceId, this.unitDataNew.id).subscribe(
             ued => {
               this.unitDataOld.def = ued.def;
               this.unitDataNew.def = ued.def;
-              this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
-                sessionId: this.sessionId,
-                unitDefinition: this.unitDataNew.def
-              }, '*');
+              this.postUnitDef(this.unitDataNew.def);
             },
             err => {
               this.snackBar.open(`Konnte Aufgabendefinition nicht laden (${err.code})`, 'Fehler', { duration: 3000 });
@@ -132,6 +158,30 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  private postUnitDef(unitDef: string): void {
+    if (this.playerVersion === 1) {
+      this.postMessageTarget.postMessage({
+        type: 'vo.ToPlayer.DataTransfer',
+        sessionId: this.sessionId,
+        unitDefinition: unitDef
+      }, '*');
+    } else {
+      this.postMessageTarget.postMessage({
+        type: 'vopStartCommand',
+        sessionId: this.sessionId,
+        unitState: {
+          dataParts: {},
+          presentationProgress: 'none',
+          responseProgress: 'none'
+        },
+        playerConfig: {
+          stateReportPolicy: 'eager'
+        },
+        unitDefinition: this.unitDataNew.def
+      }, '*');
+    }
+  }
+
   private buildPlayer(playerId: string) {
     this.iFramePlayer = null;
     this.postMessageTarget = null;
@@ -141,7 +191,6 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     if (playerId) {
       let playerData: PlayerData = null;
       this.ds.playerList.forEach(p => {
-        console.log(p, playerId);
         if (p.id === playerId) playerData = p;
       });
 
@@ -150,18 +199,19 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
           this.setupPlayerIFrame(playerData.html);
           this.lastPlayerId = playerData.id;
         } else {
-          this.bs.getUnitPlayerByUnitId(this.ds.selectedWorkspace, this.unitDataNew.id).subscribe(playerResponse => {
-            if (typeof playerResponse === 'number') {
+          this.bs.getUnitPlayerByUnitId(this.ds.selectedWorkspace, this.unitDataNew.id).subscribe(
+            playerResponse => {
+              playerData.html = playerResponse;
+              this.setupPlayerIFrame(playerResponse);
+              this.lastPlayerId = playerData.id;
+            },
+            () => {
               const messageElement = <HTMLIFrameElement>document.createElement('p');
               messageElement.innerText = `Für Player "${playerData.label}" konnte kein Modul geladen werden.`;
               this.iFrameHostElement.appendChild(messageElement);
               this.lastPlayerId = '';
-            } else {
-              playerData.html = playerResponse;
-              this.setupPlayerIFrame(playerResponse);
-              this.lastPlayerId = playerData.id;
             }
-          });
+          );
         }
       } else {
         const messageElement = <HTMLIFrameElement>document.createElement('p');
@@ -178,9 +228,6 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private setupPlayerIFrame(playerHtml: string): void {
-    this.setPageList([], '');
-    this.setPresentationStatus('');
-    this.setResponsesStatus('');
     this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.iFramePlayer = <HTMLIFrameElement>document.createElement('iframe');
     this.iFramePlayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
@@ -299,38 +346,50 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     if (nextPageId.length > 0) {
-      this.postMessageTarget.postMessage({
-        type: 'vo.ToPlayer.NavigateToPage',
-        sessionId: this.sessionId,
-        newPage: nextPageId
-      }, '*');
+      if (this.playerVersion === 1) {
+        this.postMessageTarget.postMessage({
+          type: 'vo.ToPlayer.NavigateToPage',
+          sessionId: this.sessionId,
+          newPage: nextPageId
+        }, '*');
+      } else {
+        this.postMessageTarget.postMessage({
+          type: 'vopPageNavigationCommand',
+          sessionId: this.sessionId,
+          target: nextPageId
+        }, '*');
+      }
     }
   }
 
   // ++++++++++++ Status ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   setPresentationStatus(status: string): void { // 'yes' | 'no' | '' | undefined;
-    if (status === 'yes') {
+    if (status === 'yes' || status === 'complete') {
       this.changeStatusColor('presentation', 'LimeGreen');
-    } else if (status === 'no') {
+    } else if (status === 'no' || status === 'some') {
       this.changeStatusColor('presentation', 'LightCoral');
-    } else if (status === '') {
+    } else if (status === '' || status === 'none') {
       this.changeStatusColor('presentation', 'DarkGray');
     }
     // if undefined: no change
   }
 
   setResponsesStatus(status: string): void { // 'yes' | 'no' | 'all' | '' | undefined
-    if (status === 'yes') {
+    if (status === 'yes' || status === 'some') {
       this.changeStatusColor('responses', 'Gold');
     } else if (status === 'no') {
       this.changeStatusColor('responses', 'LightCoral');
-    } else if (status === 'all') {
+    } else if (status === 'all' || status === 'complete') {
       this.changeStatusColor('responses', 'LimeGreen');
-    } else if (status === '') {
+    } else if (status === '' || status === 'none') {
       this.changeStatusColor('responses', 'DarkGray');
     }
     // if undefined: no change
+  }
+
+  setFocusStatus(status: boolean): void { // 'yes' | 'no' | '' | undefined;
+    this.changeStatusColor('focus', status ? 'LimeGreen' : 'LightCoral');
   }
 
   changeStatusColor(id: string, newcolor: string): void {
