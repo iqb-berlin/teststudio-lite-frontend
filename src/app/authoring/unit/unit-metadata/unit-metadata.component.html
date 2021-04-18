@@ -20,38 +20,17 @@
       </mat-form-field>
     </div>
     <div fxLayout="column" fxFlex="1 0 300px">
-      <div [hidden]="ds.editorList.length > 0">
-        <p>
-          Es sind keine Editoren in diesem System verfügbar!
-        </p>
-      </div>
-      <div [hidden]="ds.editorList.length === 0" fxLayout="column">
-        <mat-form-field>
-          <mat-select placeholder="Editor" formControlName="editorSelector">
-            <mat-option *ngFor="let a of ds.editorList" [value]="a.id">
-              {{a.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div [hidden]="ds.playerList.length > 0">
-        <p>
-          Es sind keine Player in diesem System verfügbar!
-        </p>
-      </div>
-      <div [hidden]="ds.playerList.length === 0" fxLayout="column">
-        <mat-form-field>
-          <mat-select placeholder="Player" formControlName="playerSelector">
-            <mat-option *ngFor="let a of ds.playerList" [value]="a.id">
-              {{a.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <p *ngIf="!unitData?.playerId">Kein Player zugewiesen. Der Aufgabe wird automatisch ein Player
-        zugewiesen, wenn Sie das erste Mal die Aufgabe im Editor aufrufen und speichern.</p>
-      <p><em>Letzte Änderung: {{ unitData?.lastChangedStr }}</em></p>
+      <app-select-module [moduleList]="ds.editorList"
+                         [selectedModuleId]="unitData.editorid"
+                         moduleType="Editor"
+                         (selectionChanged)="editorChanged($event)">
+      </app-select-module>
+      <app-select-module [moduleList]="ds.playerList"
+                         [selectedModuleId]="unitData.playerid"
+                         moduleType="Player"
+                         (selectionChanged)="playerChanged($event)">
+      </app-select-module>
+      <!--<p><em>Letzte Änderung: {{ unitData.lastChanged * 1000 | date : 'dd.MM.yyyy HH:mm' : timeZone }}</em></p>-->
     </div>
   </div>
 

@@ -54,7 +54,37 @@ export class AuthoringComponent implements OnInit, OnDestroy {
       this.routingSubscription = this.route.params.subscribe(params => {
         this.ds.selectedWorkspace = Number(params.ws);
         this.ds.selectedUnit$.next(0);
-        this.updateUnitList();
+        this.ds.unitDefinitionOld = '';
+        this.ds.unitDefinitionNew = '';
+        this.ds.unitMetadataNew = null;
+        this.ds.unitMetadataOld = null;
+        this.ds.unitMetadataChanged = false;
+        this.ds.unitMetadataChanged = false;
+        this.ds.editorList = {};
+        this.ds.playerList = {};
+        this.ds.defaultEditor = '';
+        this.ds.defaultPlayer = '';
+        this.bs.getWorkspaceData(this.ds.selectedWorkspace).subscribe(
+          wResponse => {
+            this.mds.pageTitle = `IQB-Teststudio - ${wResponse.label}`;
+            if (wResponse.editors) {
+              this.ds.editorList = wResponse.editors;
+            }
+            if (wResponse.players) {
+              this.ds.playerList = wResponse.players;
+            }
+            if (wResponse.settings) {
+              this.ds.defaultEditor = wResponse.settings.defaultEditor;
+              this.ds.defaultPlayer = wResponse.settings.defaultPlayer;
+            }
+            this.updateUnitList();
+          },
+          err => {
+            this.snackBar.open(
+              `Konnte Daten für Arbeitsbereich nicht laden (${err.code})`, 'Fehler', { duration: 3000 }
+            );
+          }
+        );
       });
     });
   }
@@ -71,42 +101,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
           }
         });
         this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
-        this.bs.getEditorList().subscribe(atL => {
-          this.ds.editorList = atL;
-          let selectedWorkspaceName = '';
-          if (this.mds.loginStatus) {
-            this.mds.loginStatus.workspaces.forEach(ws => {
-              if (ws.id === this.ds.selectedWorkspace) {
-                selectedWorkspaceName = ws.name;
-              }
-            });
-          }
-          this.mds.pageTitle = `IQB-Teststudio ${selectedWorkspaceName ? (` - ${selectedWorkspaceName}`) : ''}`;
-        },
-        () => {
-          this.ds.editorList = [];
-        });
-        this.bsSuper.getItemPlayerFiles().subscribe(
-          fileDataResponse => {
-            fileDataResponse.forEach(f => {
-              const fnSplits = f.filename.split('.');
-              this.ds.playerList.push({
-                id: fnSplits[0],
-                label: fnSplits[0],
-                html: ''
-              });
-            });
-          },
-          () => {
-            this.ds.playerList = [];
-          }
-        );
       },
       err => {
         this.mds.errorMessage = err.msg();
         this.ds.unitList = [];
         this.ds.selectedUnit$.next(0);
-        this.mds.pageTitle = 'IQB-Teststudio - Problem beim Laden der Aufgabenliste';
       }
     );
   }
@@ -239,7 +238,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   copyUnit(): void {
     const myUnitId = this.ds.selectedUnit$.getValue();
     if (myUnitId > 0) {
-      this.bs.getUnitProperties(
+      this.bs.getUnitMetadata(
         this.ds.selectedWorkspace,
         myUnitId
       ).subscribe(
@@ -368,17 +367,18 @@ export class AuthoringComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== false) {
-        this.ds.unitDataNew = {
-          id: this.ds.unitDataOld.id,
-          key: this.ds.unitDataOld.key,
-          label: this.ds.unitDataOld.label,
-          description: this.ds.unitDataOld.description,
-          editorId: this.ds.unitDataOld.editorId,
-          playerId: this.ds.unitDataOld.playerId,
-          lastChangedStr: this.ds.unitDataOld.lastChangedStr,
-          def: this.ds.unitDataOld.def
+        this.ds.unitMetadataNew = {
+          id: this.ds.unitMetadataOld.id,
+          key: this.ds.unitMetadataOld.key,
+          label: this.ds.unitMetadataOld.label,
+          description: this.ds.unitMetadataOld.description,
+          editorid: this.ds.unitMetadataOld.editorid,
+          playerid: this.ds.unitMetadataOld.playerid,
+          lastchanged: this.ds.unitMetadataOld.lastchanged
         };
-        this.ds.unitDataChanged = false;
+        this.ds.unitMetadataChanged = false;
+        this.ds.unitDefinitionNew = this.ds.unitDefinitionOld;
+        this.ds.unitDefinitionChanged = false;
       }
     });
   }

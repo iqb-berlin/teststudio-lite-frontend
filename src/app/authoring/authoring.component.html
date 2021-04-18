@@ -5,11 +5,11 @@
     </div>
     <div fxLayout="row" style="margin: 2px">
       <button mat-button (click)="discardChanges()" matTooltip="Aufgabenänderungen verwerfen"
-              [disabled]="!ds.unitDataChanged" matTooltipPosition="above">
+              [disabled]="!ds.unitMetadataChanged && !ds.unitDefinitionChanged" matTooltipPosition="above">
         <mat-icon>close</mat-icon>
       </button>
       <button mat-raised-button (click)="saveUnitData()" matTooltip="Aufgabe speichern" fxFlex=""
-              [disabled]="!ds.unitDataChanged" matTooltipPosition="above">
+              [disabled]="!ds.unitMetadataChanged && !ds.unitDefinitionChanged" matTooltipPosition="above">
         Speichern <mat-icon>save</mat-icon>
       </button>
     </div>

@@ -35,6 +35,7 @@ import { SaveOrDiscardComponent } from './dialogs/save-or-discard.component';
 import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
 import { UnitPreviewComponent } from './unit/unit-preview/unit-preview.component';
 import { IqbFilesModule } from '../iqb-files';
+import { SelectModuleComponent } from './unit/unit-metadata/select-module.component';
 
 @NgModule({
   imports: [
@@ -74,7 +75,8 @@ import { IqbFilesModule } from '../iqb-files';
     UnitMetadataComponent,
     UnitEditorComponent,
     SaveOrDiscardComponent,
-    UnitPreviewComponent
+    UnitPreviewComponent,
+    SelectModuleComponent
   ],
   exports: [
     AuthoringComponent

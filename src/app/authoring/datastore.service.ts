@@ -5,9 +5,8 @@ import { Injectable } from '@angular/core';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import {
-  BackendService, EditorData, PlayerData, UnitShortData
+  BackendService, ModulData, UnitMetadata, UnitShortData
 } from './backend.service';
-import { UnitData } from './authoring.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -15,42 +14,33 @@ import { UnitData } from './authoring.classes';
 export class DatastoreService {
   selectedWorkspace = 0;
   selectedUnit$ = new BehaviorSubject<number>(0);
-  editorList: EditorData[] = [];
-  playerList: PlayerData[] = [];
-  unitDataOld: UnitData = null;
-  unitDataNew: UnitData = null;
-  unitDataChanged = false;
+  editorList: { [key: string]: ModulData; };
+  defaultEditor = '';
+  playerList: { [key: string]: ModulData; };
+  defaultPlayer = '';
+  unitMetadataOld: UnitMetadata = null;
+  unitMetadataNew: UnitMetadata = null;
+  unitMetadataChanged = false;
+  unitDefinitionOld: string = '';
+  unitDefinitionNew: string = '';
+  unitDefinitionChanged = false;
   unitList: UnitShortData[] = [];
 
   constructor(private bs: BackendService) {}
 
   saveUnitData(): Observable<boolean> {
-    if (this.unitDataNew && this.unitDataOld) {
+    if (this.unitMetadataNew && this.unitMetadataOld) {
+      const reloadUnitList = (this.unitMetadataNew.key !== this.unitMetadataOld.key) ||
+        (this.unitMetadataNew.label !== this.unitMetadataOld.label);
       const saveSubscriptions: Observable<number | boolean>[] = [];
-      let reloadUnitList = false;
-      if (
-        (this.unitDataNew.key !== this.unitDataOld.key) ||
-        (this.unitDataNew.label !== this.unitDataOld.label) ||
-        (this.unitDataNew.description !== this.unitDataOld.description)
-      ) {
-        reloadUnitList = (this.unitDataNew.key !== this.unitDataOld.key) ||
-          (this.unitDataNew.label !== this.unitDataOld.label);
-        saveSubscriptions.push(this.bs.setUnitMetaData(
-          this.selectedWorkspace,
-          this.unitDataNew.id, this.unitDataNew.key, this.unitDataNew.label, this.unitDataNew.description
+      if (this.unitMetadataChanged) {
+        saveSubscriptions.push(this.bs.setUnitMetadata(this.selectedWorkspace, this.unitMetadataNew));
+      }
+      if (this.unitDefinitionChanged) {
+        saveSubscriptions.push(this.bs.setUnitDefinition(
+          this.selectedWorkspace, this.unitMetadataNew.id, this.unitDefinitionNew
         ));
       }
-      if (this.unitDataOld.editorId !== this.unitDataNew.editorId) {
-        saveSubscriptions.push(this.bs.setUnitEditor(
-          this.selectedWorkspace, this.unitDataNew.id, this.unitDataNew.editorId
-        ));
-      }
-      if (this.unitDataOld.playerId !== this.unitDataNew.playerId) {
-        saveSubscriptions.push(this.bs.setUnitPlayer(
-          this.selectedWorkspace, this.unitDataNew.id, this.unitDataNew.playerId
-        ));
-      }
-      // todo unit-def
       if (saveSubscriptions.length > 0) {
         return forkJoin(saveSubscriptions).pipe(
           switchMap(results => {
@@ -59,17 +49,19 @@ export class DatastoreService {
               if (r !== true) isFailing = true;
             });
             if (isFailing) return of(false);
-            this.unitDataOld = {
-              id: this.unitDataNew.id,
-              key: this.unitDataNew.key,
-              label: this.unitDataNew.label,
-              description: this.unitDataNew.description,
-              editorId: this.unitDataNew.editorId,
-              playerId: this.unitDataNew.playerId,
-              lastChangedStr: this.unitDataNew.lastChangedStr,
-              def: this.unitDataNew.def
+            this.unitMetadataNew.lastchanged = Math.round(Date.now() / 1000);
+            this.unitMetadataOld = {
+              id: this.unitMetadataNew.id,
+              key: this.unitMetadataNew.key,
+              label: this.unitMetadataNew.label,
+              description: this.unitMetadataNew.description,
+              editorid: this.unitMetadataNew.editorid,
+              playerid: this.unitMetadataNew.playerid,
+              lastchanged: this.unitMetadataNew.lastchanged
             };
-            this.unitDataChanged = false;
+            this.unitMetadataChanged = false;
+            this.unitDefinitionOld = this.unitDefinitionNew;
+            this.unitDefinitionChanged = false;
             if (reloadUnitList) {
               return this.bs.getUnitList(this.selectedWorkspace)
                 .pipe(
@@ -90,7 +82,19 @@ export class DatastoreService {
   }
 
   setUnitDataChanged(): void {
-    this.unitDataChanged = this.getUnitDataChanged();
+    this.unitMetadataChanged = this.getUnitMetaDataChanged();
+    this.unitDefinitionChanged = this.unitDefinitionNew !== this.unitDefinitionOld;
+  }
+
+  private getUnitMetaDataChanged(): boolean {
+    if (this.unitMetadataOld && this.unitMetadataNew) {
+      if (this.unitMetadataNew.key !== this.unitMetadataOld.key) return true;
+      if (this.unitMetadataNew.label !== this.unitMetadataOld.label) return true;
+      if (this.unitMetadataNew.description !== this.unitMetadataOld.description) return true;
+      if (this.unitMetadataNew.editorid !== this.unitMetadataOld.editorid) return true;
+      if (this.unitMetadataNew.playerid !== this.unitMetadataOld.playerid) return true;
+    }
+    return false;
   }
 
   static unitKeyUniquenessValidator(unitId: number, unitList: UnitShortData[]): ValidatorFn {
@@ -107,17 +111,5 @@ export class DatastoreService {
       }
       return null;
     };
-  }
-
-  private getUnitDataChanged(): boolean {
-    if (this.unitDataOld && this.unitDataNew) {
-      if (this.unitDataNew.key !== this.unitDataOld.key) return true;
-      if (this.unitDataNew.label !== this.unitDataOld.label) return true;
-      if (this.unitDataNew.description !== this.unitDataOld.description) return true;
-      if (this.unitDataNew.editorId !== this.unitDataOld.editorId) return true;
-      if (this.unitDataNew.playerId !== this.unitDataOld.playerId) return true;
-      if (this.unitDataNew.def !== this.unitDataOld.def) return true;
-    }
-    return false;
   }
 }

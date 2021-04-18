@@ -17,7 +17,7 @@ export class UnitRoutingCanDeactivateGuard implements CanDeactivate<UnitComponen
   ) { }
 
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.ds.unitDataChanged) {
+    if (this.ds.unitMetadataChanged) {
       const dialogRef = this.confirmDialog.open(SaveOrDiscardComponent, {
         width: '500px',
         height: '300px',

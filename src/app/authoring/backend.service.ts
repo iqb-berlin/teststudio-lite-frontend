@@ -9,17 +9,25 @@ import { AppHttpError } from '../backend.service';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private readonly serverUrlUnit: string,
-    @Inject('SERVER_URL') private readonly serverUrlPreview: string,
+    @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient
   ) {
-    this.serverUrlUnit += 'php_authoring/';
-    this.serverUrlPreview += 'php_preview/';
+    this.serverUrl += 'php_authoring/';
   }
 
   getUnitList(workspaceId: number): Observable <UnitShortData[]> {
     return this.http
-      .put<UnitShortData[]>(`${this.serverUrlUnit}getUnitList.php`, { t: localStorage.getItem('t'), ws: workspaceId })
+      .put<UnitShortData[]>(`${this.serverUrl}getUnitList.php`, { t: localStorage.getItem('t'), ws: workspaceId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  getWorkspaceData(workspaceId: number): Observable<WorkspaceData> {
+    return this.http
+      .put<WorkspaceData>(
+      `${this.serverUrl}getWorkspaceData.php`, { t: localStorage.getItem('t'), ws: workspaceId }
+    )
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
@@ -27,7 +35,7 @@ export class BackendService {
 
   addUnit(workspaceId: number, key: string, label: string): Observable<boolean> {
     return this.http
-      .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
+      .put<boolean>(`${this.serverUrl}addUnit.php`,
       {
         t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label
       })
@@ -39,7 +47,7 @@ export class BackendService {
   copyUnit(workspaceId: number,
            fromUnit: number, key: string, label: string): Observable<boolean> {
     return this.http
-      .put<boolean>(`${this.serverUrlUnit}addUnit.php`,
+      .put<boolean>(`${this.serverUrl}addUnit.php`,
       {
         t: localStorage.getItem('t'), ws: workspaceId, u: fromUnit, k: key, l: label
       })
@@ -50,7 +58,7 @@ export class BackendService {
 
   deleteUnits(workspaceId: number, units: number[]): Observable<boolean> {
     return this.http
-      .put<boolean>(`${this.serverUrlUnit}deleteUnits.php`, { t: localStorage.getItem('t'), ws: workspaceId, u: units })
+      .put<boolean>(`${this.serverUrl}deleteUnits.php`, { t: localStorage.getItem('t'), ws: workspaceId, u: units })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
@@ -63,7 +71,7 @@ export class BackendService {
       return of(401);
     }
     return this.http
-      .put<UnitShortData[]>(`${this.serverUrlUnit}moveUnits.php`,
+      .put<UnitShortData[]>(`${this.serverUrl}moveUnits.php`,
       {
         t: authToken, ws: workspaceId, u: units, tws: targetWorkspace
       })
@@ -83,73 +91,38 @@ export class BackendService {
         options: JSON.stringify({ t: localStorage.getItem('t'), ws: workspaceId, u: units })
       })
     };
-    return this.http.get<Blob>(`${this.serverUrlUnit}downloadUnits.php`, httpOptions);
+    return this.http.get<Blob>(`${this.serverUrl}downloadUnits.php`, httpOptions);
   }
 
-  getUnitProperties(workspaceId: number, unitId: number): Observable<UnitProperties> {
+  getUnitMetadata(workspaceId: number, unitId: number): Observable<UnitMetadata> {
     return this.http
-      .put<UnitProperties>(`${this.serverUrlUnit}getUnitProperties.php`,
+      .put<UnitMetadata>(`${this.serverUrl}getUnitMetadata.php`,
       { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getUnitDesignData(workspaceId: number, unitId: number): Observable<UnitDesignData> {
+  getUnitDefinition(workspaceId: number, unitId: number): Observable<string> {
     return this.http
-      .put<UnitDesignData>(`${this.serverUrlUnit}getUnitDesignData.php`,
+      .put<string>(`${this.serverUrl}getUnitDefinition.php`,
       { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getEditorList(): Observable<EditorData[]> {
+  setUnitMetadata(workspaceId: number, unitData: UnitMetadata): Observable<boolean> {
     return this.http
-      .get<EditorData[]>(`${this.serverUrlUnit}getItemAuthoringToolList.php`)
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  setUnitMetaData(workspaceId: number, unitId: number, unitKey: string,
-                  unitLabel: string, unitDescription: string): Observable<boolean> {
-    return this.http
-      .put<boolean>(`${this.serverUrlUnit}changeUnitProperties.php`, {
+      .put<boolean>(`${this.serverUrl}setUnitMetadata.php`, {
       t: localStorage.getItem('t'),
       ws: workspaceId,
-      u: unitId,
-      k: unitKey,
-      l: unitLabel,
-      d: unitDescription
-    })
-      .pipe(
-        catchError(() => of(false))
-      );
-  }
-
-  setUnitEditor(workspaceId: number,
-                unitId: number, editorId: string): Observable<boolean> {
-    return this.http
-      .post<boolean>(`${this.serverUrlUnit}setUnitAuthoringTool.php`, {
-      t: localStorage.getItem('t'),
-      ws: workspaceId,
-      u: unitId,
-      ati: editorId
-    })
-      .pipe(
-        catchError(() => of(false))
-      );
-  }
-
-  setUnitPlayer(workspaceId: number,
-                unitId: number, playerId: string): Observable<boolean> {
-    return this.http
-      .post<boolean>(`${this.serverUrlUnit}setUnitPlayer.php`, {
-      t: localStorage.getItem('t'),
-      ws: workspaceId,
-      u: unitId,
-      pl: playerId
+      u: unitData.id,
+      k: unitData.key,
+      l: unitData.label,
+      d: unitData.description,
+      e: unitData.editorid,
+      p: unitData.playerid
     })
       .pipe(
         catchError(() => of(false))
@@ -158,7 +131,7 @@ export class BackendService {
 
   startUnitUploadProcessing(workspaceId: number, processId: string): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrlUnit}startUnitUploadProcessing.php`, {
+      .post<boolean>(`${this.serverUrl}startUnitUploadProcessing.php`, {
       t: localStorage.getItem('t'),
       ws: workspaceId,
       p: processId
@@ -169,27 +142,25 @@ export class BackendService {
   }
 
   setUnitDefinition(workspaceId: number,
-                    unitId: number, unitDef: string, unitPlayerId: string): Observable<boolean> {
+                    unitId: number, unitDef: string): Observable<boolean> {
     return this.http
-      .put<boolean>(`${this.serverUrlUnit}setUnitDefinition.php`, {
+      .put<boolean>(`${this.serverUrl}setUnitDefinition.php`, {
       t: localStorage.getItem('t'),
       ws: workspaceId,
       u: unitId,
-      ud: unitDef,
-      pl: unitPlayerId
+      ud: unitDef
     })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  getUnitPlayerByUnitId(workspaceId: number, unitId: number): Observable<string> {
+  getModuleHtml(moduleId: string): Observable<string> {
     return this.http
-      .post<UnitPlayerData>(`${this.serverUrlPreview}getUnitPreviewData.php`,
-      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
+      .post<string>(`${this.serverUrl}getModuleHtml.php`,
+      { m: moduleId })
       .pipe(
-        catchError(err => throwError(new AppHttpError(err))),
-        map((playerData: UnitPlayerData) => playerData.player)
+        catchError(err => throwError(new AppHttpError(err)))
       );
   }
 }
@@ -201,42 +172,31 @@ export interface UnitShortData {
   label: string;
 }
 
-export interface UnitProperties {
+export interface UnitMetadata {
   id: number;
   key: string;
   label: string;
-  lastchangedStr: string;
-  authoringtoolid: string;
-  playerid: string;
   description: string;
+  lastchanged: number;
+  editorid: string;
+  playerid: string;
 }
 
-export interface UnitDesignData {
-  id: number;
-  key: string;
-  label: string;
-  def: string;
-  authoringtoolLink: string;
-  playerLink: string;
-}
-
-export interface PlayerData {
-  id: string;
+export interface ModulData {
   label: string;
   html: string;
 }
 
-export interface EditorData {
-  id: string;
-  label: string;
-  link: string;
-}
-
-export interface UnitPlayerData {
+export interface WorkspaceData {
   id: number;
-  key: string;
   label: string;
-  def: string;
-  player: string;
-  player_id: string;
+  settings: {
+    [key: string]: string;
+  };
+  players: {
+    [key: string]: ModulData;
+  };
+  editors: {
+    [key: string]: ModulData;
+  };
 }

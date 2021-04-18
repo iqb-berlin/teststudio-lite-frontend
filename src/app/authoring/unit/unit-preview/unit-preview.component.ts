@@ -3,16 +3,13 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
 import {
   PageData,
   StatusVisual
 } from './unit-preview.classes';
 import { MainDatastoreService } from '../../../maindatastore.service';
-import { BackendService, PlayerData } from '../../backend.service';
+import { BackendService } from '../../backend.service';
 import { DatastoreService } from '../../datastore.service';
-import { UnitData } from '../../authoring.classes';
 
 declare let srcDoc: any;
 
@@ -22,15 +19,15 @@ declare let srcDoc: any;
   styleUrls: ['./unit-preview.component.css']
 })
 export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() workspaceId: number;
-  @Input() unitDataOld: UnitData;
-  @Input() unitDataNew!: UnitData;
+  @Input() unitId!: number;
+  @Input() playerId = '';
   private iFrameHostElement: HTMLElement;
-  private iFramePlayer: HTMLIFrameElement;
+  private iFrameElement: HTMLIFrameElement;
   private readonly postMessageSubscription: Subscription = null;
   private sessionId = '';
   postMessageTarget: Window = null;
   private lastPlayerId = '';
+  playerName = '';
   playerVersion = 3;
   statusVisual: StatusVisual[] = [
     {
@@ -46,15 +43,12 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
 
   showPageNav = false;
   pageList: PageData[] = [];
-  player = '';
 
   constructor(
     private mds: MainDatastoreService,
-    private ds: DatastoreService,
     private snackBar: MatSnackBar,
     private bs: BackendService,
-    private route: ActivatedRoute,
-    private location: Location
+    private ds: DatastoreService
   ) {
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
@@ -75,7 +69,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
             } else {
               this.playerVersion = 1;
             }
-            if (this.unitDataNew) {
+            if (this.ds.unitDefinitionNew) {
               this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
               this.sendUnitDataToPlayer();
@@ -143,16 +137,16 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     this.setPresentationStatus('none');
     this.setResponsesStatus('none');
     this.setPageList([], '');
-    if (this.unitDataNew) {
-      if ((this.unitDataNew.playerId === this.lastPlayerId) && this.postMessageTarget) {
-        if (this.unitDataNew.def) {
-          this.postUnitDef(this.unitDataNew.def);
+    if (this.unitId > 0) {
+      if ((this.playerId === this.lastPlayerId) && this.postMessageTarget) {
+        if (this.ds.unitDefinitionNew) {
+          this.postUnitDef(this.ds.unitDefinitionNew);
         } else {
-          this.bs.getUnitDesignData(this.workspaceId, this.unitDataNew.id).subscribe(
+          this.bs.getUnitDefinition(this.ds.selectedWorkspace, this.unitId).subscribe(
             ued => {
-              this.unitDataOld.def = ued.def;
-              this.unitDataNew.def = ued.def;
-              this.postUnitDef(this.unitDataNew.def);
+              this.ds.unitDefinitionOld = ued;
+              this.ds.unitDefinitionNew = ued;
+              this.postUnitDef(ued);
             },
             err => {
               this.snackBar.open(`Konnte Aufgabendefinition nicht laden (${err.code})`, 'Fehler', { duration: 3000 });
@@ -160,7 +154,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
           );
         }
       } else {
-        this.buildPlayer(this.unitDataNew.playerId);
+        this.buildPlayer(this.playerId);
         // player gets unit data via ReadyNotification
       }
     } else {
@@ -187,7 +181,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
         playerConfig: {
           stateReportPolicy: 'eager'
         },
-        unitDefinition: this.unitDataNew.def
+        unitDefinition: unitDef
       }, '*');
     }
   }
@@ -201,45 +195,35 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private buildPlayer(playerId: string) {
-    this.iFramePlayer = null;
+    this.iFrameElement = null;
     this.postMessageTarget = null;
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
-    if (playerId) {
-      let playerData: PlayerData = null;
-      this.ds.playerList.forEach(p => {
-        if (p.id === playerId) playerData = p;
-      });
-
-      if (playerData) {
-        if (playerData.html) {
-          this.setupPlayerIFrame(playerData.html);
-          this.lastPlayerId = playerData.id;
-        } else {
-          this.bs.getUnitPlayerByUnitId(this.ds.selectedWorkspace, this.unitDataNew.id).subscribe(
-            playerResponse => {
-              playerData.html = playerResponse;
-              this.setupPlayerIFrame(playerResponse);
-              this.lastPlayerId = playerData.id;
-            },
-            () => {
-              const messageElement = <HTMLIFrameElement>document.createElement('p');
-              messageElement.innerText = `Für Player "${playerData.label}" konnte kein Modul geladen werden.`;
-              this.iFrameHostElement.appendChild(messageElement);
-              this.lastPlayerId = '';
-            }
-          );
-        }
+    if (playerId && this.ds.playerList[playerId]) {
+      const playerData = this.ds.playerList[playerId];
+      this.playerName = playerData.label;
+      if (playerData.html) {
+        this.setupPlayerIFrame(playerData.html);
+        this.lastPlayerId = playerId;
       } else {
-        const messageElement = <HTMLIFrameElement>document.createElement('p');
-        messageElement.innerText = `Für Player "${playerId}" wurde kein Modul gefunden.`;
-        this.iFrameHostElement.appendChild(messageElement);
-        this.lastPlayerId = '';
+        this.bs.getModuleHtml(playerId).subscribe(
+          playerResponse => {
+            playerData.html = playerResponse;
+            this.setupPlayerIFrame(playerResponse);
+            this.lastPlayerId = playerId;
+          },
+          () => {
+            const messageElement = <HTMLIFrameElement>document.createElement('p');
+            messageElement.innerText = `Für Player "${playerData.label}" konnte kein Modul geladen werden.`;
+            this.iFrameHostElement.appendChild(messageElement);
+            this.lastPlayerId = '';
+          }
+        );
       }
     } else {
       const messageElement = <HTMLIFrameElement>document.createElement('p');
-      messageElement.innerText = 'Kein Player festgelegt';
+      messageElement.innerText = playerId ? `Player-Modul "${playerId}" nicht in Datenbank` : 'Kein Player festgelegt.';
       this.iFrameHostElement.appendChild(messageElement);
       this.lastPlayerId = '';
     }
@@ -247,17 +231,17 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
 
   private setupPlayerIFrame(playerHtml: string): void {
     this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-    this.iFramePlayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFramePlayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-    this.iFramePlayer.setAttribute('class', 'unitHost');
-    this.iFramePlayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
-    this.iFrameHostElement.appendChild(this.iFramePlayer);
-    srcDoc.set(this.iFramePlayer, playerHtml);
+    this.iFrameElement = <HTMLIFrameElement>document.createElement('iframe');
+    this.iFrameElement.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+    this.iFrameElement.setAttribute('class', 'unitHost');
+    this.iFrameElement.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+    this.iFrameHostElement.appendChild(this.iFrameElement);
+    srcDoc.set(this.iFrameElement, playerHtml);
   }
 
   ngOnInit(): void {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-    if (this.unitDataNew) this.sendUnitDataToPlayer();
+    if (this.unitId > 0) this.sendUnitDataToPlayer();
   }
 
   ngOnChanges(): void {
@@ -266,9 +250,9 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
 
   @HostListener('window:resize')
   onResize(): void {
-    if (this.iFramePlayer && this.iFrameHostElement) {
+    if (this.iFrameElement && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
-      this.iFramePlayer.setAttribute('height', String(divHeight - 5));
+      this.iFrameElement.setAttribute('height', String(divHeight - 5));
       // TODO: Why minus 5px?
     }
   }

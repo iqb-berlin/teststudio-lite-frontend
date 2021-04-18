@@ -9,7 +9,7 @@
     <button mat-raised-button (click)="postNavigationDenied()"
             [disabled]="(playerVersion < 3) || (postMessageTarget === null)"
             matTooltip="Sende die Nachricht 'Verweigerte Navigation'">Validieren</button>
-    <p>{{ player }}</p>
+    <p>{{ playerName }}</p>
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
