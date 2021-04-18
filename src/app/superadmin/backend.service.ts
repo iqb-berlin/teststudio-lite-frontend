@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppHttpError } from '../backend.service';
 
@@ -15,11 +15,6 @@ export class BackendService {
     this.serverUrl += 'php_superadmin/';
   }
 
-  // *******************************************************************
-  // *******************************************************************
-  // users
-  // *******************************************************************
-  // *******************************************************************
   getUsers(): Observable<GetUserDataResponse[]> {
     return this.http
       .post<GetUserDataResponse[]>(`${this.serverUrl}getUsers.php`, { t: localStorage.getItem('t') })
@@ -63,7 +58,6 @@ export class BackendService {
       );
   }
 
-  // *******************************************************************
   getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[]> {
     return this.http
       .post<IdLabelSelectedData[]>(`${this.serverUrl}getUserWorkspaces.php`,
@@ -82,11 +76,6 @@ export class BackendService {
       );
   }
 
-  // *******************************************************************
-  // *******************************************************************
-  // workspaces
-  // *******************************************************************
-  // *******************************************************************
   getWorkspaces(): Observable<IdLabelSelectedData[]> {
     return this.http
       .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaces.php`, { t: localStorage.getItem('t') })
@@ -139,65 +128,7 @@ export class BackendService {
       );
   }
 
-  // *******************************************************************
-  // *******************************************************************
-  // itemauthoringtools
-  // *******************************************************************
-  // *******************************************************************
-  getItemAuthoringTools(): Observable<StrIdLabelSelectedData[]> {
-    return this.http
-      .post<StrIdLabelSelectedData[]>(`${this.serverUrl}getItemAuthoringTools.php`, { t: localStorage.getItem('t') })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  addItemAuthoringTool(id: string, name: string): Observable<boolean> {
-    return this.http
-      .post<boolean>(`${this.serverUrl}addItemAuthoringTool.php`, { t: localStorage.getItem('t'), i: id, n: name })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  changeItemAuthoringTool(oldid: string, id: string, name: string): Observable<boolean> {
-    return this.http
-      .post<boolean>(`${this.serverUrl}renameItemAuthoringTool.php`, {
-      t: localStorage.getItem('t'), old_i: oldid, new_i: id, n: name
-    })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  deleteItemAuthoringTools(ids: string[]): Observable<boolean> {
-    return this.http
-      .post<boolean>(`${this.serverUrl}deleteItemAuthoringTools.php`, { t: localStorage.getItem('t'), i: ids })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  // *******************************************************************
-  // itemauthoringtools - Files
-  getItemAuthoringToolFiles(id: string): Observable<GetFileResponseData[]> {
-    return this.http
-      .post<GetFileResponseData[]>(`${this.serverUrl}getItemAuthoringToolFiles.php`,
-      { t: localStorage.getItem('t'), i: id })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
-  deleteItemAuthoringToolFiles(id: string, files: string[]): Observable<string> {
-    return this.http
-      .post<string>(`${this.serverUrl}deleteItemAuthoringToolFiles.php`,
-      { t: localStorage.getItem('t'), i: id, f: files })
-      .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
-      );
-  }
-
+  // todo: replace with getPlayers
   getItemPlayerFiles(): Observable<GetFileResponseData[]> {
     return this.http
       .post<GetFileResponseData[]>(`${this.serverUrl}getItemPlayerFiles.php`, { t: localStorage.getItem('t') })
@@ -206,9 +137,17 @@ export class BackendService {
       );
   }
 
-  deleteItemPlayerFiles(files: string[]): Observable<string> {
+  getVeronaModuleList(): Observable<VeronaModuleData[]> {
     return this.http
-      .post<string>(`${this.serverUrl}deleteItemPlayerFiles.php`, { t: localStorage.getItem('t'), f: files })
+      .post<VeronaModuleData[]>(`${this.serverUrl}getVeronaModuleList.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  deleteVeronaModules(files: string[]): Observable<string> {
+    return this.http
+      .post<string>(`${this.serverUrl}deleteVeronaModule.php`, { t: localStorage.getItem('t'), f: files })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
@@ -227,12 +166,6 @@ export interface IdLabelSelectedData {
   selected: boolean;
 }
 
-export interface StrIdLabelSelectedData {
-  id: string;
-  label: string;
-  selected: boolean;
-}
-
 export interface GetFileResponseData {
   filename: string;
   filesize: number;
@@ -240,4 +173,15 @@ export interface GetFileResponseData {
   filedatetime: string;
   filedatetimestr: string;
   selected: boolean;
+}
+
+export interface VeronaModuleData {
+  id: string;
+  name: string;
+  filesizeStr: string;
+  filesize: number;
+  fileDatetime: number;
+  veronaVersion: string;
+  isPlayer: boolean;
+  isEditor: boolean
 }

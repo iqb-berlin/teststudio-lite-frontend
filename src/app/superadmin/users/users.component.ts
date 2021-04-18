@@ -17,21 +17,21 @@ import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../bac
 import { NewuserComponent } from './newuser/newuser.component';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { MainDatastoreService } from '../../maindatastore.service';
-import { SuperadminPasswordRequestComponent } from '../superadmin-password-request/superadmin-password-request.component';
+import { SuperadminPasswordRequestComponent } from
+  '../superadmin-password-request/superadmin-password-request.component';
 
 @Component({
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
   dataLoading = false;
   objectsDatasource: MatTableDataSource<GetUserDataResponse>;
   displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
-  private tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
+  tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
+  tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
   selectedUser = '';
 
-  private pendingWorkspaceChanges = false;
+  pendingWorkspaceChanges = false;
   WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
   displayedWorkspaceColumns = ['selectCheckbox', 'label'];
 
@@ -348,19 +348,19 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
     this.isAllSelected() ?
       this.tableselectionCheckbox.clear() :
       this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 }

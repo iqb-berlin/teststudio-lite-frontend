@@ -23,18 +23,17 @@ import { IqbComponentsModule } from 'iqb-components';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
-import { ItemauthoringComponent } from './itemauthoring/itemauthoring.component';
-import { ItemplayerComponent } from './itemplayer/itemplayer.component';
 import { SuperadminComponent } from './superadmin.component';
 import { BackendService } from './backend.service';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
-import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authoring-tool/new-item-authoring-tool.component';
-import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
 import { IqbFilesModule } from '../iqb-files';
-import { SuperadminPasswordRequestComponent } from './superadmin-password-request/superadmin-password-request.component';
+import { SuperadminPasswordRequestComponent } from
+  './superadmin-password-request/superadmin-password-request.component';
+import { VeronaModulesComponent } from './verona-modules/verona-modules.component';
+import { VeronaModulesTableComponent } from './verona-modules/verona-modules-table.component';
 
 @NgModule({
   imports: [
@@ -67,16 +66,14 @@ import { SuperadminPasswordRequestComponent } from './superadmin-password-reques
   declarations: [
     WorkspacesComponent,
     UsersComponent,
-    ItemauthoringComponent,
-    ItemplayerComponent,
     SuperadminComponent,
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
-    NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent,
-    SuperadminPasswordRequestComponent
+    SuperadminPasswordRequestComponent,
+    VeronaModulesComponent,
+    VeronaModulesTableComponent
   ],
   providers: [
     BackendService
@@ -86,8 +83,6 @@ import { SuperadminPasswordRequestComponent } from './superadmin-password-reques
     NewpasswordComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
-    NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent,
     SuperadminPasswordRequestComponent
   ]
 })
