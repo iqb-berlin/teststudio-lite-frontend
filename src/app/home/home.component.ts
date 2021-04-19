@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
-import { AppHttpError, BackendService, WorkspaceData } from '../backend.service';
+import { BackendService, WorkspaceData } from '../backend.service';
 import { MainDatastoreService } from '../maindatastore.service';
 
 @Component({
@@ -26,6 +26,9 @@ export class HomeComponent implements OnInit {
       name: this.fb.control('', [Validators.required, Validators.minLength(1)]),
       pw: this.fb.control('', [Validators.required, Validators.minLength(1)])
     });
+    setTimeout(() => {
+      this.mds.pageTitle = 'IQB-Teststudio - Willkommen!';
+    });
   }
 
   login(): void {
@@ -37,7 +40,7 @@ export class HomeComponent implements OnInit {
       },
       err => {
         this.isError = true;
-        this.errorMessage = `Server meldet Problem: ${err.msg()}`;
+        this.errorMessage = `${err.msg()}`;
       });
     }
   }

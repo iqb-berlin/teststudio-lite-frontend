@@ -13,7 +13,9 @@ export class AboutComponent implements OnInit {
     private mds: MainDatastoreService
   ) { }
 
-  ngOnInit() {
-    this.mds.pageTitle = '';
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.mds.pageTitle = 'IQB-Teststudio - Impressum/Datenschutz';
+    });
   }
 }

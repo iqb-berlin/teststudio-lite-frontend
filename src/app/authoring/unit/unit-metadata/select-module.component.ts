@@ -4,6 +4,7 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ModulData } from '../../backend.service';
+import { DatastoreService } from '../../datastore.service';
 
 @Component({
   selector: 'app-select-module',
@@ -18,6 +19,7 @@ export class SelectModuleComponent implements OnInit, OnDestroy, OnChanges {
   moduleForm: FormGroup;
   isValid = false;
   isEmpty = false;
+  moduleSubstitute = '';
   private moduleFormDataChangedSubscription: Subscription = null;
 
   constructor(
@@ -43,14 +45,18 @@ export class SelectModuleComponent implements OnInit, OnDestroy, OnChanges {
     this.listLength = this.moduleList ? Object.keys(this.moduleList).length : 0;
     this.isValid = true;
     this.isEmpty = true;
+    this.moduleSubstitute = '';
     if (this.selectedModuleId) {
       this.isEmpty = false;
     }
     if (!this.isEmpty) {
-      if (this.moduleList[this.selectedModuleId]) {
+      const checkModuleId = DatastoreService.validModuleId(this.selectedModuleId, this.moduleList);
+      if (checkModuleId === false) {
+        this.isValid = false;
+      } else if (checkModuleId === true) {
         newModuleSelectorValue = this.selectedModuleId;
       } else {
-        this.isValid = false;
+        this.moduleSubstitute = this.moduleList[checkModuleId].label;
       }
     }
     this.moduleFormDataChangedSubscription = this.moduleForm.valueChanges.subscribe(() => {

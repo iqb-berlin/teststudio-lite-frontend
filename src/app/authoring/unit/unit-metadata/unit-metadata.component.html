@@ -30,7 +30,8 @@
                          moduleType="Player"
                          (selectionChanged)="playerChanged($event)">
       </app-select-module>
-      <!--<p><em>Letzte Änderung: {{ unitData.lastChanged * 1000 | date : 'dd.MM.yyyy HH:mm' : timeZone }}</em></p>-->
+      <p *ngIf="unitData.lastchanged > 0"><em>Letzte Änderung: {{ unitData.lastchanged * 1000 | date : 'dd.MM.yyyy HH:mm' : timeZone }}</em></p>
+      <p *ngIf="unitData.lastchanged === 0"><em>Zeitpunkt der letzten Änderung ist unbekannt.</em></p>
     </div>
   </div>
 

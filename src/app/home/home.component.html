@@ -15,6 +15,7 @@
             <input matInput #pw type="password" formControlName="pw" placeholder="Kennwort" (keyup.enter)="login()">
           </mat-form-field>
         </mat-card-content>
+        <p *ngIf="errorMessage" class="error-message">{{errorMessage}}</p>
         <mat-card-actions>
           <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
         </mat-card-actions>
@@ -41,23 +42,17 @@
     </mat-card>
 
     <mat-card fxFlex="0 2 400px" fxLayout="column" class="status">
-      <mat-card-title>IQB-Itemdatenbank</mat-card-title>
+      <mat-card-title>IQB-Teststudio</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <div *ngIf="!mds.loginStatus">
-          <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-            betreibt auf diesen Seiten eine Pilotanwendung für die Aufgabenentwicklung zum Einsatz in computerbasierten Leistungstests.
-            Der Zugang ist nur möglich, wenn Sie vom IQB
-            Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
-        </div>
+        <app-intro></app-intro>
         <div *ngIf="mds.loginStatus">
           <ul>
             <li>angemeldet als: {{ mds.loginStatus.name }}</li>
-            <li *ngIf="mds.loginStatus.isSuperAdmin">Superkräfte, d. h. zum Ändern von Nutzerrechten und Arbeitsbereichen berechtigt</li>
+            <li *ngIf="mds.loginStatus.isSuperAdmin">Berechtigung zum Ändern von Nutzerrechten und Arbeitsbereichen</li>
           </ul>
         </div>
-        <p>{{ errorMessage }}</p>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>

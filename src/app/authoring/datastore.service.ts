@@ -112,4 +112,27 @@ export class DatastoreService {
       return null;
     };
   }
+
+  static validModuleId(moduleId: string, moduleList: { [key: string]: ModulData; }): boolean | string {
+    if (moduleList[moduleId]) return true;
+    const regexPattern = /^([A-Za-z0-9_-]+)@(\d+)\.(\d+)/;
+    const matches1 = regexPattern.exec(moduleId);
+    if (!matches1 || matches1.length !== 4) return false;
+    let bestMatchId = '';
+    let bestMatchMinor = +matches1[3];
+    Object.keys(moduleList).forEach(k => {
+      const matches2 = regexPattern.exec(k);
+      if (matches2 && matches2.length === 4) {
+        if ((matches2[1] === matches1[1]) && (matches2[2] === matches1[2])) {
+          const minor = +matches2[3];
+          if (minor > bestMatchMinor) {
+            bestMatchMinor = minor;
+            bestMatchId = k;
+          }
+        }
+      }
+    });
+    if (bestMatchId) return bestMatchId;
+    return false;
+  }
 }

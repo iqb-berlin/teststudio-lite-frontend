@@ -4,3 +4,7 @@
 .status {
   background-color: lightgrey;
 }
+.error-message {
+  color: red;
+  padding: 5px;
+}
