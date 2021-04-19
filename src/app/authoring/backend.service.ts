@@ -156,6 +156,7 @@ export class BackendService {
   }
 
   getModuleHtml(moduleId: string): Observable<string> {
+    console.log('getModuleHtml', moduleId);
     return this.http
       .post<string>(`${this.serverUrl}getModuleHtml.php`,
       { m: moduleId })

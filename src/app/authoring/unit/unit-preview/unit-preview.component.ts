@@ -53,7 +53,6 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData.type;
-
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
           case 'vopReadyNotification':
@@ -69,11 +68,9 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
             } else {
               this.playerVersion = 1;
             }
-            if (this.ds.unitDefinitionNew) {
-              this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.postMessageTarget = m.source as Window;
-              this.sendUnitDataToPlayer();
-            }
+            this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+            this.postMessageTarget = m.source as Window;
+            this.sendUnitDataToPlayer();
             break;
 
           case 'vo.FromPlayer.StartedNotification':
