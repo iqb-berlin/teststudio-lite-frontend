@@ -1,8 +1,5 @@
 <div class="authoring-body" fxLayout="row">
   <div class="navibar" fxLayout="column" fxFlex="200px">
-    <div class="spinner-container" *ngIf="dataLoading">
-      <mat-spinner></mat-spinner>
-    </div>
     <div fxLayout="row" style="margin: 2px">
       <button mat-button (click)="discardChanges()" matTooltip="Aufgabenänderungen verwerfen"
               [disabled]="!ds.unitMetadataChanged && !ds.unitDefinitionChanged" matTooltipPosition="above">

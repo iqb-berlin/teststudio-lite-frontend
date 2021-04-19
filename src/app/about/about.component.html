@@ -5,8 +5,8 @@
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <app-intro></app-intro>
-        <p>
+        <div [innerHTML]="mds.appConfig?.trusted_impressum_html"></div>
+        <!--<p>
             <em>Postanschrift:</em><br/>
             Humboldt-Universität zu Berlin<br/>
             Institut zur Qualitätsentwicklung im Bildungswesen<br/>
@@ -26,7 +26,7 @@
             Tel: +49 (30) 2093-2591<br/>
             E-Mail: datenschutz@uv.hu-berlin.de<br/>
             <a href="http://www.hu-berlin.de/de/datenschutz" target="_blank">www.hu-berlin.de/de/datenschutz</a>
-        </p>
+        </p>-->
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="foreground" [routerLink]="['/']">Startseite</button>

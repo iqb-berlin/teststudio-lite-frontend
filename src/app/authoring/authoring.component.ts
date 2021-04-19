@@ -22,7 +22,6 @@ import { BackendService as SuperAdminBackendService } from '../superadmin/backen
   styleUrls: ['./authoring.component.css']
 })
 export class AuthoringComponent implements OnInit, OnDestroy {
-  dataLoading = false;
   private routingSubscription: Subscription = null;
   private selectedUnitSubscription: Subscription = null;
   selectedUnits: string[] = [];
@@ -131,7 +130,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.dataLoading = true;
+          this.mds.dataLoading = true;
           this.bs.addUnit(
             this.ds.selectedWorkspace,
             (<FormGroup>result).get('key').value.trim(),
@@ -145,11 +144,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
               } else {
                 this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
-              this.dataLoading = false;
+              this.mds.dataLoading = false;
             },
             err => {
               this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
-              this.dataLoading = false;
+              this.mds.dataLoading = false;
             }
           );
         }
@@ -181,12 +180,12 @@ export class AuthoringComponent implements OnInit, OnDestroy {
                 this.snackBar.open('Aufgabe(n) gelöscht', '', { duration: 1000 });
               } else {
                 this.snackBar.open('Konnte Aufgabe(n) nicht löschen.', 'Fehler', { duration: 3000 });
-                this.dataLoading = false;
+                this.mds.dataLoading = false;
               }
             },
             err => {
               this.snackBar.open(`Konnte Aufgabe(n) nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
-              this.dataLoading = false;
+              this.mds.dataLoading = false;
             }
           );
         }
@@ -256,7 +255,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             dialogRef.afterClosed().subscribe(result => {
               if (typeof result !== 'undefined') {
                 if (result !== false) {
-                  this.dataLoading = true;
+                  this.mds.dataLoading = true;
                   this.bs.copyUnit(
                     this.ds.selectedWorkspace,
                     myUnitId,
@@ -272,12 +271,12 @@ export class AuthoringComponent implements OnInit, OnDestroy {
                       } else {
                         this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
                       }
-                      this.dataLoading = false;
+                      this.mds.dataLoading = false;
                     },
                     err => {
                       this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.msg()})`,
                         'Fehler', { duration: 3000 });
-                      this.dataLoading = false;
+                      this.mds.dataLoading = false;
                     }
                   );
                 }
@@ -288,7 +287,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         err => {
           this.snackBar.open(`Fehler beim Laden der Aufgabeneigenschaften (${err.msg()})`,
             'Fehler', { duration: 3000 });
-          this.dataLoading = false;
+          this.mds.dataLoading = false;
         }
       );
     } else {

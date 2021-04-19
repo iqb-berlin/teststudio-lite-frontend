@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { MainDatastoreService } from './maindatastore.service';
 import { BackendService } from './backend.service';
 
@@ -11,11 +12,19 @@ import { BackendService } from './backend.service';
 export class AppComponent implements OnInit {
   constructor(
     public mds: MainDatastoreService,
-    private bs: BackendService
-  ) { }
+    private bs: BackendService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.dataLoading = true;
+      this.bs.getConfig().subscribe(newConfig => {
+        this.mds.appConfig = newConfig;
+        this.mds.appConfig.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.intro_html);
+        this.mds.appConfig.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.impressum_html);
+        this.mds.dataLoading = false;
+      });
       this.bs.getStatus().subscribe(newStatus => {
         this.mds.loginStatus = newStatus;
       },

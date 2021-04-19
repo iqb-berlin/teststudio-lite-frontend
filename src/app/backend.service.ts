@@ -3,6 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { SafeUrl } from '@angular/platform-browser';
 
 export class AppHttpError {
   code: number;
@@ -103,6 +104,14 @@ export class BackendService {
         switchMap(authData => this.getWorkspaceList(authData))
       );
   }
+
+  getConfig(): Observable<AppConfig> {
+    return this.http
+      .put<AppConfig>(`${this.serverUrl}getConfig.php`, {})
+      .pipe(
+        catchError(() => of(null))
+      );
+  }
 }
 
 export interface LoginStatusResponseData {
@@ -123,7 +132,9 @@ export interface LoginData {
 }
 
 export interface AppConfig {
-  standardEditor: string;
-  standardPlayer: string;
-  selected: boolean;
+  app_title: string;
+  intro_html: string;
+  trusted_intro_html: SafeUrl;
+  impressum_html: string;
+  trusted_impressum_html: SafeUrl;
 }

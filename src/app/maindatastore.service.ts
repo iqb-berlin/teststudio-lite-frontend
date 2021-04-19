@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LoginData } from './backend.service';
+import { AppConfig, LoginData } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,8 @@ export class MainDatastoreService {
   pageTitle = 'IQB-Teststudio - Willkommen!';
   errorMessage = '';
   postMessage$ = new Subject<MessageEvent>();
+  appConfig: AppConfig = null;
+  dataLoading = false;
 
   processMessagePost(postData: MessageEvent): void {
     const msgData = postData.data;

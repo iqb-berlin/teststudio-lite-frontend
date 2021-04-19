@@ -10,7 +10,7 @@ export class AboutComponent implements OnInit {
     @Inject('APP_NAME') public appName: string,
     @Inject('APP_PUBLISHER') public appPublisher: string,
     @Inject('APP_VERSION') public appVersion: string,
-    private mds: MainDatastoreService
+    public mds: MainDatastoreService
   ) { }
 
   ngOnInit(): void {

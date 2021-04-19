@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +16,8 @@ export class HomeComponent implements OnInit {
   errorMessage = '';
 
   constructor(private fb: FormBuilder,
+              @Inject('APP_VERSION') readonly appVersion: string,
+              @Inject('APP_NAME') readonly appName: string,
               public mds: MainDatastoreService,
               private bs: BackendService,
               public confirmDialog: MatDialog,

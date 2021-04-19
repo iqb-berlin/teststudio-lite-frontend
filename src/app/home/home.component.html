@@ -46,9 +46,11 @@
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <app-intro></app-intro>
+        <div [innerHTML]="mds.appConfig?.trusted_intro_html"></div>
         <div *ngIf="mds.loginStatus">
           <ul>
+            <li>Kennung der Anwendung: {{appName}}</li>
+            <li>Version: {{appVersion}}</li>
             <li>angemeldet als: {{ mds.loginStatus.name }}</li>
             <li *ngIf="mds.loginStatus.isSuperAdmin">Berechtigung zum Ändern von Nutzerrechten und Arbeitsbereichen</li>
           </ul>

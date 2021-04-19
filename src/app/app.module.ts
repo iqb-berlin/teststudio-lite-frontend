@@ -29,14 +29,12 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
 import { AuthoringModule } from './authoring';
-import { IntroComponent } from './home/intro.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent,
-    IntroComponent
+    AboutComponent
   ],
   imports: [
     ApplicationModule,
