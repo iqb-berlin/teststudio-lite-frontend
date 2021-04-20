@@ -10,6 +10,7 @@ import {
 import { MainDatastoreService } from '../../../maindatastore.service';
 import { BackendService } from '../../backend.service';
 import { DatastoreService } from '../../datastore.service';
+import { UnitComponent } from '../unit.component';
 
 declare let srcDoc: any;
 
@@ -28,7 +29,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   postMessageTarget: Window = null;
   private lastPlayerId = '';
   playerName = '';
-  playerVersion = 3;
+  playerApiVersion = 3;
   statusVisual: StatusVisual[] = [
     {
       id: 'presentation', label: 'P', color: 'DarkGray', description: 'Status: Vollständigkeit der Präsentation'
@@ -61,12 +62,12 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
               const majorVersion = msgData.apiVersion.match(/\d+/);
               if (majorVersion.length > 0) {
                 const majorVersionNumber = Number(majorVersion[0]);
-                this.playerVersion = majorVersionNumber > 2 ? 3 : 2;
+                this.playerApiVersion = majorVersionNumber > 2 ? 3 : 2;
               } else {
-                this.playerVersion = 2;
+                this.playerApiVersion = 2;
               }
             } else {
-              this.playerVersion = 1;
+              this.playerApiVersion = 1;
             }
             this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
             this.postMessageTarget = m.source as Window;
@@ -166,7 +167,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private postUnitDef(unitDef: string): void {
-    if (this.playerVersion === 1) {
+    if (this.playerApiVersion === 1) {
       this.postMessageTarget.postMessage({
         type: 'vo.ToPlayer.DataTransfer',
         sessionId: this.sessionId,
@@ -217,27 +218,28 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
             this.lastPlayerId = playerId;
           },
           () => {
-            const messageElement = <HTMLIFrameElement>document.createElement('p');
-            messageElement.innerText = `Für Player "${playerData.label}" konnte kein Modul geladen werden.`;
-            this.iFrameHostElement.appendChild(messageElement);
+            this.iFrameHostElement.appendChild(
+              UnitComponent.getMessageElement(`Für Player "${playerData.label}" konnte kein Modul geladen werden.`)
+            );
             this.lastPlayerId = '';
           }
         );
       }
     } else {
-      const messageElement = <HTMLIFrameElement>document.createElement('p');
-      messageElement.innerText = playerId ? `Player-Modul "${playerId}" nicht in Datenbank` : 'Kein Player festgelegt.';
-      this.iFrameHostElement.appendChild(messageElement);
+      this.iFrameHostElement.appendChild(
+        UnitComponent.getMessageElement(
+          playerId ? `Player-Modul "${playerId}" nicht in Datenbank` : 'Kein Player festgelegt.'
+        )
+      );
       this.lastPlayerId = '';
     }
   }
 
   private setupPlayerIFrame(playerHtml: string): void {
-    this.sessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.iFrameElement = <HTMLIFrameElement>document.createElement('iframe');
     this.iFrameElement.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
     this.iFrameElement.setAttribute('class', 'unitHost');
-    this.iFrameElement.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+    this.iFrameElement.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
     this.iFrameHostElement.appendChild(this.iFrameElement);
     srcDoc.set(this.iFrameElement, playerHtml);
   }
@@ -351,7 +353,7 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     if (nextPageId.length > 0) {
-      if (this.playerVersion === 1) {
+      if (this.playerApiVersion === 1) {
         this.postMessageTarget.postMessage({
           type: 'vo.ToPlayer.NavigateToPage',
           sessionId: this.sessionId,

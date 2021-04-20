@@ -6,9 +6,7 @@
   </mat-tab>
   <mat-tab label="Editor">
     <ng-template matTabContent>
-     <!-- <app-unit-editor [workspaceId]="ds.selectedWorkspace" [unitDataOld]="ds.unitMetadataOld" fxFlex
-                       [unitDataNew]="ds.unitMetadataNew" (unitDataChanged)="ds.setUnitDataChanged()"></app-unit-editor>-->
-      <div><p>editor coming soon</p></div>
+      <app-unit-editor [unitId]="ds.selectedUnit$ | async" [editorId]="ds.unitMetadataNew?.editorid" fxFlex></app-unit-editor>
     </ng-template>
   </mat-tab>
   <mat-tab label="Vorschau">

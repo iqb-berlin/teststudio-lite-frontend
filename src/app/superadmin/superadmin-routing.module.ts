@@ -5,6 +5,7 @@ import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { VeronaModulesComponent } from './verona-modules/verona-modules.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
       { path: 'users', component: UsersComponent },
       { path: 'workspaces', component: WorkspacesComponent },
       { path: 'v-modules', component: VeronaModulesComponent },
+      { path: 'settings', component: SettingsComponent },
       { path: '**', component: UsersComponent }
     ]
   }

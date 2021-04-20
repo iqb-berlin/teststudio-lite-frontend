@@ -10,9 +10,8 @@ export class SuperadminComponent {
   navLinks = [
     { path: 'users', label: 'Nutzer' },
     { path: 'workspaces', label: 'Arbeitsbereiche' },
-    { path: 'v-modules', label: 'Player/Editoren' },
-    { path: 'editors', label: 'Editoren' },
-    { path: 'players', label: 'Player' }
+    { path: 'v-modules', label: 'Editoren/Player' },
+    { path: 'settings', label: 'Einstellungen' }
   ];
 
   constructor(

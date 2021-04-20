@@ -1,18 +1,18 @@
 <div id="iFrameHost" class="preview-body">
 
 </div>
-<div id="pageNav" fxLayout="row" fxLayoutAlign="space-between center">
+<div id="pageFooter" fxLayout="row" fxLayoutAlign="space-between center">
   <div fxLayout="row" fxLayoutAlign="space-between center">
     <div class="statusVisual" fxLayout="row">
       <div *ngFor="let sV of statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
     </div>
     <button mat-raised-button (click)="postNavigationDenied()"
-            [disabled]="(playerVersion < 3) || (postMessageTarget === null)"
+            [disabled]="(playerApiVersion < 3) || (postMessageTarget === null)"
             matTooltip="Sende die Nachricht 'Verweigerte Navigation'">Validieren</button>
-    <p>{{ playerName }}</p>
+    <p>&nbsp;{{ playerName }}</p>
   </div>
 
-  <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
+  <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav" class="pageNav">
     <div id="pageNavPrompt">
       Wähle hier andere Seiten dieser Aufgabe:
     </div>

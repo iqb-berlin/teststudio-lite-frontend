@@ -58,4 +58,13 @@ export class UnitComponent implements OnInit {
       });
     });
   }
+
+  static getMessageElement(msg: string): HTMLDivElement {
+    const messageP = <HTMLParagraphElement>document.createElement('p');
+    messageP.innerText = msg;
+    const messageDiv = <HTMLDivElement>document.createElement('div');
+    messageDiv.setAttribute('style', 'padding: 20px;');
+    messageDiv.appendChild(messageP);
+    return messageDiv;
+  }
 }

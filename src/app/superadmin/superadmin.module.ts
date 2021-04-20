@@ -34,6 +34,7 @@ import { SuperadminPasswordRequestComponent } from
   './superadmin-password-request/superadmin-password-request.component';
 import { VeronaModulesComponent } from './verona-modules/verona-modules.component';
 import { VeronaModulesTableComponent } from './verona-modules/verona-modules-table.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   imports: [
@@ -73,7 +74,8 @@ import { VeronaModulesTableComponent } from './verona-modules/verona-modules-tab
     EditworkspaceComponent,
     SuperadminPasswordRequestComponent,
     VeronaModulesComponent,
-    VeronaModulesTableComponent
+    VeronaModulesTableComponent,
+    SettingsComponent
   ],
   providers: [
     BackendService
