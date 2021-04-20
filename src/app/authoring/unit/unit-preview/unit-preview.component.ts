@@ -135,24 +135,30 @@ export class UnitPreviewComponent implements OnInit, OnDestroy, OnChanges {
     this.setResponsesStatus('none');
     this.setPageList([], '');
     if (this.unitId > 0) {
-      if ((this.playerId === this.lastPlayerId) && this.postMessageTarget) {
-        if (this.ds.unitDefinitionNew) {
-          this.postUnitDef(this.ds.unitDefinitionNew);
-        } else {
-          this.bs.getUnitDefinition(this.ds.selectedWorkspace, this.unitId).subscribe(
-            ued => {
-              this.ds.unitDefinitionOld = ued;
-              this.ds.unitDefinitionNew = ued;
-              this.postUnitDef(ued);
-            },
-            err => {
-              this.snackBar.open(`Konnte Aufgabendefinition nicht laden (${err.code})`, 'Fehler', { duration: 3000 });
-            }
-          );
-        }
+      const playerValidation = DatastoreService.validModuleId(this.playerId, this.ds.playerList);
+      if (playerValidation === false) {
+        this.buildPlayer(this.playerId); // creates error message
       } else {
-        this.buildPlayer(this.playerId);
-        // player gets unit data via ReadyNotification
+        if (playerValidation !== true) this.playerId = playerValidation;
+        if ((this.playerId === this.lastPlayerId) && this.postMessageTarget) {
+          if (this.ds.unitDefinitionNew) {
+            this.postUnitDef(this.ds.unitDefinitionNew);
+          } else {
+            this.bs.getUnitDefinition(this.ds.selectedWorkspace, this.unitId).subscribe(
+              ued => {
+                this.ds.unitDefinitionOld = ued;
+                this.ds.unitDefinitionNew = ued;
+                this.postUnitDef(ued);
+              },
+              err => {
+                this.snackBar.open(`Konnte Aufgabendefinition nicht laden (${err.code})`, 'Fehler', { duration: 3000 });
+              }
+            );
+          }
+        } else {
+          this.buildPlayer(this.playerId);
+          // player gets unit data via ReadyNotification
+        }
       }
     } else {
       this.buildPlayer('');
