@@ -15,7 +15,7 @@ export class AboutComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.pageTitle = 'IQB-Teststudio - Impressum/Datenschutz';
+      this.mds.pageTitle = 'Impressum/Datenschutz';
     });
   }
 }

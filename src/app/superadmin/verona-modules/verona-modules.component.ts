@@ -43,7 +43,7 @@ export class VeronaModulesComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.pageTitle = 'Super-Admin: Player/Editoren';
+      this.mds.pageTitle = 'Admin: Player/Editoren';
       this.updateFileList();
       this.token = localStorage.getItem('t');
     });

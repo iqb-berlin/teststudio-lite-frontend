@@ -7,7 +7,7 @@ import { AppConfig, LoginData } from './backend.service';
 })
 export class MainDatastoreService {
   loginStatus: LoginData = null;
-  pageTitle = 'IQB-Teststudio - Willkommen!';
+  pageTitle = 'Willkommen!';
   errorMessage = '';
   postMessage$ = new Subject<MessageEvent>();
   appConfig: AppConfig = null;

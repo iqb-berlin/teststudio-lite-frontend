@@ -65,7 +65,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         this.ds.defaultPlayer = '';
         this.bs.getWorkspaceData(this.ds.selectedWorkspace).subscribe(
           wResponse => {
-            this.mds.pageTitle = `IQB-Teststudio - ${wResponse.label}`;
+            this.mds.pageTitle = wResponse.label;
             if (wResponse.editors) {
               this.ds.editorList = wResponse.editors;
             }

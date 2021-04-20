@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { MainDatastoreService } from './maindatastore.service';
 import { BackendService } from './backend.service';
 
@@ -13,16 +13,19 @@ export class AppComponent implements OnInit {
   constructor(
     public mds: MainDatastoreService,
     private bs: BackendService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.dataLoading = true;
       this.bs.getConfig().subscribe(newConfig => {
+        newConfig.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.intro_html);
+        newConfig.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.impressum_html);
+        if (!newConfig.app_title) newConfig.app_title = 'IQB-Teststudio';
         this.mds.appConfig = newConfig;
-        this.mds.appConfig.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.intro_html);
-        this.mds.appConfig.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.impressum_html);
+        this.titleService.setTitle(this.mds.appConfig.app_title);
         this.mds.dataLoading = false;
       });
       this.bs.getStatus().subscribe(newStatus => {

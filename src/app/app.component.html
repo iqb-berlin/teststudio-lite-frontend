@@ -5,7 +5,8 @@
   <a [routerLink]="['/']">
     <img class="logo" src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
-  <span>{{ mds.pageTitle }}</span>
+  <span>{{ mds.appConfig?.app_title }}</span>
+  <span *ngIf="mds.pageTitle"> - {{ mds.pageTitle }}</span>
   <span class="itp-fill-remaining-space"></span>
 </mat-toolbar>
 

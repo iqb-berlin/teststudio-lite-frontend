@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
       pw: this.fb.control('', [Validators.required, Validators.minLength(1)])
     });
     setTimeout(() => {
-      this.mds.pageTitle = 'IQB-Teststudio - Willkommen!';
+      this.mds.pageTitle = 'Willkommen!';
     });
   }
 

@@ -64,7 +64,7 @@ export class UsersComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.updateObjectList();
-      this.mds.pageTitle = 'Super-Admin: Nutzer';
+      this.mds.pageTitle = 'Admin: Nutzer';
     });
   }
 

@@ -26,12 +26,12 @@ export class WorkspacesComponent implements OnInit {
   dataLoading = false;
   objectsDatasource: MatTableDataSource<IdLabelSelectedData>;
   displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
-  private tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
+  tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
+  tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
   selectedWorkspaceId = 0;
-  private selectedWorkspaceName = '';
+  selectedWorkspaceName = '';
 
-  private pendingUserChanges = false;
+  pendingUserChanges = false;
   UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
   displayedUserColumns = ['selectCheckbox', 'name'];
 
@@ -63,7 +63,7 @@ export class WorkspacesComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.updateObjectList();
-      this.mds.pageTitle = 'Super-Admin: Arbeitsbereiche';
+      this.mds.pageTitle = 'Admin: Arbeitsbereiche';
     });
   }
 
