@@ -123,6 +123,8 @@ export interface LoginStatusResponseData {
 export interface WorkspaceData {
   id: number;
   name: string;
+  ws_group_id: number;
+  ws_group_name: string;
 }
 
 export interface LoginData {

@@ -152,6 +152,44 @@ export class BackendService {
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
+
+  getWorkspaceGroupList(): Observable<WorkspaceGroupData[]> {
+    return this.http
+      .post<WorkspaceGroupData[]>(`${this.serverUrl}getWorkspaceGroups.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  addWorkspaceGroup(name: string): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}addWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), n: name
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  deleteWorkspaceGroup(id: number): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}deleteWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), wsg: id
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  renameWorkspaceGroup(id: number, newName: string): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}setWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), wsg_id: id, wsg_name: newName
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
 }
 
 export interface GetUserDataResponse {
@@ -185,4 +223,10 @@ export interface VeronaModuleData {
   isPlayer: boolean;
   isEditor: boolean;
   description: string;
+}
+
+export interface WorkspaceGroupData {
+  id: number;
+  label: string;
+  ws_count: number;
 }

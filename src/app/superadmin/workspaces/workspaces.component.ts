@@ -14,8 +14,8 @@ import {
   MessageType
 } from 'iqb-components';
 import { BackendService, IdLabelSelectedData } from '../backend.service';
-import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
+import { NewworkspaceComponent } from './newworkspace.component';
+import { EditworkspaceComponent } from './editworkspace.component';
 import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
@@ -120,8 +120,7 @@ export class WorkspacesComponent implements OnInit {
       const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
         width: '600px',
         data: {
-          name: selectedRows[0].label,
-          oldname: selectedRows[0].label
+          name: selectedRows[0].label
         }
       });
 

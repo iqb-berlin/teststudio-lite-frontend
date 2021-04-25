@@ -20,6 +20,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { IqbComponentsModule } from 'iqb-components';
+import { MatChipsModule } from '@angular/material/chips';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
@@ -27,14 +28,16 @@ import { SuperadminComponent } from './superadmin.component';
 import { BackendService } from './backend.service';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
-import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
-import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
+import { NewworkspaceComponent } from './workspaces/newworkspace.component';
+import { EditworkspaceComponent } from './workspaces/editworkspace.component';
 import { IqbFilesModule } from '../iqb-files';
 import { SuperadminPasswordRequestComponent } from
   './superadmin-password-request/superadmin-password-request.component';
 import { VeronaModulesComponent } from './verona-modules/verona-modules.component';
 import { VeronaModulesTableComponent } from './verona-modules/verona-modules-table.component';
 import { SettingsComponent } from './settings/settings.component';
+import { WorkspaceGroupsComponent } from './settings/workspace-groups.component';
+import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.component';
 
 @NgModule({
   imports: [
@@ -59,7 +62,8 @@ import { SettingsComponent } from './settings/settings.component';
     MatInputModule,
     MatToolbarModule,
     MatSnackBarModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatChipsModule
   ],
   exports: [
     SuperadminComponent
@@ -75,7 +79,9 @@ import { SettingsComponent } from './settings/settings.component';
     SuperadminPasswordRequestComponent,
     VeronaModulesComponent,
     VeronaModulesTableComponent,
-    SettingsComponent
+    SettingsComponent,
+    WorkspaceGroupsComponent,
+    EditWorkspaceGroupComponent
   ],
   providers: [
     BackendService
@@ -85,6 +91,7 @@ import { SettingsComponent } from './settings/settings.component';
     NewpasswordComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
+    EditWorkspaceGroupComponent,
     SuperadminPasswordRequestComponent
   ]
 })
