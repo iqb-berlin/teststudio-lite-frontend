@@ -28,7 +28,6 @@ import { SuperadminComponent } from './superadmin.component';
 import { BackendService } from './backend.service';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
-import { NewworkspaceComponent } from './workspaces/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace.component';
 import { IqbFilesModule } from '../iqb-files';
 import { SuperadminPasswordRequestComponent } from
@@ -74,7 +73,6 @@ import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.com
     SuperadminComponent,
     NewuserComponent,
     NewpasswordComponent,
-    NewworkspaceComponent,
     EditworkspaceComponent,
     SuperadminPasswordRequestComponent,
     VeronaModulesComponent,
@@ -89,7 +87,6 @@ import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.com
   entryComponents: [
     NewuserComponent,
     NewpasswordComponent,
-    NewworkspaceComponent,
     EditworkspaceComponent,
     EditWorkspaceGroupComponent,
     SuperadminPasswordRequestComponent

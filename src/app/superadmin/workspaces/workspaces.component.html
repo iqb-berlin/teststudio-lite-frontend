@@ -1,10 +1,10 @@
-<div fxLayout="row" fxLayoutAlign="space-between start">
+<div fxLayout="row" fxLayoutAlign="space-between start" class="admin-tab-content">
   <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
   </div>
 
   <!-- ============================================= -->
-  <div class="objectlist" fxLayout="column" fxFlex="50">
+  <div class="object-list" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
         <button mat-raised-button (click)="addObject()" matTooltip="Arbeitsbereich hinzufügen" matTooltipPosition="above">
             <mat-icon>add</mat-icon>
@@ -17,7 +17,7 @@
         </button>
     </div>
 
-    <mat-table [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="objectsDatasource" matSort class="scroll-area">
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef fxFlex="70px">
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -38,6 +38,11 @@
         <mat-cell *matCellDef="let element"> {{element.label}} </mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="group">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Gruppe </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.ws_group_name}} </mat-cell>
+      </ng-container>
+
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"
         [style.background]="tableselectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
@@ -45,7 +50,7 @@
   </div>
 
   <!-- ============================================= -->
-  <div fxLayout="column" fxFlex="40">
+  <div fxLayout="column" fxFlex="40" class="object-list">
 
     <div *ngIf="selectedWorkspaceId == 0">
       <div>Zugriffsberechtigte für Arbeitsbereich:</div>
@@ -60,7 +65,7 @@
         </button>
     </div>
 
-    <mat-table [dataSource]="UserlistDatasource">
+    <mat-table [dataSource]="UserlistDatasource" class="scroll-area">
       <ng-container matColumnDef="selectCheckbox">
         <mat-cell *matCellDef="let row" fxFlex="70px">
           <mat-checkbox (change)="selectUser(row)"

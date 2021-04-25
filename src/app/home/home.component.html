@@ -29,10 +29,13 @@
           <p *ngIf="mds.loginStatus.workspaces.length === 0">
             Für diese Anmeldung wurden keine Arbeitsbereiche gefunden.
           </p>
-          <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)"
-            *ngFor="let ws of mds.loginStatus.workspaces">
-              {{ws.name}}
-          </button>
+          <div *ngFor="let wsg of mds.loginStatus.workspacesGrouped" fxLayout="column">
+            <h2>{{wsg.name}}</h2>
+            <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)" class="ws-button"
+                    *ngFor="let ws of wsg.workspaces">
+                    {{ws.name}}
+            </button>
+          </div>
         </div>
       </mat-card-content>
       <mat-card-actions>

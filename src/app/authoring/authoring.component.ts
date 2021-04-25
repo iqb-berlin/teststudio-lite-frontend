@@ -204,7 +204,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
 
   moveUnit(): void {
     const dialogRef = this.selectUnitDialog.open(MoveUnitComponent, {
-      width: '400px',
+      width: '600px',
       height: '700px',
       data: {
         title: 'Aufgabe(n) verschieben',

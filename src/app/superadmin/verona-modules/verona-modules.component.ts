@@ -15,7 +15,11 @@ import { BackendService, VeronaModuleData } from '../backend.service';
 import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
-  templateUrl: './verona-modules.component.html'
+  templateUrl: './verona-modules.component.html',
+  styles: [
+    '.scroll-area {height: calc(100% - 35px); overflow-y: auto;}',
+    '.object-list {height: calc(100% - 5px);}'
+  ]
 })
 export class VeronaModulesComponent implements OnInit {
   dataLoading = false;

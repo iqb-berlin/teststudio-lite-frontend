@@ -60,10 +60,28 @@ export class BackendService {
           return of(<LoginData>{
             name: loginStatusResponseData.name,
             isSuperAdmin: loginStatusResponseData.is_superadmin,
-            workspaces: workspaceList
+            workspaces: workspaceList,
+            workspacesGrouped: BackendService.transformWorkspaceData(workspaceList)
           });
         })
       );
+  }
+
+  private static transformWorkspaceData(workspaceList: WorkspaceData[]): WorkspaceGroupData[] {
+    const collectedData: {
+      [key: string]: WorkspaceGroupData;
+    } = {};
+    workspaceList.forEach(ws => {
+      if (!collectedData[ws.ws_group_id]) {
+        collectedData[ws.ws_group_id] = <WorkspaceGroupData>{
+          id: ws.ws_group_id,
+          name: ws.ws_group_name,
+          workspaces: []
+        };
+      }
+      collectedData[ws.ws_group_id].workspaces.push(ws);
+    });
+    return Object.values(collectedData);
   }
 
   login(name: string, password: string): Observable<LoginData> {
@@ -127,10 +145,17 @@ export interface WorkspaceData {
   ws_group_name: string;
 }
 
+export interface WorkspaceGroupData {
+  id: number;
+  name: string;
+  workspaces: WorkspaceData[];
+}
+
 export interface LoginData {
   name: string;
   isSuperAdmin: boolean;
-  workspaces: WorkspaceData[]
+  workspaces: WorkspaceData[];
+  workspacesGrouped: WorkspaceGroupData[];
 }
 
 export interface AppConfig {

@@ -58,9 +58,9 @@ export class BackendService {
       );
   }
 
-  getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[]> {
+  getWorkspacesByUser(username: string): Observable<WorkspaceData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(`${this.serverUrl}getUserWorkspaces.php`,
+      .post<WorkspaceData[]>(`${this.serverUrl}getUserWorkspaces.php`,
       { t: localStorage.getItem('t'), u: username })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
@@ -84,18 +84,26 @@ export class BackendService {
       );
   }
 
-  addWorkspace(name: string): Observable<boolean> {
+  addWorkspace(name: string, group: number): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}addWorkspace.php`, { t: localStorage.getItem('t'), n: name })
+      .post<boolean>(`${this.serverUrl}addWorkspace.php`, {
+      t: localStorage.getItem('t'),
+      n: name,
+      wsg: group
+    })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
 
-  changeWorkspace(wsId: number, wsName: string): Observable<boolean> {
+  changeWorkspace(wsId: number, wsName: string, wsGroup: number): Observable<boolean> {
     return this.http
-      .post<boolean>(`${this.serverUrl}setWorkspace.php`,
-      { t: localStorage.getItem('t'), ws_id: wsId, ws_name: wsName })
+      .post<boolean>(`${this.serverUrl}setWorkspace.php`, {
+      t: localStorage.getItem('t'),
+      ws_id: wsId,
+      ws_name: wsName,
+      ws_group: wsGroup
+    })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))
       );
@@ -201,6 +209,14 @@ export interface GetUserDataResponse {
 export interface IdLabelSelectedData {
   id: number;
   label: string;
+  selected: boolean;
+}
+
+export interface WorkspaceData {
+  id: number;
+  label: string;
+  ws_group_id: number;
+  ws_group_name: string;
   selected: boolean;
 }
 

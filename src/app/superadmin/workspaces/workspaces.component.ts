@@ -13,26 +13,29 @@ import {
   MessageDialogData,
   MessageType
 } from 'iqb-components';
-import { BackendService, IdLabelSelectedData } from '../backend.service';
-import { NewworkspaceComponent } from './newworkspace.component';
+import { BackendService, WorkspaceData, WorkspaceGroupData } from '../backend.service';
 import { EditworkspaceComponent } from './editworkspace.component';
 import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
   templateUrl: './workspaces.component.html',
-  styleUrls: ['./workspaces.component.css']
+  styles: [
+    '.scroll-area {height: calc(100% - 35px); overflow-y: auto;}',
+    '.object-list {height: calc(100% - 5px);}'
+  ]
 })
 export class WorkspacesComponent implements OnInit {
   dataLoading = false;
-  objectsDatasource: MatTableDataSource<IdLabelSelectedData>;
-  displayedColumns = ['selectCheckbox', 'name'];
-  tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
-  tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
+  objectsDatasource: MatTableDataSource<WorkspaceData>;
+  displayedColumns = ['selectCheckbox', 'group', 'name'];
+  tableselectionCheckbox = new SelectionModel <WorkspaceData>(true, []);
+  tableselectionRow = new SelectionModel <WorkspaceData>(false, []);
   selectedWorkspaceId = 0;
   selectedWorkspaceName = '';
+  workspaceGroups: WorkspaceGroupData[] = [];
 
   pendingUserChanges = false;
-  UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
+  UserlistDatasource: MatTableDataSource<WorkspaceData>;
   displayedUserColumns = ['selectCheckbox', 'name'];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -40,7 +43,6 @@ export class WorkspacesComponent implements OnInit {
   constructor(
     private mds: MainDatastoreService,
     private bs: BackendService,
-    private newworkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
     private messsageDialog: MatDialog,
@@ -69,10 +71,13 @@ export class WorkspacesComponent implements OnInit {
 
   // ***********************************************************************************
   addObject(): void {
-    const dialogRef = this.newworkspaceDialog.open(NewworkspaceComponent, {
+    const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
       width: '600px',
       data: {
-        name: ''
+        name: '',
+        title: 'Neuer Arbeitsbereich',
+        saveButtonLabel: 'Anlegen',
+        groups: this.workspaceGroups
       }
     });
 
@@ -81,7 +86,8 @@ export class WorkspacesComponent implements OnInit {
         if (result !== false) {
           this.dataLoading = true;
           this.bs.addWorkspace(
-            (<FormGroup>result).get('name').value
+            (<FormGroup>result).get('name').value,
+            (<FormGroup>result).get('groupSelector').value
           ).subscribe(
             respOk => {
               if (respOk) {
@@ -120,7 +126,11 @@ export class WorkspacesComponent implements OnInit {
       const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
         width: '600px',
         data: {
-          name: selectedRows[0].label
+          name: selectedRows[0].label,
+          title: 'Arbeitsbereich ändern',
+          saveButtonLabel: 'Speichern',
+          groups: this.workspaceGroups,
+          group: selectedRows[0].ws_group_id
         }
       });
 
@@ -130,7 +140,8 @@ export class WorkspacesComponent implements OnInit {
             this.dataLoading = true;
             this.bs.changeWorkspace(
               selectedRows[0].id,
-              (<FormGroup>result).get('name').value
+              (<FormGroup>result).get('name').value,
+              (<FormGroup>result).get('groupSelector').value
             ).subscribe(
               respOk => {
                 if (respOk) {
@@ -188,7 +199,7 @@ export class WorkspacesComponent implements OnInit {
           // =========================================================
           this.dataLoading = true;
           const workspacesToDelete = [];
-          selectedRows.forEach((r: IdLabelSelectedData) => workspacesToDelete.push(r.id));
+          selectedRows.forEach((r: WorkspaceData) => workspacesToDelete.push(r.id));
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk) {
@@ -216,7 +227,7 @@ export class WorkspacesComponent implements OnInit {
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
       this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+        (dataresponse: WorkspaceData[]) => {
           this.UserlistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
         }, () => {
@@ -229,7 +240,7 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectUser(ws?: IdLabelSelectedData): void {
+  selectUser(ws?: WorkspaceData): void {
     ws.selected = !ws.selected;
     this.pendingUserChanges = true;
   }
@@ -266,7 +277,7 @@ export class WorkspacesComponent implements OnInit {
     if (this.mds.loginStatus.isSuperAdmin) {
       this.dataLoading = true;
       this.bs.getWorkspaces().subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+        (dataresponse: WorkspaceData[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;
           this.tableselectionCheckbox.clear();
@@ -278,6 +289,12 @@ export class WorkspacesComponent implements OnInit {
           this.dataLoading = false;
         }
       );
+      this.bs.getWorkspaceGroupList().subscribe(wsg => {
+        this.workspaceGroups = wsg;
+      },
+      () => {
+        this.workspaceGroups = [];
+      });
     }
   }
 

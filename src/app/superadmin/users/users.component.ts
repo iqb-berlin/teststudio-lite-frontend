@@ -13,7 +13,9 @@ import {
   MessageDialogData,
   MessageType
 } from 'iqb-components';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData } from '../backend.service';
+import {
+  BackendService, GetUserDataResponse, IdLabelSelectedData, WorkspaceData
+} from '../backend.service';
 import { NewuserComponent } from './newuser/newuser.component';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { MainDatastoreService } from '../../maindatastore.service';
@@ -21,7 +23,11 @@ import { SuperadminPasswordRequestComponent } from
   '../superadmin-password-request/superadmin-password-request.component';
 
 @Component({
-  templateUrl: './users.component.html'
+  templateUrl: './users.component.html',
+  styles: [
+    '.scroll-area {height: calc(100% - 35px); overflow-y: auto;}',
+    '.object-list {height: calc(100% - 5px);}'
+  ]
 })
 export class UsersComponent implements OnInit {
   dataLoading = false;
@@ -32,8 +38,8 @@ export class UsersComponent implements OnInit {
   selectedUser = '';
 
   pendingWorkspaceChanges = false;
-  WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
-  displayedWorkspaceColumns = ['selectCheckbox', 'label'];
+  WorkspacelistDatasource: MatTableDataSource<WorkspaceData>;
+  displayedWorkspaceColumns = ['selectCheckbox', 'group', 'label'];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -214,7 +220,7 @@ export class UsersComponent implements OnInit {
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+        (dataresponse: WorkspaceData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
         }, () => {

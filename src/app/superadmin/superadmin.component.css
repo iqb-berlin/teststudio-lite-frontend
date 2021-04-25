@@ -1,9 +1,9 @@
 .adminbackground {
   box-shadow: 5px 10px 20px black;
   background-color: white;
-  min-height: 85%;
   padding: 25px;
-  margin: 20px;
+  margin: 0 15px 15px 15px;
+  height: calc(100% - 65px);
 }
 
 .communication-error-message {

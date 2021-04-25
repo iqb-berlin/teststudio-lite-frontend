@@ -30,6 +30,12 @@ export class HomeComponent implements OnInit {
     });
     setTimeout(() => {
       this.mds.pageTitle = 'Willkommen!';
+      this.bs.getStatus().subscribe(newStatus => {
+        this.mds.loginStatus = newStatus;
+      },
+      () => {
+        this.mds.loginStatus = null;
+      });
     });
   }
 
