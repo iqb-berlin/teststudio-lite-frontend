@@ -33,26 +33,28 @@ export class BackendService {
       );
   }
 
-  addUnit(workspaceId: number, key: string, label: string): Observable<boolean> {
+  addUnit(workspaceId: number, key: string, label: string): Observable<number> {
     return this.http
-      .put<boolean>(`${this.serverUrl}addUnit.php`,
+      .put<string>(`${this.serverUrl}addUnit.php`,
       {
         t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label
       })
       .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
+        catchError(err => throwError(new AppHttpError(err))),
+        map(returnId => Number(returnId))
       );
   }
 
   copyUnit(workspaceId: number,
-           fromUnit: number, key: string, label: string): Observable<boolean> {
+           fromUnit: number, key: string, label: string): Observable<number> {
     return this.http
-      .put<boolean>(`${this.serverUrl}addUnit.php`,
+      .put<string>(`${this.serverUrl}addUnit.php`,
       {
         t: localStorage.getItem('t'), ws: workspaceId, u: fromUnit, k: key, l: label
       })
       .pipe(
-        catchError(err => throwError(new AppHttpError(err)))
+        catchError(err => throwError(new AppHttpError(err))),
+        map(returnId => Number(returnId))
       );
   }
 
@@ -122,7 +124,8 @@ export class BackendService {
       l: unitData.label,
       d: unitData.description,
       e: unitData.editorid,
-      p: unitData.playerid
+      p: unitData.playerid,
+      dt: unitData.playerid
     })
       .pipe(
         catchError(() => of(false))
@@ -156,7 +159,6 @@ export class BackendService {
   }
 
   getModuleHtml(moduleId: string): Observable<string> {
-    console.log('getModuleHtml', moduleId);
     return this.http
       .post<string>(`${this.serverUrl}getModuleHtml.php`,
       { m: moduleId })

@@ -88,23 +88,33 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateUnitList(): void {
+  updateUnitList(unitToSelect?: number): void {
     this.bs.getUnitList(this.ds.selectedWorkspace).subscribe(
       uResponse => {
         this.ds.unitList = uResponse;
-        const selectedUnit = this.ds.selectedUnit$.getValue();
+        const selectedUnit = unitToSelect || this.ds.selectedUnit$.getValue();
         let unitExists = false;
         this.ds.unitList.forEach(u => {
           if (u.id === selectedUnit) {
             unitExists = true;
           }
         });
-        this.ds.selectedUnit$.next(unitExists ? selectedUnit : 0);
+        if (unitExists) {
+          if (unitToSelect) {
+            this.router.navigate([`u/${unitToSelect}`], { relativeTo: this.route });
+          } else {
+            this.ds.selectedUnit$.next(selectedUnit);
+          }
+        } else {
+          this.ds.selectedUnit$.next(0);
+          this.router.navigate([`/a/${this.ds.selectedWorkspace}`]);
+        }
       },
       err => {
         this.mds.errorMessage = err.msg();
         this.ds.unitList = [];
         this.ds.selectedUnit$.next(0);
+        this.router.navigate([`/a/${this.ds.selectedWorkspace}`]);
       }
     );
   }
@@ -137,10 +147,9 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             (<FormGroup>result).get('label').value
           ).subscribe(
             respOk => {
-              if (respOk) {
+              if (respOk > 0) {
                 this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
-                this.updateUnitList();
-                // this.router.navigate(['a/']);
+                this.updateUnitList(respOk);
               } else {
                 this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
               }
@@ -266,8 +275,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
                       // todo db-error?
                       if (respOk) {
                         this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
-                        this.updateUnitList();
-                        this.selectedUnits = [];
+                        this.updateUnitList(respOk);
                       } else {
                         this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
                       }

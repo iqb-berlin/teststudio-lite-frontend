@@ -181,7 +181,8 @@ export interface VeronaModuleData {
   filesizeStr: string;
   filesize: number;
   fileDatetime: number;
-  veronaVersion: string;
+  apiVersion: string;
   isPlayer: boolean;
-  isEditor: boolean
+  isEditor: boolean;
+  description: string;
 }

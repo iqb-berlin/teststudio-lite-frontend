@@ -16,7 +16,9 @@
 
   <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell" fxFlex> Name </mat-header-cell>
-    <mat-cell *matCellDef="let element" class="namecell" fxFlex><a target="_blank" [href]="downloadPath + element.filelink">{{element.label}}</a> </mat-cell>
+    <mat-cell *matCellDef="let element" class="namecell" fxFlex>
+      <a target="_blank" [href]="downloadPath + element.filelink" [matTooltip]="element.description">{{element.label}}</a>
+    </mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="id">

@@ -30,17 +30,21 @@
       </button>
 
       <mat-menu #menu="matMenu">
+        <button mat-menu-item disabled="disabled">
+          <mat-icon>settings</mat-icon>Einstellungen
+        </button>
+        <mat-divider></mat-divider>
         <button mat-menu-item (click)="copyUnit()">
-          <span>Aufgabe kopieren</span>
+          <mat-icon>content_copy</mat-icon>Kopieren
         </button>
         <button mat-menu-item (click)="moveUnit()">
-          <span>Aufgabe(n) verschieben</span>
+          <mat-icon>swap_horiz</mat-icon>Verschieben
         </button>
         <button mat-menu-item (click)="hiddenFileInput.click()">
-          <span>Aufgabe(n) importieren</span>
+          <mat-icon>input</mat-icon>Import
         </button>
         <button mat-menu-item (click)="exportUnit()">
-          <span>Aufgabe(n) als Datei speichern</span>
+          <mat-icon>get_app</mat-icon>Export
         </button>
       </mat-menu>
     </div>
