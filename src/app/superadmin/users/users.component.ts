@@ -305,7 +305,8 @@ export class UsersComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Ändern des Superadmin-Status',
           content:
-            `Für "${selectedRows[0].name}" den Status auf "${selectedRows[0].is_superadmin ? 'NICHT ' : ''}Superadmin" setzen?`,
+            `Für "${selectedRows[0].name}" den Status auf "
+            ${selectedRows[0].is_superadmin ? 'NICHT ' : ''}Superadmin" setzen?`,
           confirmbuttonlabel: 'Status ändern',
           showcancel: true
         }

@@ -71,41 +71,54 @@ export class WorkspacesComponent implements OnInit {
 
   // ***********************************************************************************
   addObject(): void {
-    const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
-      width: '600px',
-      data: {
-        name: '',
-        title: 'Neuer Arbeitsbereich',
-        saveButtonLabel: 'Anlegen',
-        groups: this.workspaceGroups
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.dataLoading = true;
-          this.bs.addWorkspace(
-            (<FormGroup>result).get('name').value,
-            (<FormGroup>result).get('groupSelector').value
-          ).subscribe(
-            respOk => {
-              if (respOk) {
-                this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
-                this.updateObjectList();
-              } else {
-                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 3000 });
-              }
-              this.dataLoading = false;
-            },
-            err => {
-              this.snackBar.open(`Konnte Arbeitsbereich nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
-              this.dataLoading = false;
-            }
-          );
+    if (this.workspaceGroups.length === 0) {
+      this.messsageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Arbeitsbereich hinzufügen',
+          content: 'Bitte legen Sie erst eine Gruppe für Arbeitsbereiche an! Gehen Sie hierzu auf "Einstellungen"!',
+          type: MessageType.error
         }
-      }
-    });
+      });
+    } else {
+      const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
+        width: '600px',
+        data: {
+          name: '',
+          title: 'Neuer Arbeitsbereich',
+          saveButtonLabel: 'Anlegen',
+          groups: this.workspaceGroups,
+          group: this.workspaceGroups.length === 1 ? this.workspaceGroups[0].id : null
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (typeof result !== 'undefined') {
+          if (result !== false) {
+            this.dataLoading = true;
+            this.bs.addWorkspace(
+              (<FormGroup>result).get('name').value,
+              (<FormGroup>result).get('groupSelector').value
+            ).subscribe(
+              respOk => {
+                if (respOk) {
+                  this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
+                  this.updateObjectList();
+                } else {
+                  this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 3000 });
+                }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Arbeitsbereich nicht hinzufügen (
+                ${err.code})`, 'Fehler', { duration: 3000 });
+                this.dataLoading = false;
+              }
+            );
+          }
+        }
+      });
+    }
   }
 
   changeObject(): void {
