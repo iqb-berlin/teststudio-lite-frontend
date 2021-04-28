@@ -38,3 +38,4 @@ testem.log
 .DS_Store
 Thumbs.db
 /teststudio-lite-frontend.iml
+src/environments/environment.ts
