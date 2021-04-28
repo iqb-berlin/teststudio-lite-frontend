@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AppConfig, BackendService as MainDataService } from '../../backend.service';
 import { BackendService } from '../backend.service';
+import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
   selector: 'app-app-config',
@@ -20,7 +21,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   configForm: FormGroup;
   dataChanged = false;
   private configDataChangedSubscription: Subscription = null;
-  expiredIsInPast = false;
+  warningIsExpired = false;
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -76,6 +77,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         this.configDataChangedSubscription = null;
       }
       this.appConfig = appConfig;
+      this.warningIsExpired = MainDatastoreService.warningIsExpired(this.appConfig);
       this.configForm.setValue({
         appTitle: this.appConfig.app_title,
         introHtml: this.appConfig.intro_html,
@@ -89,14 +91,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
         this.appConfig.global_warning_expired_day = this.configForm.get('globalWarningExpiredDay').value;
         this.appConfig.global_warning_expired_hour = this.configForm.get('globalWarningExpiredHour').value;
-        if (this.appConfig.global_warning_expired_day) {
-          const calcTimePoint = new Date(this.appConfig.global_warning_expired_day);
-          calcTimePoint.setHours(calcTimePoint.getHours() + Number(this.appConfig.global_warning_expired_hour));
-          const now = new Date(Date.now());
-          this.expiredIsInPast = calcTimePoint < now;
-        } else {
-          this.expiredIsInPast = false;
-        }
+        this.warningIsExpired = MainDatastoreService.warningIsExpired(this.appConfig);
         this.dataChanged = true;
       });
     },

@@ -13,9 +13,10 @@ import { EditWorkspaceGroupComponent } from './edit-workspace-group.component';
     <mat-form-field class="example-chip-list">
       <mat-label>Arbeitsbereiche - Gruppen</mat-label>
       <mat-chip-list #chipList>
-        <mat-chip *ngFor="let wsg of workspaceGroups" (click)="changeName(wsg)"
-                  [removable]="wsg.ws_count === 0" (removed)="deleteWorkspaceGroup(wsg)">
-          {{wsg.label}} <span *ngIf="wsg.ws_count > 0">({{wsg.ws_count}})</span>
+        <mat-chip *ngFor="let wsg of workspaceGroups" (click)="changeName(wsg)" [matBadge]="wsg.ws_count"
+                  [removable]="wsg.ws_count === 0" (removed)="deleteWorkspaceGroup(wsg)"
+                  [matBadgeHidden]="wsg.ws_count === 0">
+          {{wsg.label}}
           <mat-icon matChipRemove *ngIf="wsg.ws_count === 0">cancel</mat-icon>
         </mat-chip><br/>
         <input placeholder="Neue Gruppe..."

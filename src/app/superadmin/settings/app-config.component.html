@@ -20,7 +20,7 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <p *ngIf="expiredIsInPast" class="warning-warning">Zeitpunkt ist in der Vergangenheit.</p>
+      <p *ngIf="warningIsExpired" class="warning-warning">Zeitpunkt ist in der Vergangenheit.</p>
     </div>
   </div>
   <mat-form-field fxLayout="column">
@@ -39,10 +39,10 @@
               cdkTextareaAutosize
               cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
-  <div fxLayout="row" fxLayoutGap="30px">
+  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
     <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
       Speichern
     </button>
-    <div *ngIf="dataChanged">Nach dem Speichern bitte die Seite neu laden, damit die Änderungen wirksam werden!</div>
+    <div *ngIf="dataChanged" fxFlex>Nach dem Speichern bitte die Seite neu laden, damit die Änderungen wirksam werden!</div>
   </div>
 </form>

@@ -18,6 +18,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatBadgeModule } from '@angular/material/badge';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -66,6 +67,7 @@ import { AppConfigComponent } from './settings/app-config.component';
     MatSnackBarModule,
     MatNativeDateModule,
     MatDatepickerModule,
+    MatBadgeModule,
     FlexLayoutModule,
     MatChipsModule
   ],
