@@ -164,4 +164,7 @@ export interface AppConfig {
   trusted_intro_html: SafeUrl;
   impressum_html: string;
   trusted_impressum_html: SafeUrl;
+  global_warning: string;
+  global_warning_expired_day: Date,
+  global_warning_expired_hour: number
 }

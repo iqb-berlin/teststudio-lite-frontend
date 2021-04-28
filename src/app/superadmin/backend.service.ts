@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppHttpError } from '../backend.service';
+import { AppConfig, AppHttpError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -193,6 +193,16 @@ export class BackendService {
     return this.http
       .post<boolean>(`${this.serverUrl}setWorkspaceGroup.php`, {
       t: localStorage.getItem('t'), wsg_id: id, wsg_name: newName
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  setAppConfig(appConfig: AppConfig): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}setConfig.php`, {
+      t: localStorage.getItem('t'), c: JSON.stringify(appConfig)
     })
       .pipe(
         catchError(err => throwError(new AppHttpError(err)))

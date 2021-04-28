@@ -16,6 +16,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -37,6 +39,7 @@ import { VeronaModulesTableComponent } from './verona-modules/verona-modules-tab
 import { SettingsComponent } from './settings/settings.component';
 import { WorkspaceGroupsComponent } from './settings/workspace-groups.component';
 import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.component';
+import { AppConfigComponent } from './settings/app-config.component';
 
 @NgModule({
   imports: [
@@ -61,6 +64,8 @@ import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.com
     MatInputModule,
     MatToolbarModule,
     MatSnackBarModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
     FlexLayoutModule,
     MatChipsModule
   ],
@@ -79,10 +84,14 @@ import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.com
     VeronaModulesTableComponent,
     SettingsComponent,
     WorkspaceGroupsComponent,
-    EditWorkspaceGroupComponent
+    EditWorkspaceGroupComponent,
+    AppConfigComponent
   ],
   providers: [
-    BackendService
+    BackendService,
+    [
+      { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
+    ]
   ],
   entryComponents: [
     NewuserComponent,
