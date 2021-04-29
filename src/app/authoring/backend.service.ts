@@ -193,6 +193,7 @@ export interface ModulData {
 export interface WorkspaceData {
   id: number;
   label: string;
+  group: string;
   settings: {
     [key: string]: string;
   };

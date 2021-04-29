@@ -27,6 +27,11 @@ export class AppComponent implements OnInit {
         this.mds.appConfig = newConfig;
         this.titleService.setTitle(this.mds.appConfig.app_title);
         this.mds.dataLoading = false;
+        if (this.mds.appConfig.global_warning) {
+          if (!MainDatastoreService.warningIsExpired(this.mds.appConfig)) {
+            this.mds.globalWarning = this.mds.appConfig.global_warning;
+          }
+        }
       });
       this.bs.getStatus().subscribe(newStatus => {
         this.mds.loginStatus = newStatus;

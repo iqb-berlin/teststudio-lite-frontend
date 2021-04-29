@@ -65,7 +65,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         this.ds.defaultPlayer = '';
         this.bs.getWorkspaceData(this.ds.selectedWorkspace).subscribe(
           wResponse => {
-            this.mds.pageTitle = wResponse.label;
+            this.mds.pageTitle = `${wResponse.group}: ${wResponse.label}`;
             if (wResponse.editors) {
               this.ds.editorList = wResponse.editors;
             }
@@ -323,7 +323,11 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             (binaryData: Blob) => {
               // todo db-error?
               // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
-              saveAs(binaryData, 'unitDefs.voud.zip');
+              const nowDate = new Date();
+              let fileName = `${nowDate.getFullYear().toString()}-`;
+              fileName += `${(nowDate.getMonth() < 9 ? '0' : '')}${nowDate.getMonth() + 1}-`;
+              fileName += `${(nowDate.getDate() < 10 ? '0' : '')}${nowDate.getDate()}`;
+              saveAs(binaryData, `${fileName} UnitDefs.voud.zip`);
               this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
             }
           );

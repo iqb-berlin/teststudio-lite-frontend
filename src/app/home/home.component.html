@@ -7,6 +7,7 @@
       <!-- - - - - - - - - - - - - - - - - -->
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-header *ngIf="mds.globalWarning">{{mds.globalWarning}}</mat-card-header>
         <mat-card-content fxLayout="column">
           <mat-form-field class="full-width">
             <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
@@ -24,6 +25,7 @@
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="mds.loginStatus">
       <mat-card-title>Arbeitsbereich wählen</mat-card-title>
+      <mat-card-header *ngIf="mds.globalWarning">{{mds.globalWarning}}</mat-card-header>
       <mat-card-content>
         <div fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="mds.loginStatus.workspaces.length === 0">

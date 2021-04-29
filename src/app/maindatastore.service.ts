@@ -9,6 +9,7 @@ export class MainDatastoreService {
   loginStatus: LoginData = null;
   pageTitle = 'Willkommen!';
   errorMessage = '';
+  globalWarning = '';
   postMessage$ = new Subject<MessageEvent>();
   appConfig: AppConfig = null;
   dataLoading = false;
