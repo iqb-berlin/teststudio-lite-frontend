@@ -16,6 +16,7 @@ import { NewunitComponent } from './dialogs/newunit.component';
 import { SelectUnitComponent } from './dialogs/select-unit.component';
 import { MoveUnitComponent } from './dialogs/moveunit.component';
 import { BackendService as SuperAdminBackendService } from '../superadmin/backend.service';
+import { ExportUnitComponent } from './dialogs/export-unit.component';
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -304,7 +305,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   exportUnit(): void {
-    const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
+    const dialogRef = this.selectUnitDialog.open(ExportUnitComponent, {
       width: '400px',
       height: '700px',
       data: {
