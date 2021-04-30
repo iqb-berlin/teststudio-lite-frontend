@@ -133,9 +133,9 @@ export class BackendService {
       );
   }
 
-  startUnitUploadProcessing(workspaceId: number, processId: string): Observable<boolean> {
+  startUnitUploadProcessing(workspaceId: number, processId: string): Observable<ImportUnitSelectionData[]> {
     return this.http
-      .post<boolean>(`${this.serverUrl}startUnitUploadProcessing.php`, {
+      .post<ImportUnitSelectionData[]>(`${this.serverUrl}startUnitUploadProcessing.php`, {
       t: localStorage.getItem('t'),
       ws: workspaceId,
       p: processId
@@ -215,4 +215,10 @@ export interface ExportUnitSelectionData {
   selected_units: number[];
   add_players: string[];
   add_xml: ModuleDataForExport[];
+}
+
+export interface ImportUnitSelectionData {
+  filename: string;
+  success: boolean;
+  message: string;
 }

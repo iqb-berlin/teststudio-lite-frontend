@@ -3,8 +3,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BackendService, WorkspaceData } from '../backend.service';
 import { MainDatastoreService } from '../maindatastore.service';
+import { ChangePasswordComponent } from './change-password.component';
 
 @Component({
   templateUrl: './home.component.html',
@@ -21,6 +23,8 @@ export class HomeComponent implements OnInit {
               public mds: MainDatastoreService,
               private bs: BackendService,
               public confirmDialog: MatDialog,
+              private changePasswordDialog: MatDialog,
+              private snackBar: MatSnackBar,
               private router: Router) { }
 
   ngOnInit(): void {
@@ -70,6 +74,26 @@ export class HomeComponent implements OnInit {
           () => {
             this.mds.loginStatus = null;
             this.router.navigateByUrl('/');
+          }
+        );
+      }
+    });
+  }
+
+  changePassword() : void {
+    const dialogRef = this.changePasswordDialog.open(ChangePasswordComponent, {
+      width: '400px',
+      height: '700px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.setUserPassword(result.controls.pw_old.value, result.controls.pw_new1.value).subscribe(
+          respOk => {
+            this.snackBar.open(
+              respOk ? 'Neues Kennwort gespeichert' : 'Konnte Kennwort nicht ändern.',
+              respOk ? 'OK' : 'Fehler', { duration: 3000 }
+            );
           }
         );
       }

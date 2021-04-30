@@ -29,6 +29,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   uploadUrl = '';
   token = '';
   uploadProcessId = '';
+  uploadMessages: string[] = [];
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -346,22 +347,38 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   finishUnitUpload() : void {
+    this.uploadMessages = [];
     this.bs.startUnitUploadProcessing(this.ds.selectedWorkspace, this.uploadProcessId).subscribe(
-      ok => {
-        if (ok === true) {
-          this.snackBar.open('Aufgaben wurden importiert gespeichert', '', { duration: 1000 });
-          this.updateUnitList();
-          this.selectedUnits = [];
-        } else {
-          this.snackBar.open('Problem: Konnte Aufgabendateien nicht hochladen', '', { duration: 3000 });
-        }
+      okdata => {
+        let okCount = 0;
+        okdata.forEach(uploadInfo => {
+          if (uploadInfo.success) {
+            okCount += 1;
+          } else {
+            this.uploadMessages.push(`${uploadInfo.filename}: ${uploadInfo.message}`);
+          }
+          if (this.uploadMessages.length > 0) {
+            this.snackBar.open('Problem: Konnte Aufgabendateien nicht hochladen', '', { duration: 3000 });
+          } else {
+            this.snackBar.open(`${okCount} Aufgabe(n) wurden importiert`, '', { duration: 3000 });
+          }
+          if (okCount > 0) {
+            this.updateUnitList();
+            this.selectedUnits = [];
+          }
+        });
       },
       err => {
+        this.uploadMessages.push(`${err.code}: ${err.info}`);
         this.snackBar.open(`Problem: Konnte Aufgabendateien nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
       }
     );
     this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.snackBar.open('Dateien wurden an den Server gesendet - bitte warten', '', { duration: 10000 });
+  }
+
+  clearUploadMessages(): void {
+    this.uploadMessages = [];
   }
 
   discardChanges(): void {

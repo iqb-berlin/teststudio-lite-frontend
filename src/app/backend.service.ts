@@ -130,6 +130,18 @@ export class BackendService {
         catchError(() => of(null))
       );
   }
+
+  setUserPassword(oldPassword: string, newPassword: string): Observable<boolean> {
+    return this.http
+      .put<boolean>(`${this.serverUrl}setUserPassword.php`, {
+      t: localStorage.getItem('t'),
+      old: oldPassword,
+      new: newPassword
+    })
+      .pipe(
+        catchError(() => of(false))
+      );
+  }
 }
 
 export interface LoginStatusResponseData {

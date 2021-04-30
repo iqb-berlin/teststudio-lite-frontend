@@ -3,8 +3,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  templateUrl: './newpassword.component.html',
-  styleUrls: ['./newpassword.component.css']
+  templateUrl: './newpassword.component.html'
 })
 
 export class NewpasswordComponent implements OnInit {
@@ -13,7 +12,7 @@ export class NewpasswordComponent implements OnInit {
   constructor(private fb: FormBuilder,
               @Inject(MAT_DIALOG_DATA) public data: any) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.newpasswordform = this.fb.group({
       pw: this.fb.control('', [Validators.required, Validators.minLength(3), Validators.pattern(/^\S+$/)])
     });
