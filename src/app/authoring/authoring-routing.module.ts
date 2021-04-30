@@ -6,7 +6,7 @@ import { UnitRoutingCanDeactivateGuard } from './unit/unit-routing.guard';
 
 const routes: Routes = [
   {
-    path: 'a/:ws',
+    path: '',
     component: AuthoringComponent,
     children: [
       {

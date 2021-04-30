@@ -9,7 +9,7 @@ import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {
-    path: 'super-admin',
+    path: '',
     component: SuperadminComponent,
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },

@@ -46,12 +46,12 @@
           </div>
         </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button color="foreground" (click)="changePassword()" matTooltip="Kennwort ändern">
-          <mat-icon>person</mat-icon>
+      <mat-card-actions fxLayout="row" fxLayoutAlign="space-between center">
+        <button mat-raised-button color="foreground" (click)="changePassword()" matTooltip="Kennwort ändern">
+          <mat-icon>account_box</mat-icon>Kennwort ändern
         </button>
-        <button mat-button color="foreground" (click)="logout()" matTooltip="Abmelden/Neu anmelden">
-          <mat-icon>logout</mat-icon>
+        <button mat-raised-button color="foreground" (click)="logout()" matTooltip="Abmelden/Neu anmelden">
+          <mat-icon>logout</mat-icon>Abmelden
         </button>
       </mat-card-actions>
     </mat-card>
