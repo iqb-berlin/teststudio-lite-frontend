@@ -29,12 +29,14 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
 import { AuthoringModule } from './authoring';
+import { ChangePasswordComponent } from './home/change-password.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent
+    AboutComponent,
+    ChangePasswordComponent
   ],
   imports: [
     ApplicationModule,
@@ -70,6 +72,9 @@ import { AuthoringModule } from './authoring';
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     }
+  ],
+  entryComponents: [
+    ChangePasswordComponent
   ],
   bootstrap: [AppComponent]
 })

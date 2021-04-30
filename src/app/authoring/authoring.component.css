@@ -3,7 +3,7 @@
   width: 100%;
   top: 70px;
   bottom: 0;
-  padding: 0px;
+  padding: 0;
 }
 
 .unitdatacontainer {
@@ -20,7 +20,7 @@
 
 .navibar {
   background-color:whitesmoke;
-  margin: 0px;
+  margin: 0;
 }
 
 .no-wrap {
@@ -53,4 +53,13 @@ mat-selection-list {
 mat-button-toggle {
   margin: 4px;
   color: blue;
+}
+
+.upload-message {
+  margin: 10px;
+  color: goldenrod;
+}
+
+.upload-message-ok-button {
+  margin: 10px;
 }

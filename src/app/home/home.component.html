@@ -24,7 +24,13 @@
     </mat-card>
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="mds.loginStatus">
-      <mat-card-title>Arbeitsbereich wählen</mat-card-title>
+      <mat-card-title fxLayout="row" fxLayoutAlign="space-between center">
+        Arbeitsbereich wählen
+        <button mat-button *ngIf="mds.loginStatus.isSuperAdmin" [routerLink]="['/super-admin']"
+                matTooltip="Nutzer/Arbeitsbereiche">
+          <mat-icon>settings</mat-icon>
+        </button>
+      </mat-card-title>
       <mat-card-header *ngIf="mds.globalWarning">{{mds.globalWarning}}</mat-card-header>
       <mat-card-content>
         <div fxLayoutGap="10px" fxLayout="column">
@@ -41,8 +47,12 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="foreground" *ngIf="mds.loginStatus.isSuperAdmin" [routerLink]="['/super-admin']">Nutzer/Arbeitsbereiche</button>
-        <button mat-raised-button color="foreground" (click)="logout()">Abmelden</button>
+        <button mat-button color="foreground" (click)="changePassword()" matTooltip="Kennwort ändern">
+          <mat-icon>person</mat-icon>
+        </button>
+        <button mat-button color="foreground" (click)="logout()" matTooltip="Abmelden/Neu anmelden">
+          <mat-icon>logout</mat-icon>
+        </button>
       </mat-card-actions>
     </mat-card>
 
