@@ -9,7 +9,7 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MainDatastoreService } from '../maindatastore.service';
-import { BackendService, UnitShortData } from './backend.service';
+import { BackendService, UnitShortData, WorkspaceSettings } from './backend.service';
 import { DatastoreService } from './datastore.service';
 
 import { NewunitComponent } from './dialogs/newunit.component';
@@ -17,6 +17,7 @@ import { SelectUnitComponent } from './dialogs/select-unit.component';
 import { MoveUnitComponent } from './dialogs/moveunit.component';
 import { BackendService as SuperAdminBackendService } from '../superadmin/backend.service';
 import { ExportUnitComponent } from './dialogs/export-unit.component';
+import { EditSettingsComponent } from './dialogs/edit-settings.component';
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -40,6 +41,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     private newUnitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
     private messsageDialog: MatDialog,
+    private editSettingsDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
@@ -146,7 +148,9 @@ export class AuthoringComponent implements OnInit, OnDestroy {
           this.bs.addUnit(
             this.ds.selectedWorkspace,
             (<FormGroup>result).get('key').value.trim(),
-            (<FormGroup>result).get('label').value
+            (<FormGroup>result).get('label').value,
+            this.ds.defaultEditor,
+            this.ds.defaultPlayer
           ).subscribe(
             respOk => {
               if (respOk > 0) {
@@ -332,6 +336,33 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
           }
         );
+      }
+    });
+  }
+
+  settings(): void {
+    const dialogRef = this.editSettingsDialog.open(EditSettingsComponent, {
+      width: '400px',
+      height: '300px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.setWorkspaceSettings(
+          this.ds.selectedWorkspace,
+          <WorkspaceSettings>{
+            defaultEditor: result.controls.editorSelector.value,
+            defaultPlayer: result.controls.playerSelector.value
+          }
+        ).subscribe(isOK => {
+          if (isOK === false) {
+            this.snackBar.open('Einstellungen konnten nicht gespeichert werden.', '', { duration: 3000 });
+          } else {
+            this.snackBar.open('Einstellungen gespeichert', '', { duration: 1000 });
+            this.ds.defaultPlayer = result.controls.playerSelector.value;
+            this.ds.defaultEditor = result.controls.editorSelector.value;
+          }
+        });
       }
     });
   }
