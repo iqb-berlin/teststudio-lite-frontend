@@ -39,7 +39,7 @@
     <p *ngIf="tableSelectionCheckbox.selected.length === 1">Eine Aufgabe ausgewählt.</p>
     <p *ngIf="tableSelectionCheckbox.selected.length > 1">{{tableSelectionCheckbox.selected.length}} Aufgaben ausgewählt.</p>
     <div fxLayout="row">
-      <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="true" [disabled]="!tableSelectionCheckbox.hasValue()">
+      <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="getResultData()" [disabled]="!tableSelectionCheckbox.hasValue()">
         {{data.buttonLabel}}</button>
       <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
     </div>

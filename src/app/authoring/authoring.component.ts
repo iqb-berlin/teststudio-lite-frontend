@@ -315,24 +315,22 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.bs.downloadUnits(
-            this.ds.selectedWorkspace,
-            (result as UnitShortData[]).map(ud => ud.id)
-          ).subscribe(
-            (binaryData: Blob) => {
-              // todo db-error?
-              // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
-              const nowDate = new Date();
-              let fileName = `${nowDate.getFullYear().toString()}-`;
-              fileName += `${(nowDate.getMonth() < 9 ? '0' : '')}${nowDate.getMonth() + 1}-`;
-              fileName += `${(nowDate.getDate() < 10 ? '0' : '')}${nowDate.getDate()}`;
-              saveAs(binaryData, `${fileName} UnitDefs.voud.zip`);
-              this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
-            }
-          );
-        }
+      if (result !== false) {
+        this.bs.downloadUnits(
+          this.ds.selectedWorkspace,
+          result
+        ).subscribe(
+          (binaryData: Blob) => {
+            // todo db-error?
+            // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
+            const nowDate = new Date();
+            let fileName = `${nowDate.getFullYear().toString()}-`;
+            fileName += `${(nowDate.getMonth() < 9 ? '0' : '')}${nowDate.getMonth() + 1}-`;
+            fileName += `${(nowDate.getDate() < 10 ? '0' : '')}${nowDate.getDate()}`;
+            saveAs(binaryData, `${fileName} UnitDefs.voud.zip`);
+            this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
+          }
+        );
       }
     });
   }
