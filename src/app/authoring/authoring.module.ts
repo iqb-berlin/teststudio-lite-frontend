@@ -37,6 +37,7 @@ import { UnitPreviewComponent } from './unit/unit-preview/unit-preview.component
 import { IqbFilesModule } from '../iqb-files';
 import { SelectModuleComponent } from './unit/unit-metadata/select-module.component';
 import { ExportUnitComponent } from './dialogs/export-unit.component';
+import { EditSettingsComponent } from './dialogs/edit-settings.component';
 
 @NgModule({
   imports: [
@@ -78,7 +79,8 @@ import { ExportUnitComponent } from './dialogs/export-unit.component';
     SaveOrDiscardComponent,
     UnitPreviewComponent,
     SelectModuleComponent,
-    ExportUnitComponent
+    ExportUnitComponent,
+    EditSettingsComponent
   ],
   exports: [
     AuthoringComponent

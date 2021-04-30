@@ -30,7 +30,7 @@
       </button>
 
       <mat-menu #menu="matMenu">
-        <button mat-menu-item disabled="disabled">
+        <button mat-menu-item (click)="settings()">
           <mat-icon>settings</mat-icon>Einstellungen
         </button>
         <mat-divider></mat-divider>

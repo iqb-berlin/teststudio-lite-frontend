@@ -33,11 +33,11 @@ export class BackendService {
       );
   }
 
-  addUnit(workspaceId: number, key: string, label: string): Observable<number> {
+  addUnit(workspaceId: number, key: string, label: string, editor: string, player: string): Observable<number> {
     return this.http
       .put<string>(`${this.serverUrl}addUnit.php`,
       {
-        t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label
+        t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label, e: editor, p: player
       })
       .pipe(
         catchError(err => throwError(new AppHttpError(err))),
@@ -167,6 +167,18 @@ export class BackendService {
         catchError(err => throwError(new AppHttpError(err)))
       );
   }
+
+  setWorkspaceSettings(workspaceId: number, settings: WorkspaceSettings): Observable<boolean> {
+    return this.http
+      .put<boolean>(`${this.serverUrl}setWorkspaceSettings.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
+      s: settings
+    })
+      .pipe(
+        catchError(() => of(false))
+      );
+  }
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -195,9 +207,7 @@ export interface WorkspaceData {
   id: number;
   label: string;
   group: string;
-  settings: {
-    [key: string]: string;
-  };
+  settings: WorkspaceSettings;
   players: {
     [key: string]: ModulData;
   };
@@ -221,4 +231,9 @@ export interface ImportUnitSelectionData {
   filename: string;
   success: boolean;
   message: string;
+}
+
+export interface WorkspaceSettings {
+  defaultPlayer: string;
+  defaultEditor: string
 }
