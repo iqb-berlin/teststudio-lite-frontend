@@ -86,11 +86,12 @@ export class BackendService {
       );
   }
 
-  downloadUnits(workspaceId: number, units: number[]): Observable<Blob> {
+  downloadUnits(workspaceId: number, unitData: ExportUnitSelectionData): Observable<Blob> {
     const httpOptions = {
       responseType: 'blob' as 'json',
       headers: new HttpHeaders({
-        options: JSON.stringify({ t: localStorage.getItem('t'), ws: workspaceId, u: units })
+        'Content-Type': 'application/json; charset=utf-8',
+        options: JSON.stringify({ t: localStorage.getItem('t'), ws: workspaceId, u: unitData })
       })
     };
     return this.http.get<Blob>(`${this.serverUrl}downloadUnits.php`, httpOptions);
@@ -193,6 +194,7 @@ export interface ModulData {
 export interface WorkspaceData {
   id: number;
   label: string;
+  group: string;
   settings: {
     [key: string]: string;
   };
@@ -202,4 +204,15 @@ export interface WorkspaceData {
   editors: {
     [key: string]: ModulData;
   };
+}
+
+export interface ModuleDataForExport {
+  id : string;
+  content : string
+}
+
+export interface ExportUnitSelectionData {
+  selected_units: number[];
+  add_players: string[];
+  add_xml: ModuleDataForExport[];
 }

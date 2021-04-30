@@ -16,6 +16,7 @@ import { NewunitComponent } from './dialogs/newunit.component';
 import { SelectUnitComponent } from './dialogs/select-unit.component';
 import { MoveUnitComponent } from './dialogs/moveunit.component';
 import { BackendService as SuperAdminBackendService } from '../superadmin/backend.service';
+import { ExportUnitComponent } from './dialogs/export-unit.component';
 
 @Component({
   templateUrl: './authoring.component.html',
@@ -65,7 +66,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
         this.ds.defaultPlayer = '';
         this.bs.getWorkspaceData(this.ds.selectedWorkspace).subscribe(
           wResponse => {
-            this.mds.pageTitle = wResponse.label;
+            this.mds.pageTitle = `${wResponse.group}: ${wResponse.label}`;
             if (wResponse.editors) {
               this.ds.editorList = wResponse.editors;
             }
@@ -304,7 +305,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
   }
 
   exportUnit(): void {
-    const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
+    const dialogRef = this.selectUnitDialog.open(ExportUnitComponent, {
       width: '400px',
       height: '700px',
       data: {
@@ -314,20 +315,22 @@ export class AuthoringComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.bs.downloadUnits(
-            this.ds.selectedWorkspace,
-            (result as UnitShortData[]).map(ud => ud.id)
-          ).subscribe(
-            (binaryData: Blob) => {
-              // todo db-error?
-              // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
-              saveAs(binaryData, 'unitDefs.voud.zip');
-              this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
-            }
-          );
-        }
+      if (result !== false) {
+        this.bs.downloadUnits(
+          this.ds.selectedWorkspace,
+          result
+        ).subscribe(
+          (binaryData: Blob) => {
+            // todo db-error?
+            // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
+            const nowDate = new Date();
+            let fileName = `${nowDate.getFullYear().toString()}-`;
+            fileName += `${(nowDate.getMonth() < 9 ? '0' : '')}${nowDate.getMonth() + 1}-`;
+            fileName += `${(nowDate.getDate() < 10 ? '0' : '')}${nowDate.getDate()}`;
+            saveAs(binaryData, `${fileName} UnitDefs.voud.zip`);
+            this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
+          }
+        );
       }
     });
   }

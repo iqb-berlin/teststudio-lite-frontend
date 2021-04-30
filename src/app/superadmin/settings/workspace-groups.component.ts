@@ -9,7 +9,24 @@ import { EditWorkspaceGroupComponent } from './edit-workspace-group.component';
 
 @Component({
   selector: 'app-workspace-groups',
-  templateUrl: './workspace-groups.component.html',
+  template: `
+    <mat-form-field class="example-chip-list">
+      <mat-label>Arbeitsbereiche - Gruppen</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let wsg of workspaceGroups" (click)="changeName(wsg)" [matBadge]="wsg.ws_count"
+                  [removable]="wsg.ws_count === 0" (removed)="deleteWorkspaceGroup(wsg)"
+                  [matBadgeHidden]="wsg.ws_count === 0">
+          {{wsg.label}}
+          <mat-icon matChipRemove *ngIf="wsg.ws_count === 0">cancel</mat-icon>
+        </mat-chip><br/>
+        <input placeholder="Neue Gruppe..."
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+    </mat-form-field>
+  `,
   styles: ['.example-chip-list {width: 100%;}']
 })
 export class WorkspaceGroupsComponent implements OnInit {
