@@ -21,14 +21,13 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { IqbComponentsModule } from 'iqb-components';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { BackendService } from './backend.service';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
-import { SuperadminModule } from './superadmin';
-import { AuthoringModule } from './authoring';
 import { ChangePasswordComponent } from './home/change-password.component';
 
 @NgModule({
@@ -56,14 +55,13 @@ import { ChangePasswordComponent } from './home/change-password.component';
     MatTableModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     FlexLayoutModule,
     RouterModule,
     ReactiveFormsModule,
     HttpClientModule,
-    SuperadminModule,
     AppRoutingModule,
-    AuthoringModule,
-    IqbComponentsModule
+    IqbComponentsModule.forRoot()
   ],
   providers: [
     BackendService,
