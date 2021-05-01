@@ -9,7 +9,7 @@ You can find the backend for this application [here](https://github.com/iqb-berl
 You can find a complete setup with front- and backend [here](https://github.com/iqb-berlin/teststudio-lite-setup).
 
 # Release notes
-##1.0
+## 1.0
 * user can change password
 * workspaces are organized in groups to ease the management
 * intro text and impressum text can be changed after installation
@@ -23,7 +23,7 @@ You can find a complete setup with front- and backend [here](https://github.com/
 
 # Bug Reports
 
-Please file bug reports etc. here [here](https://github.com/iqb-berlin/teststudio-lite-frontend/issues).
+Please file bug reports etc. [here](https://github.com/iqb-berlin/teststudio-lite-frontend/issues).
 
 # Installation
 
