@@ -4,7 +4,7 @@
   <mat-dialog-content>
     <form [formGroup]="settingsForm" fxLayout="column">
       <mat-form-field>
-        <mat-label>Voreinstellter Editor</mat-label>
+        <mat-label>Voreingestellter Editor</mat-label>
         <mat-select placeholder="Editor" formControlName="editorSelector">
           <mat-option [value]=""></mat-option>
           <mat-option *ngFor="let m of ds.editorList | keyvalue" [value]="m.key">
@@ -13,7 +13,7 @@
         </mat-select>
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Voreinstellter Player</mat-label>
+        <mat-label>Voreingestellter Player</mat-label>
         <mat-select placeholder="Player" formControlName="playerSelector">
           <mat-option [value]=""></mat-option>
           <mat-option *ngFor="let m of ds.playerList | keyvalue" [value]="m.key">

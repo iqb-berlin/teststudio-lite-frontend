@@ -80,6 +80,7 @@ export class ExportUnitComponent implements OnInit {
           ud.disabled = this.unitsWithPlayer.indexOf(ud.id) < 0;
         });
       } else {
+        this.mds.dataLoading = true;
         const getMetadataSubscriptions: Observable<UnitMetadata>[] = [];
         this.ds.unitList.forEach(
           ud => {
@@ -103,6 +104,7 @@ export class ExportUnitComponent implements OnInit {
             this.objectsDatasource.data.forEach(ud => {
               ud.disabled = this.unitsWithPlayer.indexOf(ud.id) < 0;
             });
+            this.mds.dataLoading = false;
           });
       }
     } else {
@@ -140,7 +142,7 @@ export class ExportUnitComponent implements OnInit {
       `;
       let unitNumber = 1;
       this.tableSelectionCheckbox.selected.forEach(ud => {
-        bookletXml += `<Unit id="${ud.key}" label="${unitNumber}. ${ud.label}" />`;
+        bookletXml += `<Unit id="${encodeURI(ud.key)}" label="${unitNumber}. ${encodeURI(ud.label)}" />`;
         unitNumber += 1;
       });
       bookletXml += `

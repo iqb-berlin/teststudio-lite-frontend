@@ -50,7 +50,7 @@
     </div>
     <input #hiddenFileInput type="file" name="unit-file" accept=".xml,.voud,.zip" multiple [iqbFilesUploadInputFor]="fileUploadQueue" hidden="true"/>
   </div>
-  <div [hidden]="fileUploadQueue.files.length<=0 && uploadMessages.length <= 0" class="import-units-log">
+  <div [hidden]="fileUploadQueue.files.length<=0 && uploadMessages.length <= 0" class="import-units-log" fxFlex="40">
     <div *ngFor="let msg of uploadMessages" class="upload-message">{{msg}}</div>
     <iqb-files-upload-queue #fileUploadQueue
                             [httpUrl]="uploadUrl"

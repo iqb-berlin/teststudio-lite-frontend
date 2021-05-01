@@ -379,6 +379,7 @@ export class AuthoringComponent implements OnInit, OnDestroy {
 
   finishUnitUpload() : void {
     this.uploadMessages = [];
+    this.mds.dataLoading = true;
     this.bs.startUnitUploadProcessing(this.ds.selectedWorkspace, this.uploadProcessId).subscribe(
       okdata => {
         let okCount = 0;
@@ -398,10 +399,12 @@ export class AuthoringComponent implements OnInit, OnDestroy {
             this.selectedUnits = [];
           }
         });
+        this.mds.dataLoading = false;
       },
       err => {
         this.uploadMessages.push(`${err.code}: ${err.info}`);
         this.snackBar.open(`Problem: Konnte Aufgabendateien nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
+        this.mds.dataLoading = false;
       }
     );
     this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
