@@ -1,40 +1,48 @@
-import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
-import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
+import { ViewChild, Component, OnInit } from '@angular/core';
 
-import { DatastoreService } from '../datastore.service';
-import { Component, OnInit } from '@angular/core';
-import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  MessageDialogComponent,
+  MessageDialogData,
+  MessageType
+} from 'iqb-components';
+import { BackendService, WorkspaceData, WorkspaceGroupData } from '../backend.service';
+import { EditworkspaceComponent } from './editworkspace.component';
+import { MainDatastoreService } from '../../maindatastore.service';
 
 @Component({
   templateUrl: './workspaces.component.html',
-  styleUrls: ['./workspaces.component.css']
+  styles: [
+    '.scroll-area {height: calc(100% - 35px); overflow-y: auto;}',
+    '.object-list {height: calc(100% - 5px);}'
+  ]
 })
 export class WorkspacesComponent implements OnInit {
-  public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<IdLabelSelectedData>;
-  public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
-  private tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
-  public selectedWorkspaceId = 0;
-  private selectedWorkspaceName = '';
+  dataLoading = false;
+  objectsDatasource: MatTableDataSource<WorkspaceData>;
+  displayedColumns = ['selectCheckbox', 'group', 'name'];
+  tableselectionCheckbox = new SelectionModel <WorkspaceData>(true, []);
+  tableselectionRow = new SelectionModel <WorkspaceData>(false, []);
+  selectedWorkspaceId = 0;
+  selectedWorkspaceName = '';
+  workspaceGroups: WorkspaceGroupData[] = [];
 
-  private pendingUserChanges = false;
-  public UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
-  public displayedUserColumns = ['selectCheckbox', 'name'];
+  pendingUserChanges = false;
+  UserlistDatasource: MatTableDataSource<WorkspaceData>;
+  displayedUserColumns = ['selectCheckbox', 'name'];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
-    private ds: DatastoreService,
+    private mds: MainDatastoreService,
     private bs: BackendService,
-    private newworkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
     private messsageDialog: MatDialog,
@@ -48,47 +56,72 @@ export class WorkspacesComponent implements OnInit {
         } else {
           this.selectedWorkspaceId = 0;
           this.selectedWorkspaceName = '';
-          }
+        }
         this.updateUserList();
-      });
+      }
+    );
   }
 
-  ngOnInit() {
-    this.updateObjectList();
-    this.ds.updatePageTitle('Arbeitsbereiche');
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.updateObjectList();
+      this.mds.pageTitle = 'Admin: Arbeitsbereiche';
+    });
   }
 
   // ***********************************************************************************
-  addObject() {
-    const dialogRef = this.newworkspaceDialog.open(NewworkspaceComponent, {
-      width: '600px',
-      data: {
-        name: ''
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.dataLoading = true;
-          this.bs.addWorkspace(
-              this.ds.token$.getValue(),
-              (<FormGroup>result).get('name').value).subscribe(
-                respOk => {
-                  if (respOk) {
-                    this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
-                    this.updateObjectList();
-                  } else {
-                    this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
-                  }
-                  this.dataLoading = false;
-                });
+  addObject(): void {
+    if (this.workspaceGroups.length === 0) {
+      this.messsageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Arbeitsbereich hinzufügen',
+          content: 'Bitte legen Sie erst eine Gruppe für Arbeitsbereiche an! Gehen Sie hierzu auf "Einstellungen"!',
+          type: MessageType.error
         }
-      }
-    });
+      });
+    } else {
+      const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
+        width: '600px',
+        data: {
+          name: '',
+          title: 'Neuer Arbeitsbereich',
+          saveButtonLabel: 'Anlegen',
+          groups: this.workspaceGroups,
+          group: this.workspaceGroups.length === 1 ? this.workspaceGroups[0].id : null
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (typeof result !== 'undefined') {
+          if (result !== false) {
+            this.dataLoading = true;
+            this.bs.addWorkspace(
+              (<FormGroup>result).get('name').value,
+              (<FormGroup>result).get('groupSelector').value
+            ).subscribe(
+              respOk => {
+                if (respOk) {
+                  this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
+                  this.updateObjectList();
+                } else {
+                  this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 3000 });
+                }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Arbeitsbereich nicht hinzufügen (
+                ${err.code})`, 'Fehler', { duration: 3000 });
+                this.dataLoading = false;
+              }
+            );
+          }
+        }
+      });
+    }
   }
 
-  changeObject() {
+  changeObject(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -107,7 +140,10 @@ export class WorkspacesComponent implements OnInit {
         width: '600px',
         data: {
           name: selectedRows[0].label,
-          oldname: selectedRows[0].label
+          title: 'Arbeitsbereich ändern',
+          saveButtonLabel: 'Speichern',
+          groups: this.workspaceGroups,
+          group: selectedRows[0].ws_group_id
         }
       });
 
@@ -116,25 +152,31 @@ export class WorkspacesComponent implements OnInit {
           if (result !== false) {
             this.dataLoading = true;
             this.bs.changeWorkspace(
-                this.ds.token$.getValue(),
-                selectedRows[0].id,
-                (<FormGroup>result).get('name').value).subscribe(
-                  respOk => {
-                    if (respOk) {
-                      this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
-                      this.updateObjectList();
-                    } else {
-                      this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 1000});
-                    }
-                    this.dataLoading = false;
-                  });
+              selectedRows[0].id,
+              (<FormGroup>result).get('name').value,
+              (<FormGroup>result).get('groupSelector').value
+            ).subscribe(
+              respOk => {
+                if (respOk) {
+                  this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
+                  this.updateObjectList();
+                } else {
+                  this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 3000 });
+                }
+                this.dataLoading = false;
+              },
+              err => {
+                this.snackBar.open(`Konnte Arbeitsbereich nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
+                this.dataLoading = false;
+              }
+            );
           }
         }
       });
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -151,16 +193,17 @@ export class WorkspacesComponent implements OnInit {
     } else {
       let prompt = 'Soll';
       if (selectedRows.length > 1) {
-        prompt = prompt + 'en ' + selectedRows.length + ' Arbeitsbereiche ';
+        prompt = `${prompt}en ${selectedRows.length} Arbeitsbereiche `;
       } else {
-        prompt = prompt + ' Arbeitsbereich "' + selectedRows[0].label + '" ';
+        prompt = `${prompt} Arbeitsbereich "${selectedRows[0].label}" `;
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Arbeitsbereichen',
-          content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Arbeitsbereich/e löschen'
+          content: `${prompt}gelöscht werden?`,
+          confirmbuttonlabel: 'Arbeitsbereich/e löschen',
+          showcancel: true
         }
       });
 
@@ -169,101 +212,118 @@ export class WorkspacesComponent implements OnInit {
           // =========================================================
           this.dataLoading = true;
           const workspacesToDelete = [];
-          selectedRows.forEach((r: IdLabelSelectedData) => workspacesToDelete.push(r.id));
-          this.bs.deleteWorkspaces(this.ds.token$.getValue(), workspacesToDelete).subscribe(
+          selectedRows.forEach((r: WorkspaceData) => workspacesToDelete.push(r.id));
+          this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk) {
-                this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
+                this.snackBar.open('Arbeitsbereich/e gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', {duration: 1000});
+                this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
                 this.dataLoading = false;
               }
-          });
+            },
+            err => {
+              this.snackBar.open(`Konnte Arbeitsbereich/e nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.dataLoading = false;
+            }
+          );
         }
       });
     }
   }
 
   // ***********************************************************************************
-  updateUserList() {
+  updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
-      this.bs.getUsersByWorkspace(this.ds.token$.getValue(), this.selectedWorkspaceId).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+      this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(
+        (dataresponse: WorkspaceData[]) => {
           this.UserlistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
-        });
+        }
+      );
     } else {
       this.UserlistDatasource = null;
     }
   }
 
-  selectUser(ws?: IdLabelSelectedData) {
+  selectUser(ws?: WorkspaceData): void {
     ws.selected = !ws.selected;
     this.pendingUserChanges = true;
   }
 
-  saveUsers() {
+  saveUsers(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
-      this.bs.setUsersByWorkspace(this.ds.token$.getValue(), this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
+      this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
-            this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
+            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 3000 });
           }
           this.dataLoading = false;
-        });
+        },
+        err => {
+          this.snackBar.open(`Konnte Zugriffsrechte nicht ändern (${err.code})`, 'Fehler', { duration: 3000 });
+          this.dataLoading = false;
+        }
+      );
     } else {
       this.UserlistDatasource = null;
     }
   }
 
   // ***********************************************************************************
-  updateObjectList() {
+  updateObjectList(): void {
     this.selectedWorkspaceId = 0;
     this.selectedWorkspaceName = '';
     this.updateUserList();
 
-    if (this.ds.isSuperadmin$.getValue()) {
+    if (this.mds.loginStatus.isSuperAdmin) {
       this.dataLoading = true;
-      this.bs.getWorkspaces(this.ds.token$.getValue()).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+      this.bs.getWorkspaces().subscribe(
+        (dataresponse: WorkspaceData[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
-        }, (err: ServerError) => {
+        }, () => {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
         }
       );
+      this.bs.getWorkspaceGroupList().subscribe(wsg => {
+        this.workspaceGroups = wsg;
+      },
+      () => {
+        this.workspaceGroups = [];
+      });
     }
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 }

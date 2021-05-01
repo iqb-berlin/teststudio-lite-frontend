@@ -1,26 +1,20 @@
-import { DatastoreService } from './datastore.service';
 import { Component } from '@angular/core';
-
+import { MainDatastoreService } from '../maindatastore.service';
 
 @Component({
   templateUrl: './superadmin.component.html',
   styleUrls: ['./superadmin.component.css']
 })
 export class SuperadminComponent {
-  public isSuperadmin = false;
-  public navLinks = [
-    {path: 'itemauthoring', label: 'Autorenmodule'},
-    {path: 'itemplayer', label: 'Itemplayer'},
-    {path: 'users', label: 'Nutzer'},
-    {path: 'workspaces', label: 'Arbeitsbereiche'}
+  isSuperadmin = false;
+  navLinks = [
+    { path: 'users', label: 'Nutzer' },
+    { path: 'workspaces', label: 'Arbeitsbereiche' },
+    { path: 'v-modules', label: 'Editoren/Player' },
+    { path: 'settings', label: 'Einstellungen' }
   ];
 
-
   constructor(
-    private ds: DatastoreService
-  ) {
-    this.ds.isSuperadmin$.subscribe(is => {
-      this.isSuperadmin = is;
-    });
-  }
+    public mds: MainDatastoreService
+  ) { }
 }

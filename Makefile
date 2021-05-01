@@ -10,6 +10,9 @@ stop:
 down:
 	docker-compose -f docker/docker-compose.yml down
 
+init-dev-config:
+	cp src/environments/environment.dev.ts src/environments/environment.ts
+
 build:
 	docker-compose -f docker/docker-compose.yml build
 

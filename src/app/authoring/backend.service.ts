@@ -1,308 +1,239 @@
-import { UnitShortData } from './backend.service';
-import { catchError } from 'rxjs/operators';
-import { HttpErrorResponse, HttpHeaders, HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-
+import { AppHttpError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_authoring/';
+    @Inject('SERVER_URL') private readonly serverUrl: string,
+    private http: HttpClient
+  ) {
+    this.serverUrl += 'php_authoring/';
+  }
+
+  getUnitList(workspaceId: number): Observable <UnitShortData[]> {
+    return this.http
+      .put<UnitShortData[]>(`${this.serverUrl}getUnitList.php`, { t: localStorage.getItem('t'), ws: workspaceId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  getWorkspaceData(workspaceId: number): Observable<WorkspaceData> {
+    return this.http
+      .put<WorkspaceData>(
+      `${this.serverUrl}getWorkspaceData.php`, { t: localStorage.getItem('t'), ws: workspaceId }
+    )
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  addUnit(workspaceId: number, key: string, label: string, editor: string, player: string): Observable<number> {
+    return this.http
+      .put<string>(`${this.serverUrl}addUnit.php`,
+      {
+        t: localStorage.getItem('t'), ws: workspaceId, k: key, l: label, e: editor, p: player
+      })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err))),
+        map(returnId => Number(returnId))
+      );
+  }
+
+  copyUnit(workspaceId: number,
+           fromUnit: number, key: string, label: string): Observable<number> {
+    return this.http
+      .put<string>(`${this.serverUrl}addUnit.php`,
+      {
+        t: localStorage.getItem('t'), ws: workspaceId, u: fromUnit, k: key, l: label
+      })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err))),
+        map(returnId => Number(returnId))
+      );
+  }
+
+  deleteUnits(workspaceId: number, units: number[]): Observable<boolean> {
+    return this.http
+      .put<boolean>(`${this.serverUrl}deleteUnits.php`, { t: localStorage.getItem('t'), ws: workspaceId, u: units })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  moveUnits(workspaceId: number,
+            units: number[], targetWorkspace: number): Observable<boolean | number> {
+    const authToken = localStorage.getItem('t');
+    if (!authToken) {
+      return of(401);
     }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitList (sessiontoken: string, workspaceId: number): Observable <UnitShortData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<UnitShortData[]>(this.serverUrl + 'getUnitList.php', {t: sessiontoken, ws: workspaceId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .put<UnitShortData[]>(`${this.serverUrl}moveUnits.php`,
+      {
+        t: authToken, ws: workspaceId, u: units, tws: targetWorkspace
+      })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err))),
+        map((unMovableUnits: UnitShortData[]) => {
+          if (unMovableUnits.length === 0) return true;
+          return unMovableUnits.length;
+        })
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getWorkspaceList (sessiontoken: string): Observable<WorkspaceData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<WorkspaceData[]>(this.serverUrl + 'getWorkspaceList.php', {t: sessiontoken}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public addUnit (sessiontoken: string, workspaceId: number, key: string, label: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'addUnit.php', {t: sessiontoken, ws: workspaceId, k: key, l: label}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public copyUnit (sessiontoken: string, workspaceId: number,
-                  fromUnit: number, key: string, label: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'addUnit.php', {t: sessiontoken, ws: workspaceId, u: fromUnit, k: key, l: label}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public deleteUnits (sessiontoken: string, workspaceId: number, units: number[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'deleteUnits.php', {t: sessiontoken, ws: workspaceId, u: units}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public moveUnits (sessiontoken: string, workspaceId: number,
-          units: number[], targetWorkspace: number): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'moveUnits.php', {t: sessiontoken, ws: workspaceId, u: units, tws: targetWorkspace}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public downloadUnits (sessiontoken: string, workspaceId: number, units: number[]): Observable<Blob> {
+  downloadUnits(workspaceId: number, unitData: ExportUnitSelectionData): Observable<Blob> {
     const httpOptions = {
       responseType: 'blob' as 'json',
       headers: new HttpHeaders({
-        'options': JSON.stringify({t: sessiontoken, ws: workspaceId, u: units})
+        'Content-Type': 'application/json; charset=utf-8',
+        options: JSON.stringify({ t: localStorage.getItem('t'), ws: workspaceId, u: unitData })
       })
     };
-
-    return this.http.get<Blob>(this.serverUrl + 'downloadUnits.php', httpOptions);
-
-        // .pipe(
-        //   map(binaryData => {
-        //     const blob = new Blob([binaryData], {type : 'application/zip'});
-        //     const url = window.URL.createObjectURL(blob);
-        //     const pwa = window.open(url);
-        //     if (!pwa || pwa.closed || typeof pwa.closed === 'undefined') {
-        //       alert( 'Please disable your Pop-up blocker and try again.');
-        //     }
-        //     return true;
-        //   })
-        // );
+    return this.http.get<Blob>(`${this.serverUrl}downloadUnits.php`, httpOptions);
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitProperties (sessiontoken: string, workspaceId: number, unitId: number): Observable<UnitProperties | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getUnitMetadata(workspaceId: number, unitId: number): Observable<UnitMetadata> {
     return this.http
-      .post<UnitProperties>(this.serverUrl + 'getUnitProperties.php', {t: sessiontoken, ws: workspaceId, u: unitId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .put<UnitMetadata>(`${this.serverUrl}getUnitMetadata.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitDesignData (sessiontoken: string, workspaceId: number, unitId: number): Observable<UnitDesignData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getUnitDefinition(workspaceId: number, unitId: number): Observable<string> {
     return this.http
-      .post<UnitDesignData>(this.serverUrl + 'getUnitDesignData.php', {t: sessiontoken, ws: workspaceId, u: unitId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .put<string>(`${this.serverUrl}getUnitDefinition.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId, u: unitId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getItemAuthoringToolList (): Observable<StrIdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setUnitMetadata(workspaceId: number, unitData: UnitMetadata): Observable<boolean> {
     return this.http
-      .post<StrIdLabelSelectedData[]>(this.serverUrl + 'getItemAuthoringToolList.php', httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .put<boolean>(`${this.serverUrl}setUnitMetadata.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
+      u: unitData.id,
+      k: unitData.key,
+      l: unitData.label,
+      d: unitData.description,
+      e: unitData.editorid,
+      p: unitData.playerid,
+      dt: unitData.playerid
+    })
+      .pipe(
+        catchError(() => of(false))
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public hasValidAuthoringTool (unitId: number): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  startUnitUploadProcessing(workspaceId: number, processId: string): Observable<ImportUnitSelectionData[]> {
     return this.http
-      .post<boolean>(this.serverUrl + 'hasValidAuthoringTool.php', {u: unitId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<ImportUnitSelectionData[]>(`${this.serverUrl}startUnitUploadProcessing.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
+      p: processId
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public changeUnitProperties (sessiontoken: string, workspaceId: number, props: UnitProperties): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setUnitDefinition(workspaceId: number,
+                    unitId: number, unitDef: string): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'changeUnitProperties.php', {
-              t: sessiontoken,
-              ws: workspaceId,
-              u: props.id,
-              k: props.key,
-              l: props.label,
-              d: props.description
-            }, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .put<boolean>(`${this.serverUrl}setUnitDefinition.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
+      u: unitId,
+      ud: unitDef
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public setUnitAuthoringTool (sessiontoken: string, workspaceId: number,
-            unitId: number, authoringtoolId: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getModuleHtml(moduleId: string): Observable<string> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setUnitAuthoringTool.php', {
-              t: sessiontoken,
-              ws: workspaceId,
-              u: unitId,
-              ati: authoringtoolId
-            }, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<string>(`${this.serverUrl}getModuleHtml.php`,
+      { m: moduleId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public setUnitDefinition (sessiontoken: string, workspaceId: number,
-            unitId: number, unitDef: string, unitPlayerId: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
 
+  setWorkspaceSettings(workspaceId: number, settings: WorkspaceSettings): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setUnitDefinition.php', {
-          t: sessiontoken,
-          ws: workspaceId,
-          u: unitId,
-          ud: unitDef,
-          pl: unitPlayerId
-        }, httpOptions)
-    .pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn: ServerError = {
-      label: 'Fehler bei Datenübertragung',
-      code: errorObj.status
-    };
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
-    } else {
-      myreturn.label = 'Fehler: ' + errorObj.message;
-    }
-
-    return Observable.throw(myreturn.label);
+      .put<boolean>(`${this.serverUrl}setWorkspaceSettings.php`, {
+      t: localStorage.getItem('t'),
+      ws: workspaceId,
+      s: settings
+    })
+      .pipe(
+        catchError(() => of(false))
+      );
   }
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #
-export interface ServerError {
-  code: number;
-  label: string;
-}
-
 export interface UnitShortData {
   id: number;
   key: string;
   label: string;
 }
 
-export interface UnitProperties {
+export interface UnitMetadata {
   id: number;
   key: string;
   label: string;
-  lastchangeStr: string;
-  authoringtoolid: string;
-  playerid: string;
   description: string;
+  lastchanged: number;
+  editorid: string;
+  playerid: string;
 }
 
-export interface UnitDesignData {
-  id: number;
-  key: string;
+export interface ModulData {
   label: string;
-  def: string;
-  authoringtoolLink: string;
-  playerLink: string;
-}
-
-export interface StrIdLabelSelectedData {
-  id: string;
-  label: string;
-  selected: boolean;
+  html: string;
 }
 
 export interface WorkspaceData {
   id: number;
-  name: string;
+  label: string;
+  group: string;
+  settings: WorkspaceSettings;
+  players: {
+    [key: string]: ModulData;
+  };
+  editors: {
+    [key: string]: ModulData;
+  };
+}
+
+export interface ModuleDataForExport {
+  id : string;
+  content : string
+}
+
+export interface ExportUnitSelectionData {
+  selected_units: number[];
+  add_players: string[];
+  add_xml: ModuleDataForExport[];
+}
+
+export interface ImportUnitSelectionData {
+  filename: string;
+  success: boolean;
+  message: string;
+}
+
+export interface WorkspaceSettings {
+  defaultPlayer: string;
+  defaultEditor: string
 }

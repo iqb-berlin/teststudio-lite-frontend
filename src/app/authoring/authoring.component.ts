@@ -1,114 +1,138 @@
-import { MoveUnitComponent } from './moveunit/moveunit.component';
-import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common/message-dialog/message-dialog.component';
-import { SelectionModel } from '@angular/cdk/collections';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SelectUnitComponent } from './select-unit/select-unit.component';
-import { SelectAuthoringToolComponent } from './select-authoring-tool/select-authoring-tool.component';
-import { Router, ActivatedRoute, Resolve } from '@angular/router';
-import { NewunitComponent } from './newunit/newunit.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
-import { MatDialog, MatSnackBar, MatChipList, MatChipListChange, MatChipSelectionChange } from '@angular/material';
-import { MainDatastoreService } from './../maindatastore.service';
-import { BehaviorSubject } from 'rxjs';
-import { UnitShortData, BackendService, WorkspaceData, UnitProperties } from './backend.service';
-import { DatastoreService, UnitViewMode, SaveDataComponent } from './datastore.service';
-import { FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  Component, Inject, OnDestroy, OnInit
+} from '@angular/core';
 import { saveAs } from 'file-saver';
+import { Subscription } from 'rxjs';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { MainDatastoreService } from '../maindatastore.service';
+import { BackendService, UnitShortData, WorkspaceSettings } from './backend.service';
+import { DatastoreService } from './datastore.service';
 
+import { NewunitComponent } from './dialogs/newunit.component';
+import { SelectUnitComponent } from './dialogs/select-unit.component';
+import { MoveUnitComponent } from './dialogs/moveunit.component';
+import { BackendService as SuperAdminBackendService } from '../superadmin/backend.service';
+import { ExportUnitComponent } from './dialogs/export-unit.component';
+import { EditSettingsComponent } from './dialogs/edit-settings.component';
 
 @Component({
   templateUrl: './authoring.component.html',
   styleUrls: ['./authoring.component.css']
 })
-export class AuthoringComponent implements OnInit {
-  public dataLoading = false;
-  public unitList: UnitShortData[] = [];
-  private workspaceList: WorkspaceData[] = [];
-
-  private _disablePreviewButton = true;
-  get disablePreviewButton() {
-    return this._disablePreviewButton;
-  }
-
-  private _disableSaveButton = true;
-  get disableSaveButton() {
-    return this._disableSaveButton;
-  }
-
-  // private wsSelector = new FormControl();
-  public unitSelector = new FormControl();
-  public unitviewSelector = new FormControl();
-  public unitViewModes: UnitViewMode[] = [];
-
+export class AuthoringComponent implements OnInit, OnDestroy {
+  private routingSubscription: Subscription = null;
+  private selectedUnitSubscription: Subscription = null;
+  selectedUnits: string[] = [];
+  uploadUrl = '';
+  token = '';
+  uploadProcessId = '';
+  uploadMessages: string[] = [];
 
   constructor(
+    @Inject('SERVER_URL') private serverUrl: string,
     private mds: MainDatastoreService,
-    private ds: DatastoreService,
+    public ds: DatastoreService,
     private bs: BackendService,
-    private newunitDialog: MatDialog,
+    private bsSuper: SuperAdminBackendService,
+    private newUnitDialog: MatDialog,
     private selectUnitDialog: MatDialog,
     private messsageDialog: MatDialog,
+    private editSettingsDialog: MatDialog,
+    private deleteConfirmDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.ds.workspaceList$.subscribe(wsList => this.workspaceList = wsList);
-    this.ds.unitList$.subscribe(ul => {
-      this.unitList = ul;
-    });
-    this.ds.selectedUnitId$.subscribe(id => this._disablePreviewButton = id === 0);
-    this.unitViewModes = this.ds.unitViewModes;
-    this.ds.unitViewMode$.subscribe(uvm => {
-      this.unitviewSelector.setValue(uvm, {emitEvent: false});
-    });
-    this.ds.unitDesignToSave$.subscribe(c => {
-      this._disableSaveButton = (c == null) && (this.ds.unitPropertiesToSave$.getValue() == null);
-      if (this._disableSaveButton) {
-        this.dataLoading = false;
-      }
-    });
-    this.ds.unitPropertiesToSave$.subscribe(c => {
-      this._disableSaveButton = (c == null) && (this.ds.unitDesignToSave$.getValue() == null);
-      if (this._disableSaveButton) {
-        this.dataLoading = false;
-      }
-    });
+    this.uploadUrl = `${this.serverUrl}php_authoring/uploadUnitFile.php`;
+    this.token = localStorage.getItem('t');
+    this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
   }
 
-  ngOnInit() {
-    this.mds.pageTitle$.next('IQB-Itemdatenbank');
-    this.ds.workspaceName$.subscribe(ws => {
-      if (ws.length > 0) {
-        this.mds.pageTitle$.next('IQB-Itemdatenbank: ' + ws);
-      }
-    });
-    this.ds.selectedUnitId$.subscribe((uId: number) => {
-      this.unitSelector.setValue(uId, {emitEvent: false});
-    });
-
-    this.unitSelector.valueChanges.subscribe(uId => {
-      this.router.navigate([this.ds.unitViewMode$.getValue() + '/' + uId], {relativeTo: this.route})
-        .then(naviresult => {
-          if (naviresult === false) {
-            this.unitSelector.setValue(this.ds.selectedUnitId$.getValue(), {emitEvent: false});
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.routingSubscription = this.route.params.subscribe(params => {
+        this.ds.selectedWorkspace = Number(params.ws);
+        this.ds.selectedUnit$.next(0);
+        this.ds.unitDefinitionOld = '';
+        this.ds.unitDefinitionNew = '';
+        this.ds.unitMetadataNew = null;
+        this.ds.unitMetadataOld = null;
+        this.ds.unitMetadataChanged = false;
+        this.ds.unitMetadataChanged = false;
+        this.ds.editorList = {};
+        this.ds.playerList = {};
+        this.ds.defaultEditor = '';
+        this.ds.defaultPlayer = '';
+        this.bs.getWorkspaceData(this.ds.selectedWorkspace).subscribe(
+          wResponse => {
+            this.mds.pageTitle = `${wResponse.group}: ${wResponse.label}`;
+            if (wResponse.editors) {
+              this.ds.editorList = wResponse.editors;
+            }
+            if (wResponse.players) {
+              this.ds.playerList = wResponse.players;
+            }
+            if (wResponse.settings) {
+              this.ds.defaultEditor = wResponse.settings.defaultEditor;
+              this.ds.defaultPlayer = wResponse.settings.defaultPlayer;
+            }
+            this.updateUnitList();
+          },
+          err => {
+            this.snackBar.open(
+              `Konnte Daten für Arbeitsbereich nicht laden (${err.code})`, 'Fehler', { duration: 3000 }
+            );
           }
-        });
-    });
-
-    this.unitviewSelector.valueChanges.subscribe(uvm => {
-      this.router.navigate([uvm + '/' + this.ds.selectedUnitId$.getValue()], {relativeTo: this.route})
-        .then(naviresult => {
-          if (naviresult === false) {
-            this.unitviewSelector.setValue(this.ds.unitViewMode$.getValue(), {emitEvent: false});
-          }
+        );
       });
     });
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  addUnit() {
-    const dialogRef = this.newunitDialog.open(NewunitComponent, {
+  updateUnitList(unitToSelect?: number): void {
+    this.bs.getUnitList(this.ds.selectedWorkspace).subscribe(
+      uResponse => {
+        this.ds.unitList = uResponse;
+        const selectedUnit = unitToSelect || this.ds.selectedUnit$.getValue();
+        let unitExists = false;
+        this.ds.unitList.forEach(u => {
+          if (u.id === selectedUnit) {
+            unitExists = true;
+          }
+        });
+        if (unitExists) {
+          if (unitToSelect) {
+            this.router.navigate([`u/${unitToSelect}`], { relativeTo: this.route });
+          } else {
+            this.ds.selectedUnit$.next(selectedUnit);
+          }
+        } else {
+          this.ds.selectedUnit$.next(0);
+          this.router.navigate([`/a/${this.ds.selectedWorkspace}`]);
+        }
+      },
+      err => {
+        this.mds.errorMessage = err.msg();
+        this.ds.unitList = [];
+        this.ds.selectedUnit$.next(0);
+        this.router.navigate([`/a/${this.ds.selectedWorkspace}`]);
+      }
+    );
+  }
+
+  onUnitSelectionChange(): void {
+    if (this.selectedUnits.length > 0) {
+      const unitId = this.selectedUnits[0];
+      this.selectedUnits = [];
+      this.router.navigate([`u/${unitId}`], { relativeTo: this.route });
+    }
+  }
+
+  addUnit(): void {
+    const dialogRef = this.newUnitDialog.open(NewunitComponent, {
       width: '600px',
       data: {
         title: 'Neue Aufgabe',
@@ -120,35 +144,40 @@ export class AuthoringComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.dataLoading = true;
+          this.mds.dataLoading = true;
           this.bs.addUnit(
-              this.mds.token$.getValue(),
-              this.ds.workspaceId$.getValue(),
-              (<FormGroup>result).get('key').value,
-              (<FormGroup>result).get('label').value).subscribe(
-                respOk => {
-                  if (respOk) {
-                    this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
-                    this.ds.updateUnitList();
-                    this.router.navigate(['a/']);
-                  } else {
-                    this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
-                  }
-                  this.dataLoading = false;
-                });
+            this.ds.selectedWorkspace,
+            (<FormGroup>result).get('key').value.trim(),
+            (<FormGroup>result).get('label').value,
+            this.ds.defaultEditor,
+            this.ds.defaultPlayer
+          ).subscribe(
+            respOk => {
+              if (respOk > 0) {
+                this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
+                this.updateUnitList(respOk);
+              } else {
+                this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
+              }
+              this.mds.dataLoading = false;
+            },
+            err => {
+              this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.mds.dataLoading = false;
+            }
+          );
         }
       }
     });
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  deleteUnit() {
+  deleteUnit(): void {
     const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
       width: '400px',
       height: '700px',
       data: {
         title: 'Aufgabe(n) löschen',
-        buttonlabel: 'Löschen'
+        buttonLabel: 'Löschen'
       }
     });
 
@@ -156,29 +185,37 @@ export class AuthoringComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.bs.deleteUnits(
-            this.mds.token$.getValue(),
-            this.ds.workspaceId$.getValue(),
-            (result as UnitShortData[]).map(ud => ud.id)).subscribe(
-              ok => {
-                if (ok) {
-                  this.ds.updateUnitList();
-                  this.snackBar.open('Aufgabe(n) gelöscht', '', {duration: 1000});
-                }
-              });
+            this.ds.selectedWorkspace,
+            (result as UnitShortData[]).map(ud => ud.id)
+          ).subscribe(
+            ok => {
+              // todo db-error?
+              if (ok) {
+                this.updateUnitList();
+                this.snackBar.open('Aufgabe(n) gelöscht', '', { duration: 1000 });
+              } else {
+                this.snackBar.open('Konnte Aufgabe(n) nicht löschen.', 'Fehler', { duration: 3000 });
+                this.mds.dataLoading = false;
+              }
+            },
+            err => {
+              this.snackBar.open(`Konnte Aufgabe(n) nicht löschen (${err.code})`, 'Fehler', { duration: 3000 });
+              this.mds.dataLoading = false;
+            }
+          );
         }
       }
     });
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  moveUnit() {
+  moveUnit(): void {
     const dialogRef = this.selectUnitDialog.open(MoveUnitComponent, {
-      width: '400px',
+      width: '600px',
       height: '700px',
       data: {
         title: 'Aufgabe(n) verschieben',
-        buttonlabel: 'Verschieben',
-        curentWorkspaceId: this.ds.workspaceId$.getValue()
+        buttonLabel: 'Verschieben',
+        currentWorkspaceId: this.ds.selectedWorkspace
       }
     });
 
@@ -186,131 +223,233 @@ export class AuthoringComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           const dialogComponent = dialogRef.componentInstance;
-          this.bs.moveUnits(
-            this.mds.token$.getValue(),
-            this.ds.workspaceId$.getValue(),
-            (dialogComponent.tableselectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
-            dialogComponent.selectform.get('wsSelector').value).subscribe(
-              ok => {
-                if (ok) {
-                  this.ds.updateUnitList();
-                  this.snackBar.open('Aufgabe(n) verschoben', '', {duration: 1000});
+          const wsSelected = dialogComponent.selectForm.get('wsSelector');
+          if (wsSelected) {
+            this.bs.moveUnits(
+              this.ds.selectedWorkspace,
+              (dialogComponent.tableSelectionCheckbox.selected as UnitShortData[]).map(ud => ud.id),
+              wsSelected.value
+            ).subscribe(
+              moveResponse => {
+                if (typeof moveResponse === 'number') {
+                  this.snackBar.open(`Es konnte(n) ${moveResponse} Aufgabe(n) nicht verschoben werden.`,
+                    'Fehler', { duration: 3000 });
+                } else {
+                  this.snackBar.open('Aufgabe(n) verschoben', '', { duration: 1000 });
                 }
-              });
+                this.updateUnitList();
+              },
+              err => {
+                this.snackBar.open(`Konnte Aufgabe nicht verschieben (${err.code})`, 'Fehler', { duration: 3000 });
+              }
+            );
+          }
         }
       }
     });
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  saveUnit() {
-    let componentToSaveData: SaveDataComponent = this.ds.unitPropertiesToSave$.getValue();
-    if (componentToSaveData !== null) {
-      this.dataLoading = true;
-      componentToSaveData.saveData().subscribe(result => {
-        if (result) {
-          this.ds.updateUnitList();
-        }
-      });
-    }
-    componentToSaveData = this.ds.unitDesignToSave$.getValue();
-    if (componentToSaveData !== null) {
-      this.dataLoading = true;
-      componentToSaveData.saveData().subscribe();
-    }
-  }
-
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  previewUnit() {
-    this.router.navigate(['p/' + this.ds.workspaceId$.getValue() + '##' + this.ds.selectedUnitId$.getValue()]);
-  }
-
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  copyUnit() {
-    const myUnitId = this.ds.selectedUnitId$.getValue();
+  copyUnit(): void {
+    const myUnitId = this.ds.selectedUnit$.getValue();
     if (myUnitId > 0) {
-      this.bs.getUnitProperties(
-        this.mds.token$.getValue(),
-        this.ds.workspaceId$.getValue(),
-        myUnitId).subscribe(up => {
-          if (up !== null) {
-            const newUnit = up as UnitProperties;
-            if (newUnit.id === myUnitId) {
-              const dialogRef = this.newunitDialog.open(NewunitComponent, {
-                width: '600px',
-                data: {
-                  title: 'Aufgabe ' + newUnit.key + ' in neue Aufgabe kopieren',
-                  key: newUnit.key,
-                  label: newUnit.label
-                }
-              });
+      this.bs.getUnitMetadata(
+        this.ds.selectedWorkspace,
+        myUnitId
+      ).subscribe(
+        newUnit => {
+          if (newUnit.id === myUnitId) {
+            const dialogRef = this.newUnitDialog.open(NewunitComponent, {
+              width: '600px',
+              data: {
+                title: `Aufgabe ${newUnit.key} in neue Aufgabe kopieren`,
+                key: newUnit.key,
+                label: newUnit.label
+              }
+            });
 
-              dialogRef.afterClosed().subscribe(result => {
-                if (typeof result !== 'undefined') {
-                  if (result !== false) {
-                    this.dataLoading = true;
-                    this.bs.copyUnit(
-                        this.mds.token$.getValue(),
-                        this.ds.workspaceId$.getValue(),
-                        myUnitId,
-                        (<FormGroup>result).get('key').value,
-                        (<FormGroup>result).get('label').value).subscribe(
-                          respOk => {
-                            if (respOk) {
-                              this.snackBar.open('Aufgabe hinzugefügt', '', {duration: 1000});
-                              this.ds.updateUnitList();
-                            } else {
-                              this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', {duration: 1000});
-                            }
-                            this.dataLoading = false;
-                          });
-                  }
+            dialogRef.afterClosed().subscribe(result => {
+              if (typeof result !== 'undefined') {
+                if (result !== false) {
+                  this.mds.dataLoading = true;
+                  this.bs.copyUnit(
+                    this.ds.selectedWorkspace,
+                    myUnitId,
+                    (<FormGroup>result).get('key').value,
+                    (<FormGroup>result).get('label').value
+                  ).subscribe(
+                    respOk => {
+                      // todo db-error?
+                      if (respOk) {
+                        this.snackBar.open('Aufgabe hinzugefügt', '', { duration: 1000 });
+                        this.updateUnitList(respOk);
+                      } else {
+                        this.snackBar.open('Konnte Aufgabe nicht hinzufügen', 'Fehler', { duration: 3000 });
+                      }
+                      this.mds.dataLoading = false;
+                    },
+                    err => {
+                      this.snackBar.open(`Konnte Aufgabe nicht hinzufügen (${err.msg()})`,
+                        'Fehler', { duration: 3000 });
+                      this.mds.dataLoading = false;
+                    }
+                  );
                 }
-              });
-            }
+              }
+            });
           }
-        });
+        },
+        err => {
+          this.snackBar.open(`Fehler beim Laden der Aufgabeneigenschaften (${err.msg()})`,
+            'Fehler', { duration: 3000 });
+          this.mds.dataLoading = false;
+        }
+      );
     } else {
-      this.snackBar.open('Bitte erst Aufgabe auswählen', 'Hinweis', {duration: 3000});
+      this.snackBar.open('Bitte erst Aufgabe auswählen', 'Hinweis', { duration: 3000 });
     }
   }
 
-  // HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  exportUnit() {
-    const dialogRef = this.selectUnitDialog.open(SelectUnitComponent, {
+  exportUnit(): void {
+    const dialogRef = this.selectUnitDialog.open(ExportUnitComponent, {
       width: '400px',
       height: '700px',
       data: {
         title: 'Aufgabe(n) als Datei speichern',
-        buttonlabel: 'Download'
+        buttonLabel: 'Download'
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.bs.downloadUnits(
-            this.mds.token$.getValue(),
-            this.ds.workspaceId$.getValue(),
-            (result as UnitShortData[]).map(ud => ud.id)).subscribe(
-              (binaryData: Blob) => {
-                // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
-                saveAs(binaryData, 'unitDefs.voud.zip');
-                this.snackBar.open('Aufgabe(n) gespeichert', '', {duration: 1000});
-              });
-        }
+      if (result !== false) {
+        this.bs.downloadUnits(
+          this.ds.selectedWorkspace,
+          result
+        ).subscribe(
+          (binaryData: Blob) => {
+            // todo db-error?
+            // const file = new File(binaryData, 'unitDefs.voud.zip', {type: 'application/zip'});
+            const nowDate = new Date();
+            let fileName = `${nowDate.getFullYear().toString()}-`;
+            fileName += `${(nowDate.getMonth() < 9 ? '0' : '')}${nowDate.getMonth() + 1}-`;
+            fileName += `${(nowDate.getDate() < 10 ? '0' : '')}${nowDate.getDate()}`;
+            saveAs(binaryData, `${fileName} UnitDefs.voud.zip`);
+            this.snackBar.open('Aufgabe(n) gespeichert', '', { duration: 1000 });
+          }
+        );
       }
     });
   }
 
-  dummySorry() {
-    this.messsageDialog.open(MessageDialogComponent, {
+  settings(): void {
+    const dialogRef = this.editSettingsDialog.open(EditSettingsComponent, {
       width: '400px',
-      data: <MessageDialogData>{
-        title: 'Funktion noch nicht verfügbar',
-        content: 'Sorry - coming soon.',
-        type: MessageType.info
+      height: '300px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.setWorkspaceSettings(
+          this.ds.selectedWorkspace,
+          <WorkspaceSettings>{
+            defaultEditor: result.controls.editorSelector.value,
+            defaultPlayer: result.controls.playerSelector.value
+          }
+        ).subscribe(isOK => {
+          if (isOK === false) {
+            this.snackBar.open('Einstellungen konnten nicht gespeichert werden.', '', { duration: 3000 });
+          } else {
+            this.snackBar.open('Einstellungen gespeichert', '', { duration: 1000 });
+            this.ds.defaultPlayer = result.controls.playerSelector.value;
+            this.ds.defaultEditor = result.controls.editorSelector.value;
+          }
+        });
       }
     });
+  }
+
+  saveUnitData(): void {
+    this.ds.saveUnitData().subscribe(saveResult => {
+      if (saveResult === true) {
+        this.snackBar.open('Änderungen an Aufgabedaten gespeichert', '', { duration: 1000 });
+      } else {
+        this.snackBar.open('Problem: Konnte Aufgabendaten nicht speichern', '', { duration: 3000 });
+      }
+    });
+  }
+
+  finishUnitUpload() : void {
+    this.uploadMessages = [];
+    this.mds.dataLoading = true;
+    this.bs.startUnitUploadProcessing(this.ds.selectedWorkspace, this.uploadProcessId).subscribe(
+      okdata => {
+        let okCount = 0;
+        okdata.forEach(uploadInfo => {
+          if (uploadInfo.success) {
+            okCount += 1;
+          } else {
+            this.uploadMessages.push(`${uploadInfo.filename}: ${uploadInfo.message}`);
+          }
+          if (this.uploadMessages.length > 0) {
+            this.snackBar.open('Problem: Konnte Aufgabendateien nicht hochladen', '', { duration: 3000 });
+          } else {
+            this.snackBar.open(`${okCount} Aufgabe(n) wurden importiert`, '', { duration: 3000 });
+          }
+          if (okCount > 0) {
+            this.updateUnitList();
+            this.selectedUnits = [];
+          }
+        });
+        this.mds.dataLoading = false;
+      },
+      err => {
+        this.uploadMessages.push(`${err.code}: ${err.info}`);
+        this.snackBar.open(`Problem: Konnte Aufgabendateien nicht hochladen: ${err.msg()}`, '', { duration: 3000 });
+        this.mds.dataLoading = false;
+      }
+    );
+    this.uploadProcessId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+    this.snackBar.open('Dateien wurden an den Server gesendet - bitte warten', '', { duration: 10000 });
+  }
+
+  clearUploadMessages(): void {
+    this.uploadMessages = [];
+  }
+
+  discardChanges(): void {
+    const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: <ConfirmDialogData>{
+        title: 'Verwerfen der Änderungen',
+        content: 'Die Änderungen an der Aufgabe werden verworfen. Fortsetzen?',
+        confirmbuttonlabel: 'Verwerfen',
+        showcancel: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.ds.unitMetadataNew = {
+          id: this.ds.unitMetadataOld.id,
+          key: this.ds.unitMetadataOld.key,
+          label: this.ds.unitMetadataOld.label,
+          description: this.ds.unitMetadataOld.description,
+          editorid: this.ds.unitMetadataOld.editorid,
+          playerid: this.ds.unitMetadataOld.playerid,
+          lastchanged: this.ds.unitMetadataOld.lastchanged
+        };
+        this.ds.unitMetadataChanged = false;
+        this.ds.unitDefinitionNew = this.ds.unitDefinitionOld;
+        this.ds.unitDefinitionChanged = false;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routingSubscription !== null) {
+      this.routingSubscription.unsubscribe();
+    }
+    if (this.selectedUnitSubscription !== null) {
+      this.selectedUnitSubscription.unsubscribe();
+    }
   }
 }

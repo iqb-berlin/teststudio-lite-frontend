@@ -1,8 +1,7 @@
-// import { environment } from '../environments/environment';
-import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { MainDatastoreService } from './maindatastore.service';
+import { BackendService } from './backend.service';
 
 @Component({
   selector: 'app-root',
@@ -10,31 +9,40 @@ import { MainDatastoreService } from './maindatastore.service';
   styleUrls: ['./app.component.scss']
 })
 
-
 export class AppComponent implements OnInit {
-  public title = '';
-  public isLoggedIn = false;
+  constructor(
+    public mds: MainDatastoreService,
+    private bs: BackendService,
+    private sanitizer: DomSanitizer,
+    private titleService: Title
+  ) {}
 
-  constructor (private mds: MainDatastoreService) {}
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.mds.dataLoading = true;
+      this.bs.getConfig().subscribe(newConfig => {
+        newConfig.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.intro_html);
+        newConfig.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(newConfig.impressum_html);
+        if (!newConfig.app_title) newConfig.app_title = 'IQB-Teststudio';
+        this.mds.appConfig = newConfig;
+        this.titleService.setTitle(this.mds.appConfig.app_title);
+        this.mds.dataLoading = false;
+        if (this.mds.appConfig.global_warning) {
+          if (!MainDatastoreService.warningIsExpired(this.mds.appConfig)) {
+            this.mds.globalWarning = this.mds.appConfig.global_warning;
+          }
+        }
+      });
+      this.bs.getStatus().subscribe(newStatus => {
+        this.mds.loginStatus = newStatus;
+      },
+      () => {
+        this.mds.loginStatus = null;
+      });
 
-  ngOnInit() {
-    this.mds.isLoggedIn$.subscribe(
-      is => this.isLoggedIn = is);
-
-    this.mds.pageTitle$.subscribe(
-      t => {
-        this.title = t;
-      }
-    );
-
-    // give a message to the central message broadcast
-    window.addEventListener('message', (event) => {
-      this.mds.processMessagePost(event);
-    }, false);
-  }
-
-  // *******************************************************************************************************
-  logout() {
-    this.mds.logout();
+      window.addEventListener('message', event => {
+        this.mds.processMessagePost(event);
+      }, false);
+    });
   }
 }

@@ -1,5 +1,5 @@
 <div class="page-body">
-  <div class="adminbackground" *ngIf="isSuperadmin">
+  <div class="adminbackground" *ngIf="mds.loginStatus?.isSuperAdmin">
 
     <!--<p class="communication-error-message" *ngIf="!isAdmin">{{ notLoggedInMessage }}</p>-->
 
@@ -16,7 +16,7 @@
     <router-outlet></router-outlet>
   </div>
 
-  <div class="adminbackground" *ngIf="!isSuperadmin">
+  <div class="adminbackground" *ngIf="!mds.loginStatus?.isSuperAdmin">
     <p class="communication-error-message">Bitte als Administrator/in mit Sonderrechten anmelden!</p>
   </div>
 </div>

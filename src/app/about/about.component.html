@@ -1,22 +1,12 @@
 <div class="page-body">
   <div fxLayout="row" fxLayoutAlign="center start">
     <mat-card fxFlex="0 2 500px">
-      <mat-card-title>IQB-Itemdatenbank - Impressum/Datenschutz</mat-card-title>
+      <mat-card-title>{{mds.appConfig?.app_title}} - Impressum/Datenschutz</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-        betreibt auf diesen Seiten eine Pilotanwendung für die Aufgabenentwicklung zum Einsatz in computerbasierten Leistungstests.
-        Der Zugang ist nur möglich, wenn Sie vom IQB
-        Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
-
-        <ul>
-          <li>Programmname: {{ appName }}</li>
-          <li>Programmversion: {{ appVersion }}</li>
-          <li>Copyright: {{ appPublisher }}</li>
-        </ul>
-
-        <p>
+        <div [innerHTML]="mds.appConfig?.trusted_impressum_html"></div>
+        <!--<p>
             <em>Postanschrift:</em><br/>
             Humboldt-Universität zu Berlin<br/>
             Institut zur Qualitätsentwicklung im Bildungswesen<br/>
@@ -36,8 +26,11 @@
             Tel: +49 (30) 2093-2591<br/>
             E-Mail: datenschutz@uv.hu-berlin.de<br/>
             <a href="http://www.hu-berlin.de/de/datenschutz" target="_blank">www.hu-berlin.de/de/datenschutz</a>
-        </p>
+        </p>-->
       </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="foreground" [routerLink]="['/']">Startseite</button>
+      </mat-card-actions>
     </mat-card>
   </div>
 </div>

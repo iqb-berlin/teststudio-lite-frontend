@@ -1,37 +1,53 @@
-import { IqbFilesModule } from './../iqb-files';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
-  MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule, MatCardModule,
-  MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
-  import {FlexLayoutModule} from '@angular/flex-layout';
-  import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatBadgeModule } from '@angular/material/badge';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { ReactiveFormsModule } from '@angular/forms';
 
+import { IqbComponentsModule } from 'iqb-components';
+import { MatChipsModule } from '@angular/material/chips';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
-import { ItemauthoringComponent } from './itemauthoring/itemauthoring.component';
-import { ItemplayerComponent } from './itemplayer/itemplayer.component';
 import { SuperadminComponent } from './superadmin.component';
-import { DatastoreService } from './datastore.service';
 import { BackendService } from './backend.service';
-import { IqbCommonModule } from '../iqb-common/iqb-common.module';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
-import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
-import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
-import { NewItemAuthoringToolComponent } from './itemauthoring/new-item-authoring-tool/new-item-authoring-tool.component';
-import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-authoring-tool/edit-item-authoring-tool.component';
-
-
+import { EditworkspaceComponent } from './workspaces/editworkspace.component';
+import { IqbFilesModule } from '../iqb-files';
+import { SuperadminPasswordRequestComponent } from
+  './superadmin-password-request/superadmin-password-request.component';
+import { VeronaModulesComponent } from './verona-modules/verona-modules.component';
+import { VeronaModulesTableComponent } from './verona-modules/verona-modules-table.component';
+import { SettingsComponent } from './settings/settings.component';
+import { WorkspaceGroupsComponent } from './settings/workspace-groups.component';
+import { EditWorkspaceGroupComponent } from './settings/edit-workspace-group.component';
+import { AppConfigComponent } from './settings/app-config.component';
 
 @NgModule({
   imports: [
     CommonModule,
     SuperadminRoutingModule,
     IqbFilesModule,
-    IqbCommonModule,
+    IqbComponentsModule,
     MatTableModule,
     MatTabsModule,
     MatIconModule,
@@ -49,7 +65,11 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
     MatInputModule,
     MatToolbarModule,
     MatSnackBarModule,
-    FlexLayoutModule
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatBadgeModule,
+    FlexLayoutModule,
+    MatChipsModule
   ],
   exports: [
     SuperadminComponent
@@ -57,27 +77,30 @@ import { EditItemAuthoringToolComponent } from './itemauthoring/edit-item-author
   declarations: [
     WorkspacesComponent,
     UsersComponent,
-    ItemauthoringComponent,
-    ItemplayerComponent,
     SuperadminComponent,
     NewuserComponent,
     NewpasswordComponent,
-    NewworkspaceComponent,
     EditworkspaceComponent,
-    NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent
+    SuperadminPasswordRequestComponent,
+    VeronaModulesComponent,
+    VeronaModulesTableComponent,
+    SettingsComponent,
+    WorkspaceGroupsComponent,
+    EditWorkspaceGroupComponent,
+    AppConfigComponent
   ],
   providers: [
     BackendService,
-    DatastoreService
+    [
+      { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
+    ]
   ],
   entryComponents: [
     NewuserComponent,
     NewpasswordComponent,
-    NewworkspaceComponent,
     EditworkspaceComponent,
-    NewItemAuthoringToolComponent,
-    EditItemAuthoringToolComponent
+    EditWorkspaceGroupComponent,
+    SuperadminPasswordRequestComponent
   ]
 })
 export class SuperadminModule { }

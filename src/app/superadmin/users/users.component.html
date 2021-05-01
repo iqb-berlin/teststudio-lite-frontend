@@ -1,10 +1,10 @@
-<div fxLayout="row" fxLayoutAlign="space-between start">
+<div fxLayout="row" fxLayoutAlign="space-between start" class="admin-tab-content">
   <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
   </div>
 
   <!-- ============================================= -->
-  <div class="objectlist" fxLayout="column" fxFlex="50">
+  <div class="object-list" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
         <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above">
             <mat-icon>add</mat-icon>
@@ -15,9 +15,13 @@
         <button mat-raised-button (click)="changePassword()" matTooltip="Kennwort ändern" matTooltipPosition="above">
           <mat-icon>edit</mat-icon>
         </button>
+        <button mat-raised-button (click)="changeSuperadminStatus()"
+                matTooltip="Superadmin-Status ändern" matTooltipPosition="above">
+          <mat-icon>edit</mat-icon>*
+        </button>
     </div>
 
-    <mat-table [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="objectsDatasource" matSort class="scroll-area">
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef fxFlex="70px">
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -35,7 +39,7 @@
 
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} {{element.is_superadmin ? '*' : ''}}</mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -45,7 +49,7 @@
   </div>
 
   <!-- ============================================= -->
-  <div fxLayout="column" fxFlex="40">
+  <div class="object-list" fxLayout="column" fxFlex="40">
 
     <div *ngIf="selectedUser.length == 0">
       <div>Zugriffsrechte für Arbeitsbereich(e):</div>
@@ -60,13 +64,17 @@
         </button>
     </div>
 
-    <mat-table [dataSource]="WorkspacelistDatasource">
+    <mat-table [dataSource]="WorkspacelistDatasource" class="scroll-area">
       <ng-container matColumnDef="selectCheckbox">
         <mat-cell *matCellDef="let row" fxFlex="70px">
           <mat-checkbox (change)="selectWorkspace(row)"
                         [checked]="row.selected">
           </mat-checkbox>
         </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="group">
+        <mat-cell *matCellDef="let row"> {{row.ws_group_name}} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="label">

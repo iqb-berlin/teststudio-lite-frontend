@@ -28,18 +28,21 @@ body {
   background-image: linear-gradient(to bottom, #003333, #00465d, #005791, #005ebe, #8854d0);
 }
 
-
 .spinner-container {
-  position: fixed;
-  z-index: 999;
-  height: 2em;
-  width: 2em;
-  overflow: show;
-  margin: auto;
-  top: 0;
-  left: 0;
   bottom: 0;
+  height: 2em;
+  left: 0;
+  margin: auto;
+  overflow: visible;
+  position: fixed;
   right: 0;
+  top: 0;
+  width: 2em;
+  z-index: 999;
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: blueviolet!important;
 }
 
 iframe.unitHost {
@@ -47,7 +50,15 @@ iframe.unitHost {
   border: none;
 }
 
-#unitSelectorGroup .mat-button-toggle-label-content {
-  padding: 0 4px !important;
-  line-height: 24px !important;
+.mat-tab-body-wrapper{
+  flex-grow: 1;
+}
+
+#iFrameHost > p {
+  margin: 20px;
+}
+
+.admin-tab-content {
+  overflow-x: auto;
+  height: calc(100% - 30px);
 }

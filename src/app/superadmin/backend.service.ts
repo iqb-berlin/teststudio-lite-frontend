@@ -1,333 +1,219 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { AppConfig, AppHttpError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_superadmin/';
-    }
+    @Inject('SERVER_URL') private readonly serverUrl: string,
+    private http: HttpClient
+  ) {
+    this.serverUrl += 'php_superadmin/';
+  }
 
-  private errorHandler(error: Error | any): Observable<any> {
-    return Observable.throw(error);
+  getUsers(): Observable<GetUserDataResponse[]> {
+    return this.http
+      .post<GetUserDataResponse[]>(`${this.serverUrl}getUsers.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  addUser(name: string, password: string): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}addUser.php`, { t: localStorage.getItem('t'), n: name, p: password })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  changePassword(name: string, password: string): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}setPassword.php`,
+      { t: localStorage.getItem('t'), n: name, p: password })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean> {
+    return this.http
+      .put<boolean>(`${this.serverUrl}setSuperAdminStatus.php`, {
+      t: localStorage.getItem('t'), u: userId, s: changeToSuperUser ? 'true' : 'false', p: password
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  deleteUsers(users: string[]): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}deleteUsers.php`, { t: localStorage.getItem('t'), u: users })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  getWorkspacesByUser(username: string): Observable<WorkspaceData[]> {
+    return this.http
+      .post<WorkspaceData[]>(`${this.serverUrl}getUserWorkspaces.php`,
+      { t: localStorage.getItem('t'), u: username })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  setWorkspacesByUser(user: string, accessTo: IdLabelSelectedData[]): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}setUserWorkspaces.php`,
+      { t: localStorage.getItem('t'), u: user, w: accessTo })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  getWorkspaces(): Observable<IdLabelSelectedData[]> {
+    return this.http
+      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaces.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  addWorkspace(name: string, group: number): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}addWorkspace.php`, {
+      t: localStorage.getItem('t'),
+      n: name,
+      wsg: group
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  changeWorkspace(wsId: number, wsName: string, wsGroup: number): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}setWorkspace.php`, {
+      t: localStorage.getItem('t'),
+      ws_id: wsId,
+      ws_name: wsName,
+      ws_group: wsGroup
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
+  }
+
+  deleteWorkspaces(workspaces: number[]): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.serverUrl}deleteWorkspaces.php`, { t: localStorage.getItem('t'), ws: workspaces })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
   // *******************************************************************
-  // *******************************************************************
-  // users
-  // *******************************************************************
-  // *******************************************************************
-  getUsers(token: string): Observable<GetUserDataResponse[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getUsersByWorkspace(workspaceId: number): Observable<IdLabelSelectedData[]> {
     return this.http
-      .post<GetUserDataResponse[]>(this.serverUrl + 'getUsers.php', {t: token}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<IdLabelSelectedData[]>(`${this.serverUrl}getWorkspaceUsers.php`,
+      { t: localStorage.getItem('t'), ws: workspaceId })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-
-  addUser(token: string, name: string, password: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setUsersByWorkspace(workspace: number, accessing: IdLabelSelectedData[]): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'addUser.php', {t: token, n: name, p: password}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<boolean>(`${this.serverUrl}setWorkspaceUsers.php`,
+      { t: localStorage.getItem('t'), w: workspace, u: accessing })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  changePassword(token: string, name: string, password: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  // todo: replace with getPlayers
+  getItemPlayerFiles(): Observable<GetFileResponseData[]> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setPassword.php', {t: token, n: name, p: password}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<GetFileResponseData[]>(`${this.serverUrl}getItemPlayerFiles.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  deleteUsers(token: string, users: string[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getVeronaModuleList(): Observable<VeronaModuleData[]> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteUsers.php', {t: token, u: users}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<VeronaModuleData[]>(`${this.serverUrl}getVeronaModuleList.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // *******************************************************************
-  getWorkspacesByUser(token: string, username: string): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  deleteVeronaModules(files: string[]): Observable<string> {
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getUserWorkspaces.php', {t: token, u: username}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<string>(`${this.serverUrl}deleteVeronaModule.php`, { t: localStorage.getItem('t'), f: files })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  setWorkspacesByUser(token: string, user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getWorkspaceGroupList(): Observable<WorkspaceGroupData[]> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setUserWorkspaces.php', {t: token, u: user, w: accessTo}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<WorkspaceGroupData[]>(`${this.serverUrl}getWorkspaceGroups.php`, { t: localStorage.getItem('t') })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  // *******************************************************************
-  // *******************************************************************
-  // workspaces
-  // *******************************************************************
-  // *******************************************************************
-  getWorkspaces(token: string): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  addWorkspaceGroup(name: string): Observable<boolean> {
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaces.php', {t: token}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<boolean>(`${this.serverUrl}addWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), n: name
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  addWorkspace(token: string, name: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  deleteWorkspaceGroup(id: number): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'addWorkspace.php', {t: token, n: name}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<boolean>(`${this.serverUrl}deleteWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), wsg: id
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  changeWorkspace(token: string, wsId: number, wsName: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  renameWorkspaceGroup(id: number, newName: string): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspace.php', {t: token, ws_id: wsId, ws_name: wsName}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<boolean>(`${this.serverUrl}setWorkspaceGroup.php`, {
+      t: localStorage.getItem('t'), wsg_id: id, wsg_name: newName
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
 
-  deleteWorkspaces(token: string, workspaces: number[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setAppConfig(appConfig: AppConfig): Observable<boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteWorkspaces.php', {t: token, ws: workspaces}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+      .post<boolean>(`${this.serverUrl}setConfig.php`, {
+      t: localStorage.getItem('t'), c: JSON.stringify(appConfig)
+    })
+      .pipe(
+        catchError(err => throwError(new AppHttpError(err)))
+      );
   }
-
-  // *******************************************************************
-  getUsersByWorkspace(token: string, workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaceUsers.php', {t: token, ws: workspaceId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  setUsersByWorkspace(token: string, workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspaceUsers.php', {t: token, w: workspace, u: accessing}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // *******************************************************************
-  // *******************************************************************
-  // itemauthoringtools
-  // *******************************************************************
-  // *******************************************************************
-  getItemAuthoringTools(token: string): Observable<StrIdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<StrIdLabelSelectedData[]>(this.serverUrl + 'getItemAuthoringTools.php', {t: token}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  addItemAuthoringTool(token: string, id: string, name: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'addItemAuthoringTool.php', {t: token, i: id, n: name}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  changeItemAuthoringTool(token: string, oldid: string, id: string, name: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'renameItemAuthoringTool.php', {t: token, old_i: oldid, new_i: id, n: name}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  deleteItemAuthoringTools(token: string, ids: string[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<Boolean>(this.serverUrl + 'deleteItemAuthoringTools.php', {t: token, i: ids}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // *******************************************************************
-  // itemauthoringtools - Files
-  getItemAuthoringToolFiles(token: string, id: string): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getItemAuthoringToolFiles.php', {t: token, i: id}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  deleteItemAuthoringToolFiles(token: string, id: string, files: string[]): Observable<string | ServerError>  {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<string>(this.serverUrl + 'deleteItemAuthoringToolFiles.php', {t: token, i: id, f: files}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getItemPlayerFiles(token: string): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getItemPlayerFiles.php', {t: token}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  deleteItemPlayerFiles(token: string, files: string[]): Observable<string | ServerError>  {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<string>(this.serverUrl + 'deleteItemPlayerFiles.php', {t: token, f: files}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn: ServerError = {
-      label: 'Fehler bei Datenübertragung',
-      code: errorObj.status
-    };
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
-    } else {
-      myreturn.label = 'Fehler: ' + errorObj.message;
-    }
-
-    return Observable.throw(myreturn.label);
-  }
-}
-
-
-// / / / / / /
-export interface ServerError {
-  code: number;
-  label: string;
 }
 
 export interface GetUserDataResponse {
+  id: number;
   name: string;
+  is_superadmin: boolean;
 }
 
 export interface IdLabelSelectedData {
@@ -336,9 +222,11 @@ export interface IdLabelSelectedData {
   selected: boolean;
 }
 
-export interface StrIdLabelSelectedData {
-  id: string;
+export interface WorkspaceData {
+  id: number;
   label: string;
+  ws_group_id: number;
+  ws_group_name: string;
   selected: boolean;
 }
 
@@ -349,4 +237,22 @@ export interface GetFileResponseData {
   filedatetime: string;
   filedatetimestr: string;
   selected: boolean;
+}
+
+export interface VeronaModuleData {
+  id: string;
+  name: string;
+  filesizeStr: string;
+  filesize: number;
+  fileDatetime: number;
+  apiVersion: string;
+  isPlayer: boolean;
+  isEditor: boolean;
+  description: string;
+}
+
+export interface WorkspaceGroupData {
+  id: number;
+  label: string;
+  ws_count: number;
 }

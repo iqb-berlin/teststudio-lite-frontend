@@ -1,75 +1,106 @@
-import { DatastoreService } from './../authoring/datastore.service';
-import { WorkspaceData } from './../authoring';
-import { MainDatastoreService } from '../maindatastore.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
-
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BackendService, WorkspaceData } from '../backend.service';
+import { MainDatastoreService } from '../maindatastore.service';
+import { ChangePasswordComponent } from './change-password.component';
 
 @Component({
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  loginform: FormGroup;
-  isLoggedIn = false;
+  loginForm: FormGroup;
   isError = false;
   errorMessage = '';
-  isSuperadmin = false;
-  loginName = '';
-  workspaceList: WorkspaceData[] = [];
 
   constructor(private fb: FormBuilder,
-    private mds: MainDatastoreService,
-    private ds: DatastoreService,
-    private router: Router) { }
+              @Inject('APP_VERSION') readonly appVersion: string,
+              @Inject('APP_NAME') readonly appName: string,
+              public mds: MainDatastoreService,
+              private bs: BackendService,
+              public confirmDialog: MatDialog,
+              private changePasswordDialog: MatDialog,
+              private snackBar: MatSnackBar,
+              private router: Router) { }
 
-  ngOnInit() {
-    this.mds.pageTitle$.next('');
-
-    this.mds.notLoggedInMessage$.subscribe(
-      m => this.errorMessage = m);
-    this.loginform = this.fb.group({
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
       name: this.fb.control('', [Validators.required, Validators.minLength(1)]),
       pw: this.fb.control('', [Validators.required, Validators.minLength(1)])
     });
-
-    this.ds.workspaceList$.subscribe(list => {
-      if (list.length > 0) {
-        list.sort((ws1, ws2) => {
-          if (ws1.name.toLowerCase() > ws2.name.toLowerCase()) {
-            return 1;
-          } else if (ws1.name.toLowerCase() < ws2.name.toLowerCase()) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-      }
-      this.workspaceList = list;
+    setTimeout(() => {
+      this.mds.pageTitle = 'Willkommen!';
+      this.bs.getStatus().subscribe(newStatus => {
+        this.mds.loginStatus = newStatus;
+      },
+      () => {
+        this.mds.loginStatus = null;
+      });
     });
-    this.mds.isSuperadmin$.subscribe(is => this.isSuperadmin = is);
-    this.mds.loginName$.subscribe(n => this.loginName = n);
-    this.mds.isLoggedIn$.subscribe(is => this.isLoggedIn = is);
   }
 
-  login() {
+  login(): void {
     this.isError = false;
     this.errorMessage = '';
-
-    if (this.loginform.valid) {
-      this.mds.login(this.loginform.get('name').value, this.loginform.get('pw').value);
+    if (this.loginForm.valid) {
+      this.bs.login(this.loginForm.get('name').value, this.loginForm.get('pw').value).subscribe(loginData => {
+        this.mds.loginStatus = loginData;
+      },
+      err => {
+        this.isError = true;
+        this.errorMessage = `${err.msg()}`;
+      });
     }
   }
 
-  changeLogin() {
-    this.mds.logout();
+  logout(): void {
+    const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      height: '300px',
+      data: <ConfirmDialogData>{
+        title: 'Abmelden',
+        content: 'Möchten Sie sich abmelden?',
+        confirmbuttonlabel: 'Abmelden',
+        showcancel: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.logout().subscribe(
+          () => {
+            this.mds.loginStatus = null;
+            this.router.navigateByUrl('/');
+          }
+        );
+      }
+    });
   }
 
-  buttonGotoWorkspace(selectedWorkspace: WorkspaceData) {
-    if (this.router.navigate(['/a'])) {
-      this.ds.workspaceId$.next(selectedWorkspace.id);
-    }
+  changePassword() : void {
+    const dialogRef = this.changePasswordDialog.open(ChangePasswordComponent, {
+      width: '400px',
+      height: '700px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.bs.setUserPassword(result.controls.pw_old.value, result.controls.pw_new1.value).subscribe(
+          respOk => {
+            this.snackBar.open(
+              respOk ? 'Neues Kennwort gespeichert' : 'Konnte Kennwort nicht ändern.',
+              respOk ? 'OK' : 'Fehler', { duration: 3000 }
+            );
+          }
+        );
+      }
+    });
   }
 
+  buttonGotoWorkspace(selectedWorkspace: WorkspaceData): void {
+    this.router.navigate([`/a/${selectedWorkspace.id}`]);
+  }
 }
