@@ -3,16 +3,29 @@
 
 # Teststudio-Lite Frontend
 
-Thes is the frontend for the Teststudio-Lite application (formally known as itemdb).
+You can find documentation an intro videos [here](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki) (German only). 
 
 You can find the backend for this application [here](https://github.com/iqb-berlin/teststudio-lite-backend).
 You can find a complete setup with front- and backend [here](https://github.com/iqb-berlin/teststudio-lite-setup).
 
-## Bug Reports
+# Release notes
+##1.0
+* user can change password
+* workspaces are organized in groups to ease the management
+* intro text and impressum text can be changed after installation
+* a warning message can be placed to announce shut down due to maintenance
+* import of units added
+* export extended by booklet and test-taker xml files
+* preview possible without save
+* enhanced management of players and editors in regard to version
+* standard player and editor per workspace added
+* upgrade to angular 11 (no support for IE < 11 anymore))
+
+# Bug Reports
 
 Please file bug reports etc. here [here](https://github.com/iqb-berlin/teststudio-lite-frontend/issues).
 
-## Installation
+# Installation
 
 ### With Docker (recommended)
 
