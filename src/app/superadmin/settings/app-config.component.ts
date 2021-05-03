@@ -17,7 +17,17 @@ import { MainDatastoreService } from '../../maindatastore.service';
 })
 
 export class AppConfigComponent implements OnInit, OnDestroy {
-  appConfig: AppConfig = null;
+  appConfig: AppConfig = {
+    global_warning: '',
+    global_warning_expired_hour: 0,
+    global_warning_expired_day: null,
+    app_title: 'IQB-Teststudio',
+    intro_html: '<p>nicht definiert</p>',
+    impressum_html: '<p>nicht definiert</p>',
+    trusted_impressum_html: null,
+    trusted_intro_html: null
+  };
+
   configForm: FormGroup;
   dataChanged = false;
   private configDataChangedSubscription: Subscription = null;
@@ -76,18 +86,27 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         this.configDataChangedSubscription.unsubscribe();
         this.configDataChangedSubscription = null;
       }
-      this.appConfig = appConfig;
+      if (appConfig) {
+        if (appConfig.app_title) this.appConfig.app_title = appConfig.app_title;
+        if (appConfig.intro_html) this.appConfig.intro_html = appConfig.intro_html;
+        if (appConfig.impressum_html) this.appConfig.impressum_html = appConfig.impressum_html;
+        if (appConfig.global_warning) this.appConfig.global_warning = appConfig.global_warning;
+        if (appConfig.global_warning_expired_day) {
+          this.appConfig.global_warning_expired_day = appConfig.global_warning_expired_day;
+        }
+        if (appConfig.global_warning_expired_hour) {
+          this.appConfig.global_warning_expired_hour = appConfig.global_warning_expired_hour;
+        }
+        this.configForm.setValue({
+          appTitle: this.appConfig.app_title,
+          introHtml: this.appConfig.intro_html,
+          impressumHtml: this.appConfig.impressum_html,
+          globalWarningText: this.appConfig.global_warning,
+          globalWarningExpiredDay: this.appConfig.global_warning_expired_day,
+          globalWarningExpiredHour: this.appConfig.global_warning_expired_hour
+        }, { emitEvent: false });
+      }
       this.warningIsExpired = MainDatastoreService.warningIsExpired(this.appConfig);
-      this.configForm.setValue({
-        appTitle: this.appConfig.app_title,
-        introHtml: this.appConfig.intro_html,
-        impressumHtml: this.appConfig.impressum_html,
-        globalWarningText: this.appConfig.global_warning ? this.appConfig.global_warning : '',
-        globalWarningExpiredDay:
-          this.appConfig.global_warning_expired_day ? this.appConfig.global_warning_expired_day : '',
-        globalWarningExpiredHour:
-          this.appConfig.global_warning_expired_hour ? this.appConfig.global_warning_expired_hour : '0'
-      }, { emitEvent: false });
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
         this.appConfig.global_warning_expired_day = this.configForm.get('globalWarningExpiredDay').value;
         this.appConfig.global_warning_expired_hour = this.configForm.get('globalWarningExpiredHour').value;
