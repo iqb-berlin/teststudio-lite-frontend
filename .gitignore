@@ -41,3 +41,4 @@ Thumbs.db
 src/environments/environment.ts
 
 scripts/new_version.py
+scripts/__pychache__
