@@ -18,6 +18,9 @@ init-dev-config:
 build:
 	docker-compose -f docker/docker-compose.yml build
 
+test:
+	echo "There are not tests yet... :-("
+
 new-version-major:
 	scripts/new_version.py major
 
