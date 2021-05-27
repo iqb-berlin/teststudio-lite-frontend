@@ -39,3 +39,5 @@ testem.log
 Thumbs.db
 /teststudio-lite-frontend.iml
 src/environments/environment.ts
+
+scripts/new_version.py

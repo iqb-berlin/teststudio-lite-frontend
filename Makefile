@@ -12,6 +12,8 @@ down:
 
 init-dev-config:
 	cp src/environments/environment.dev.ts src/environments/environment.ts
+	wget -O scripts/new_version.py https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/new_version.py
+	chmod +x scripts/new_version.py
 
 build:
 	docker-compose -f docker/docker-compose.yml build
